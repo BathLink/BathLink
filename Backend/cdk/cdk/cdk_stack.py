@@ -5,6 +5,7 @@ from aws_cdk import (
     aws_lambda as _lambda,
     aws_cognito as cognito
 )
+from pathlib import Path
 from constructs import Construct
 
 
@@ -25,11 +26,12 @@ class CdkStack(Stack):
 
     def create_lambdas(self):
         lambdas = {}
+        lambda_path = str(Path(__file__).resolve().parent.parent.parent / "lambda_functions" / "example_lambda")
         lambdas['example_lambda'] = _lambda.Function(
             self, "Example Lambda",
             runtime=_lambda.Runtime.PYTHON_3_9,
             handler="lambda_function.lambda_handler",
-            code=_lambda.Code.from_asset("../lambda_functions/example_lambda"),
+            code=_lambda.Code.from_asset(lambda_path),
         )
         return lambdas
 
