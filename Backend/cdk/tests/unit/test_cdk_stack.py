@@ -10,7 +10,6 @@ def test_lambdas_created():
     template = assertions.Template.from_stack(stack)
 
     lambdas = template.find_resources("AWS::Lambda::Function")
-    print(lambdas)
     assert len(lambdas) == 1
 
 
@@ -19,11 +18,11 @@ def test_cognito_created():
     stack = CdkStack(app, "cdk")
     template = assertions.Template.from_stack(stack)
 
-    template.has_resource("AWS::Cognito::UserPool")
+    template.has_resource("AWS::Cognito::UserPool",{})
 
 def test_api_gateway_created():
     app = core.App()
     stack = CdkStack(app, "cdk")
     template = assertions.Template.from_stack(stack)
 
-    template.has_resource("AWS::Apigateway")
+    template.has_resource("AWS::ApiGateway::RestApi",{})
