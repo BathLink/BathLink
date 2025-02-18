@@ -1,0 +1,102 @@
+name: Test and Deploy CDK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'Backend/'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'Backend/'
+
+jobs:
+  test:
+    name: Run Unit and Integration Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Dependencies
+        run: |
+          pip install -r Backend/requirements.txt
+          pip install -r Backend/requirements-dev.txt
+
+      - name: Run Unit Tests with Pytest
+        run: pytest Backend/tests/unit
+
+      - name: Synthesize CloudFormation Template
+        run: |
+          cd Backend/cdk
+          cdk synth
+        shell: bash
+
+      - name: Run Local API with SAM
+        run: |
+          cd Backend/cdk
+          sam local start-api -t cdk.out\CdkStack.template.json/ &
+          sleep 10
+        env:
+          AWS_ACCESS_KEY_ID: AKIAVPEYWOKMTZHWXBEO
+          AWS_SECRET_ACCESS_KEY: 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
+          AWS_REGION: us-west-2
+
+      - name: Run API Tests
+        run: |
+          pytest Backend/tests/integration
+
+
+  deploy:
+    name: Deploy CDK
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Bootstrap CDK (if needed)
+        run: |
+          cd Backend/cdk
+          cdk bootstrap
+
+      - name: Deploy CDK Stack
+        run: |
+          cd Backend/cdk
+          cdk deploy --require-approval never
+
+  e2e:
+    name: Run E2E Tests
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          pip install -r Backend/requirements.txt
+          pip install -r Backend/requirements-dev.txt
+
+      - name: Run E2E Tests
+        run: |
+          pytest Backend/tests/e2e
