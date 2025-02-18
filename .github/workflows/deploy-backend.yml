@@ -32,7 +32,7 @@ jobs:
           pip install -r Backend/requirements.txt
           pip install -r Backend/requirements-dev.txt
 
-      - name: Run Unit Tests with Pytest
+      - name: Run Unit Tests 
         run: pytest Backend/tests/unit --junitxml=results/unit-results.xml
 
       - name: Upload Unit Results
@@ -43,6 +43,15 @@ jobs:
 
       - name: Install AWS CDK
         run: npm install -g aws-cdk
+
+      - name: Run CDK Tests 
+        run: pytest Backend/tests/unit --junitxml=results/cdk-results.xml
+
+      - name: Upload CDK Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: cdk-results
+          path: results/cdk-results.xml
 
       - name: Synthesize CloudFormation Template
         run: |
@@ -74,7 +83,7 @@ jobs:
         uses: test-summary/action@v2
         with:
           paths: "results/*.xml"
-        if: always()
+        if: github.ref != 'refs/heads/main'
 
 
   deploy:
@@ -153,3 +162,9 @@ jobs:
         with:
           name: e2e-results
           path: results/e2e-results.xml
+      
+      - name: Test Summary
+        uses: test-summary/action@v2
+        with:
+          paths: "results/*.xml"
+        if: always()
