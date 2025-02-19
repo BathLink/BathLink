@@ -79,10 +79,16 @@ jobs:
           name: integration-results
           path: results/integration-results.xml
 
-      - name: Test Summary
-        uses: test-summary/action@v2
+      - name: Create Report
+        run: |
+          python Backend/scripts/generate_workflow_report.py
+          cat results/workflow-report.md >> $GITHUB_STEP_SUMMARY
+        if: github.ref != 'refs/heads/main'
+      - name: Upload Report File
+        uses: actions/upload-artifact@v4
         with:
-          paths: "results/*.xml"
+          name: test-deployment-report
+          path: report.md
         if: github.ref != 'refs/heads/main'
 
 
@@ -128,7 +134,8 @@ jobs:
       - name: Deploy CDK Stack
         run: |
           cd Backend/cdk
-          cdk deploy --require-approval never
+          cdk deploy --require-approval never 2>&1 | tee ../../results/cdk-deploy.log
+        shell: bash
 
   e2e:
     name: Run E2E Tests
@@ -162,9 +169,15 @@ jobs:
         with:
           name: e2e-results
           path: results/e2e-results.xml
-      
-      - name: Test Summary
-        uses: test-summary/action@v2
+
+      - name: Create Report
+        run: |
+          python Backend/scripts/generate_workflow_report.py
+          cat results/workflow-report.md >> $GITHUB_STEP_SUMMARY
+        if: always()
+      - name: Upload Report File
+        uses: actions/upload-artifact@v4
         with:
-          paths: "results/*.xml"
+          name: test-deployment-report
+          path: report.md
         if: always()
