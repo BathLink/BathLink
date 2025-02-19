@@ -1,12 +1,12 @@
 from aws_cdk import (
-    # Duration,
     Stack, CfnOutput,
-    aws_apigateway,
-    aws_lambda as _lambda,
     aws_cognito as cognito
 )
-from pathlib import Path
 from constructs import Construct
+from .bathlink_lambdas import BathLinkLambdas
+from .bathlink_api import BathLinkAPI
+
+
 
 
 class CdkStack(Stack):
@@ -14,31 +14,19 @@ class CdkStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        lambdas = self.create_lambdas()
+        lambdas = BathLinkLambdas().create_lambdas(self)
 
         # API Gateway
-        api = self.create_api(lambdas)
+        api = BathLinkAPI().create_api(self,lambdas)
 
         user_pool,app_client = self.configure_cognito()
 
         CfnOutput(self, "APIEndpoint", value=api.url)
         CfnOutput(self, "UserPoolId", value=user_pool.user_pool_id)
 
-    def create_lambdas(self):
-        lambdas = {}
-        lambda_path = str(Path(__file__).resolve().parent.parent.parent / "lambda_functions" / "example_lambda")
-        lambdas['example_lambda'] = _lambda.Function(
-            self, "Example Lambda",
-            runtime=_lambda.Runtime.PYTHON_3_9,
-            handler="lambda_function.lambda_handler",
-            code=_lambda.Code.from_asset(lambda_path),
-        )
-        return lambdas
 
-    def create_api(self, lambdas):
-        api = aws_apigateway.LambdaRestApi(self, "MyApi", handler=lambdas['example_lambda'])
 
-        return api
+
 
     def configure_cognito(self):
         user_pool = cognito.UserPool(
