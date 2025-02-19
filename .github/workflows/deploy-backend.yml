@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - 'Backend/'
+      - 'Backend/**'
   pull_request:
     paths:
-      - 'Backend/'
+      - 'Backend/**'
 
 jobs:
   test:
