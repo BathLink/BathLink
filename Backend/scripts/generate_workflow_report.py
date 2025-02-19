@@ -1,8 +1,7 @@
-import re
 import xml.etree.ElementTree as ET
 import os
 
-RESULTS_DIR = "../../results/"
+RESULTS_DIR = "results/"
 SUMMARY_FILE = RESULTS_DIR + "workflow-report.md"
 CDK_DEPLOY_LOG = RESULTS_DIR + "cdk-deploy.log"
 
