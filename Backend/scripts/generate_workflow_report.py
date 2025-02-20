@@ -6,16 +6,16 @@ SUMMARY_FILE = RESULTS_DIR + "workflow-report.md"
 CDK_DEPLOY_LOG = RESULTS_DIR + "cdk-deploy.log"
 
 TEST_FILES = {
-    "Unit Tests": "unit-results.xml",
-    "CDK Tests": "cdk-results.xml",
-    "Integration Tests": "integration-results.xml",
-    "E2E Tests": "e2e-results.xml",
+    "Unit Tests": "unit-results/unit-results.xml",
+    "CDK Tests": "cdk-results/cdk-results.xml",
+    "Integration Tests": "integration-results/integration-results.xml",
+    "E2E Tests": "e2e-results/e2e-results.xml",
 }
 
 COVERAGE_FILES = {
-    "Unit Tests": "unit-coverage.xml",
-    "Integration Tests": "integration-coverage.xml",
-    "E2E Tests": "e2e-coverage.xml",
+    "Unit Tests": "unit-coverage/unit-coverage.xml",
+    "Integration Tests": "integration-coverage/integration-coverage.xml",
+    "E2E Tests": "integration-coverage/e2e-coverage.xml",
 }
 
 def parse_test_results(file_path):
