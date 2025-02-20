@@ -69,6 +69,19 @@ jobs:
           pip install -r Backend/requirements.txt
           pip install -r Backend/requirements-dev.txt
 
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install AWS CDK
+        run: npm install -g aws-cdk
+
+      - name: Synthesize CDK
+        run: |
+          cd Backend/cdk
+          cdk synth
+
       - name: Run Local API with SAM
         run: | 
           cd Backend/cdk
@@ -188,6 +201,12 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: results
+          path: results
 
       - name: Create Report
         run: |

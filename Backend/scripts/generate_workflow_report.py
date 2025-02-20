@@ -82,6 +82,7 @@ def generate_summary():
 
         for test_name, file_name in TEST_FILES.items():
             path = RESULTS_DIR + file_name
+
             if not os.path.exists(path): continue
             f.write(f"### {test_name}\n")
             f.write(parse_test_results(path) + "\n")
