@@ -186,6 +186,7 @@ jobs:
 
       - name: Deploy CDK Stack
         run: |
+          touch results/cdk-deploy.log
           cd Backend/cdk
           cdk deploy --require-approval never 2>&1 | tee ../../results/cdk-deploy.log
         shell: bash
