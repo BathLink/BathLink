@@ -202,11 +202,41 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Download Artifact
+      - name: Download Unit Test Results
         uses: actions/download-artifact@v4
         with:
-          name: results
-          path: results
+          name: unit-results.xml
+          path: results/unit-results.xml
+
+      - name: Download Unit Coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: unit-coverage.xml
+          path: results/unit-coverage/coverage.xml
+        
+      - name: Download Integration Test Results
+        uses: actions/download-artifact@v4
+        with:
+          name: integration-results.xml
+          path: results/integration-results.xml
+
+      - name: Download Integration Coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: integration-coverage.xml
+          path: results/integration-coverage/coverage.xml
+      
+      - name: Download E2E Test Results
+        uses: actions/download-artifact@v4
+        with:
+          name: e2e-results.xml
+          path: results/e2e-results.xml
+
+      - name: Download E2E Coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: e2e-coverage.xml
+          path: results/e2e-coverage/coverage.xml
 
       - name: Create Report
         run: |
