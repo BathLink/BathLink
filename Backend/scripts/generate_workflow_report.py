@@ -13,9 +13,9 @@ TEST_FILES = {
 }
 
 COVERAGE_FILES = {
-    "Unit Tests": "unit-coverage/unit-coverage.xml",
-    "Integration Tests": "integration-coverage/integration-coverage.xml",
-    "E2E Tests": "integration-coverage/e2e-coverage.xml",
+    "Unit Tests": "unit-coverage/coverage.xml",
+    "Integration Tests": "integration-coverage/coverage.xml",
+    "E2E Tests": "integration-coverage/coverage.xml",
 }
 
 def parse_test_results(file_path):
