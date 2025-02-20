@@ -12,6 +12,12 @@ TEST_FILES = {
     "E2E Tests": "e2e-results.xml",
 }
 
+COVERAGE_FILES = {
+    "Unit Tests": "unit-coverage/coverage.xml",
+    "Integration Tests": "integration-coverage/coverage.xml",
+    "E2E Tests": "e2e-coverage/coverage.xml",
+}
+
 def parse_test_results(file_path):
 
     if not os.path.exists(file_path):
@@ -35,6 +41,18 @@ def parse_test_results(file_path):
         """.strip()
     except Exception as e:
         return f"❌ Error parsing results: {str(e)}\n"
+
+def parse_coverage(file_path):
+    if not os.path.exists(file_path):
+        return "⚠️ Coverage report not found.\n"
+
+    try:
+        tree = ET.parse(file_path)
+        root = tree.getroot()
+        line_rate = float(root.attrib.get("line-rate", 0)) * 100
+        return f"Coverage: {line_rate:.2f}%"
+    except Exception as e:
+        return f"❌ Error parsing coverage: {str(e)}\n"
 
 def read_cdk_log(file_path, title, max_lines=20):
     """Read the last few lines of a CDK log file."""
@@ -66,6 +84,11 @@ def generate_summary():
             if not os.path.exists(os.path.join(RESULTS_DIR, file_name)): continue
             f.write(f"### {test_name}\n")
             f.write(parse_test_results(os.path.join(RESULTS_DIR, file_name)) + "\n")
+
+            # Add coverage summary
+            coverage_file = COVERAGE_FILES.get(test_name)
+            if coverage_file:
+                f.write(parse_coverage(os.path.join(RESULTS_DIR, coverage_file)) + "\n")
 
         if not os.path.exists(CDK_DEPLOY_LOG):
             return
