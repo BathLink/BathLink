@@ -1,8 +1,9 @@
 import xml.etree.ElementTree as ET
 import os
 
-SUMMARY_FILE = "workflow-report.md"
-CDK_DEPLOY_LOG = "cdk-deploy.log"
+RESULTS_DIR = "results/"
+SUMMARY_FILE = RESULTS_DIR + "workflow-report.md"
+CDK_DEPLOY_LOG = RESULTS_DIR + "cdk-deploy.log"
 
 TEST_FILES = {
     "Unit Tests": "unit-results.xml",
@@ -71,6 +72,8 @@ def read_cdk_log(file_path, title, max_lines=20):
         return "\n### "+status+"\n#### "+time+"\n#### CDK Output:\n"+"\n".join(outputs)
 
 def generate_summary():
+    """Generate markdown summary from test results and CDK logs."""
+    os.makedirs(RESULTS_DIR, exist_ok=True)
 
     with open(SUMMARY_FILE, "w", encoding="utf-8") as f:
         f.write("# Workflow Summary\n\n")
@@ -78,16 +81,16 @@ def generate_summary():
         f.write("\n## Testing\n")
 
         for test_name, file_name in TEST_FILES.items():
-    
+            path = RESULTS_DIR + file_name
 
-            if not os.path.exists(file_name): continue
+            if not os.path.exists(path): continue
             f.write(f"### {test_name}\n")
-            f.write(parse_test_results(file_name) + "\n")
+            f.write(parse_test_results(path) + "\n")
 
             # Add coverage summary
             coverage_file = COVERAGE_FILES.get(test_name)
             if coverage_file:
-                f.write(parse_coverage(coverage_file) + "\n")
+                f.write(parse_coverage(RESULTS_DIR+ coverage_file) + "\n")
 
         if not os.path.exists(CDK_DEPLOY_LOG):
             return
