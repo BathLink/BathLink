@@ -81,14 +81,15 @@ def generate_summary():
         f.write("\n## Testing\n")
 
         for test_name, file_name in TEST_FILES.items():
-            if not os.path.exists(os.path.join(RESULTS_DIR, file_name)): continue
+            path = RESULTS_DIR + file_name
+            if not os.path.exists(path): continue
             f.write(f"### {test_name}\n")
-            f.write(parse_test_results(os.path.join(RESULTS_DIR, file_name)) + "\n")
+            f.write(parse_test_results(path) + "\n")
 
             # Add coverage summary
             coverage_file = COVERAGE_FILES.get(test_name)
             if coverage_file:
-                f.write(parse_coverage(os.path.join(RESULTS_DIR, coverage_file)) + "\n")
+                f.write(parse_coverage(RESULTS_DIR+ coverage_file) + "\n")
 
         if not os.path.exists(CDK_DEPLOY_LOG):
             return
