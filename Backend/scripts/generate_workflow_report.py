@@ -79,7 +79,7 @@ def parse_mypy_log(file_path):
 {formatted_issues}
                 </ul>   
             </details>
-            """.strip()
+            """.strip()+"\n"
 
 
 def parse_bandit_log(file_path):
@@ -107,7 +107,7 @@ def parse_bandit_log(file_path):
 {formatted_issues}
                     </ul>
                 </details>
-                """.strip()
+                """.strip()+"\n"
 
 
     except Exception as e:
@@ -134,7 +134,7 @@ def parse_test_results(file_path):
           <summary> ✅ Total: {tests}, ❌ Failures: {failures}, ⚠️ Errors: {errors}, ⏭ Skipped: {skipped}</summary>
           \n{testcases}
         </details>
-        """.strip()
+        """.strip()+"\n"
     except Exception as e:
         return f"❌ Error parsing results: {str(e)}\n"
 
@@ -176,7 +176,7 @@ def generate_summary():
     with open(SUMMARY_FILE, "w", encoding="utf-8") as f:
         f.write("# Workflow Summary\n\n")
 
-        f.write("\n## 🔍 Static Analysis\n")
+        f.write("\n## Static Analysis\n")
         for analysis_name, file_name in STATIC_ANALYSIS_FILES.items():
             path = RESULTS_DIR + file_name
             if not os.path.exists(path): continue
