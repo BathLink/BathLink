@@ -1,7 +1,6 @@
 import json
 import xml.etree.ElementTree as ET
 import os
-from idlelib.iomenu import encoding
 
 RESULTS_DIR = "results/"
 SUMMARY_FILE = RESULTS_DIR + "workflow-report.md"
