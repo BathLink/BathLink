@@ -50,7 +50,7 @@ def parse_flake8_log(file_path):
 {formatted_issues}
             </ul>
         </details>
-        """.strip() if issues else ""
+        """.strip()+"\n" if issues else ""
 
     return formatted_summary +"\n"+ formatted_issues
 
@@ -64,7 +64,7 @@ def parse_mypy_log(file_path):
         lines = f.readlines()
 
     if not lines:
-        return "✅ No type issues found."
+        return "No type issues found."
 
     summary = str(lines[-1]).strip()
     if len(lines) == 1:
@@ -93,7 +93,7 @@ def parse_bandit_log(file_path):
 
         issues = data.get("results", [])
         if not issues:
-            return "✅ No security vulnerabilities found."
+            return "No security vulnerabilities found."
 
         summary = f"❌ {len(issues)} security issues found:\n"
         formatted_issues = "\n".join(
@@ -134,7 +134,7 @@ def parse_test_results(file_path):
           <summary> ✅ Total: {tests}, ❌ Failures: {failures}, ⚠️ Errors: {errors}, ⏭ Skipped: {skipped}</summary>
           \n{testcases}
         </details>
-        """.strip()+"\n"
+        """.strip()
     except Exception as e:
         return f"❌ Error parsing results: {str(e)}\n"
 
