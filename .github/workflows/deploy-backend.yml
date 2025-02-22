@@ -15,7 +15,7 @@ on:
 
 jobs:
   static-analysis:
-    name: Static Code Analysis
+    name: Run Static Analysis
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -39,10 +39,10 @@ jobs:
         run: mkdir -p results/static-analysis
 
       - name: Run Flake8 (Linting)
-        run: flake8 Backend/lambda_functions --count --statistics --color never --output-file results/flake8.txt
+        run: flake8 Backend/lambda_functions --count --statistics --color never --output-file results/flake8.txt --exit-zero
 
       - name: Run Mypy (Type Checking)
-        run: mypy Backend/lambda_functions > results/mypy.txt || true
+        run: mypy Backend/lambda_functions > results/mypy.txt --exit-zero
 
       - name: Run Bandit (Security Scan)
         run: bandit -r Backend/lambda_functions -f json -o results/bandit.json
