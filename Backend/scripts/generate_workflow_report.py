@@ -19,8 +19,8 @@ COVERAGE_FILES = {
     "CDK Tests": "cdk-coverage/coverage.xml",
 }
 
-def parse_test_results(file_path):
 
+def parse_test_results(file_path):
     if not os.path.exists(file_path):
         return "⚠️ Test results not found.\n"
 
@@ -32,7 +32,9 @@ def parse_test_results(file_path):
         errors = int(root.attrib.get("errors", 0))
         skipped = int(root.attrib.get("skipped", 0))
 
-        testcases = "\n".join([f"- {testcase.attrib.get('classname').split('.')[-1].capitalize()}: {testcase.attrib.get('time',0.0)}s" for testcase in root]).strip()
+        testcases = "\n".join(
+            [f"- {testcase.attrib.get('classname').split('.')[-1].capitalize()}: {testcase.attrib.get('time', 0.0)}s"
+             for testcase in root]).strip()
 
         return f"""
         <details>
@@ -42,6 +44,7 @@ def parse_test_results(file_path):
         """.strip()
     except Exception as e:
         return f"❌ Error parsing results: {str(e)}\n"
+
 
 def parse_coverage(file_path):
     if not os.path.exists(file_path):
@@ -55,22 +58,23 @@ def parse_coverage(file_path):
     except Exception as e:
         return f"❌ Error parsing coverage: {str(e)}\n"
 
-def read_cdk_log(file_path, title, max_lines=20):
-    """Read the last few lines of a CDK log file."""
+
+def read_cdk_log(file_path, title):
+
     if not os.path.exists(file_path):
         return f"⚠️ {title} log not found.\n"
 
-
     with open(file_path, "r", encoding="utf-16le") as f:
         lines = f.readlines()
-        outputs = lines[lines.index('Outputs:\n')+1:lines.index('Stack ARN:\n')]
+
+        outputs = lines[lines.index('Outputs:\n') + 1:lines.index('Stack ARN:\n')]
         outputs = [f'- {line.strip()}' for line in outputs]
 
         status = [line for line in lines if '✅  CdkStac' in line][0]
         time = [line for line in lines if 'Total time:' in line][0]
 
+        return "\n### " + status + "\n#### " + time + "\n#### CDK Output:\n" + "\n".join(outputs)
 
-        return "\n### "+status+"\n#### "+time+"\n#### CDK Output:\n"+"\n".join(outputs)
 
 def generate_summary():
     """Generate markdown summary from test results and CDK logs."""
@@ -91,7 +95,7 @@ def generate_summary():
             # Add coverage summary
             coverage_file = COVERAGE_FILES.get(test_name)
             if coverage_file:
-                f.write("#### "+parse_coverage(RESULTS_DIR+ coverage_file) + "\n")
+                f.write("#### " + parse_coverage(RESULTS_DIR + coverage_file) + "\n")
 
         if not os.path.exists(CDK_DEPLOY_LOG):
             return
