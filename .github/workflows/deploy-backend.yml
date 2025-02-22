@@ -84,7 +84,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: unit-results
-          path: results/
+          path: results/unit-results.xml
+
+      - name: Upload Benchmark Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-benchmark-results
+          path: results/unit-benchmark-results.json
 
       - name: Upload Unit Coverage
         uses: actions/upload-artifact@v4
