@@ -1,3 +1,6 @@
 pytest==6.2.5
 requests
 pytest-cov
+flake8
+mypy
+bandit

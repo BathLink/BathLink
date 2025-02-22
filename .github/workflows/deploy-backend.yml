@@ -5,14 +5,56 @@ on:
   push:
     paths:
       - 'Backend/**'
-  pull_request:
-    paths:
-      - 'Backend/**'
+
 
 jobs:
+  static-analysis:
+    name: Run Static Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+          cache-dependency-path: |
+            Backend/requirements.txt
+            Backend/requirements-dev.txt
+
+      - name: Install Dependencies
+        run: |
+          pip install -r Backend/requirements.txt
+          pip install -r Backend/requirements-dev.txt
+        
+      - name: Create Results Directory
+        run: mkdir -p results/static-analysis
+
+      - name: Run Flake8 (Linting)
+        run: flake8 Backend/lambda_functions --count --statistics --color never --output-file results/flake8.txt --exit-zero
+
+      - name: Run Mypy (Type Checking)
+        run: mypy Backend/lambda_functions > results/mypy.txt || true
+
+      - name: Run Bandit (Security Scan)
+        run: bandit -r Backend/lambda_functions -f json -o results/bandit.json
+
+      - name: Upload Static Analysis Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: static-analysis
+          path: results/
+
+        
+
+  
+
   unit-tests:
     name: Run Unit Tests
     runs-on: ubuntu-latest
+    needs: static-analysis
 
     steps:
       - name: Checkout Code
@@ -50,6 +92,7 @@ jobs:
   integration-tests:
     name: Run Integration Tests
     runs-on: ubuntu-latest
+    needs: static-analysis
 
     steps:
       - name: Checkout Code
@@ -111,6 +154,7 @@ jobs:
   cdk-tests:
     name: Run CDK Tests
     runs-on: ubuntu-latest
+    needs: static-analysis
 
     steps:
       - name: Checkout Code
