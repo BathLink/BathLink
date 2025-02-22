@@ -42,7 +42,7 @@ jobs:
         run: flake8 Backend/lambda_functions --count --statistics --color never --output-file results/flake8.txt --exit-zero
 
       - name: Run Mypy (Type Checking)
-        run: mypy Backend/lambda_functions > results/mypy.txt --exit-zero
+        run: mypy Backend/lambda_functions > results/mypy.txt || true
 
       - name: Run Bandit (Security Scan)
         run: bandit -r Backend/lambda_functions -f json -o results/bandit.json
