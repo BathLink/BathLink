@@ -74,6 +74,9 @@ jobs:
           pip install -r Backend/requirements.txt
           pip install -r Backend/requirements-dev.txt
 
+      - name: Create Results Directory
+        run: mkdir results
+
       - name: Run Unit Tests
         run: pytest Backend/tests/unit --junitxml=results/unit-results.xml --cov=Backend/tests/unit --cov-report=xml:results/unit-coverage/coverage.xml --cov-report=html:results/unit-coverage --benchmark-compare --benchmark-json=results/unit-benchmark-results.json
 
