@@ -258,9 +258,7 @@ def generate_summary():
 
 
 if __name__ == "__main__":
-    # generate_summary()
-    with open('test.md','w',encoding='utf-8') as f:
-        f.write(parse_benchmark('../../results/unit-benchmark-results.json'))
+    generate_summary()
     print(f"Test summary generated at {SUMMARY_FILE}")
 
 
