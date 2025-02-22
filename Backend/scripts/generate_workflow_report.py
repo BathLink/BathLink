@@ -64,7 +64,7 @@ def read_cdk_log(file_path, title):
     if not os.path.exists(file_path):
         return f"⚠️ {title} log not found.\n"
 
-    with open(file_path, "r", encoding="utf-16le") as f:
+    with open(file_path, "r", encoding="utf-8") as f:
         lines = f.readlines()
 
         outputs = lines[lines.index('Outputs:\n') + 1:lines.index('Stack ARN:\n')]
