@@ -75,7 +75,7 @@ jobs:
           pip install -r Backend/requirements-dev.txt
 
       - name: Run Unit Tests
-        run: pytest Backend/tests/unit --junitxml=results/unit-results.xml --cov=Backend/tests/unit --cov-report=xml:results/unit-coverage/coverage.xml --cov-report=html:results/unit-coverage
+        run: pytest Backend/tests/unit --junitxml=results/unit-results.xml --cov=Backend/tests/unit --cov-report=xml:results/unit-coverage/coverage.xml --cov-report=html:results/unit-coverage --benchmark-compare --benchmark-json=results/unit-benchmark-results.json
 
       - name: Upload Unit Results
         uses: actions/upload-artifact@v4
@@ -88,6 +88,7 @@ jobs:
         with:
           name: unit-coverage
           path: results/unit-coverage
+
 
   integration-tests:
     name: Run Integration Tests

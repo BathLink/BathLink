@@ -13,6 +13,10 @@ TEST_FILES = {
     "E2E Tests": "e2e-results/e2e-results.xml",
 }
 
+BENCHMARK_FILES = {
+    "Unit Benchmarks": "unit-benchmark-results/unit-benchmark-results.json"
+}
+
 COVERAGE_FILES = {
     "Unit Tests": "unit-coverage/coverage.xml",
     "Integration Tests": "integration-coverage/coverage.xml",
@@ -25,6 +29,7 @@ STATIC_ANALYSIS_FILES = {
     "Mypy": "static-analysis/mypy.txt",
     "Bandit": "static-analysis/bandit.json",
 }
+
 
 def parse_flake8_log(file_path):
     """Parse Flake8 linting log."""
@@ -139,6 +144,37 @@ def parse_test_results(file_path):
         return f"❌ Error parsing results: {str(e)}\n"
 
 
+import json
+
+
+def parse_benchmark(benchmark_json_path):
+    try:
+        with open(benchmark_json_path, 'r') as f:
+            data = json.load(f)
+
+        md_content = ""
+
+        for benchmark in data['benchmarks']:
+            name = benchmark['name']
+            stats = benchmark['stats']
+            mean_time = stats['mean']
+            std_dev = stats['stddev']
+            number_of_rounds = stats['rounds']
+
+            md_content += f"<details>\n"
+            md_content += f"<summary>{name.capitalize()}</summary>\n"
+            md_content += f"\n"
+            md_content += f"- **Mean Time**: {mean_time:.6f} seconds\n"
+            md_content += f"- **Standard Deviation**: {std_dev:.6f} seconds\n"
+            md_content += f"- **Number of Rounds**: {number_of_rounds}\n"
+            md_content += f"</details>\n\n"
+
+
+        return md_content
+    except Exception as e:
+        return f"❌ Error parsing benchmarks: {str(e)}\n"
+
+
 def parse_coverage(file_path):
     if not os.path.exists(file_path):
         return "⚠️ Coverage report not found.\n"
@@ -204,17 +240,27 @@ def generate_summary():
             if coverage_file:
                 f.write("#### " + parse_coverage(RESULTS_DIR + coverage_file) + "\n")
 
+        f.write("\n## Benchmarking\n")
+        for benchmark_name, file_name in BENCHMARK_FILES.items():
+            path = RESULTS_DIR + file_name
+            if not os.path.exists(path): continue
+
+            f.write(f"### {benchmark_name}\n")
+            f.write(parse_benchmark(path) + "\n")
+
         if not os.path.exists(CDK_DEPLOY_LOG):
             return
 
         # Add CDK Deployment Results
-        f.write("\n## 🚀 CDK Deployment\n")
+        f.write("\n## CDK Deployment\n")
 
         f.write(read_cdk_log(CDK_DEPLOY_LOG, "CDK Deploy"))
 
 
 if __name__ == "__main__":
-    generate_summary()
+    # generate_summary()
+    with open('test.md','w',encoding='utf-8') as f:
+        f.write(parse_benchmark('../../results/unit-benchmark-results.json'))
     print(f"Test summary generated at {SUMMARY_FILE}")
 
 
