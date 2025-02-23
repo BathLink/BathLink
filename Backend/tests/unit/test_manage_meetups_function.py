@@ -1,6 +1,7 @@
 import requests
+import pytest
 
-
-def test_example_live_api(benchmark):
+@pytest.mark.benchmark(group='Manage Meetups')
+def test_example_1(benchmark):
     benchmark(lambda: True)
     assert True

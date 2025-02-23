@@ -152,23 +152,37 @@ def parse_benchmark(benchmark_json_path):
         with open(benchmark_json_path, 'r') as f:
             data = json.load(f)
 
+        # Organize benchmarks by group
+        groups = {}
+        for benchmark in data['benchmarks']:
+            group_name = benchmark['group']
+            if not group_name:
+                group_name = 'Unassigned'
+            if group_name not in groups:
+                groups[group_name] = []
+            groups[group_name].append(benchmark)
+
         md_content = ""
 
-        for benchmark in data['benchmarks']:
-            name = benchmark['name']
-            stats = benchmark['stats']
-            mean_time = stats['mean']
-            std_dev = stats['stddev']
-            number_of_rounds = stats['rounds']
-
+        for group_name, benchmarks in groups.items():
             md_content += f"<details>\n"
-            md_content += f"<summary>{name.capitalize()}</summary>\n"
-            md_content += f"\n"
-            md_content += f"- **Mean Time**: {mean_time:.6f} seconds\n"
-            md_content += f"- **Standard Deviation**: {std_dev:.6f} seconds\n"
-            md_content += f"- **Number of Rounds**: {number_of_rounds}\n"
-            md_content += f"</details>\n\n"
+            md_content += f"<summary>{group_name.capitalize()}</summary>\n\n"
 
+            for benchmark in benchmarks:
+                name = benchmark['name']
+                stats = benchmark['stats']
+                mean_time = stats['mean']
+                std_dev = stats['stddev']
+                number_of_rounds = stats['rounds']
+
+                md_content += f"<details>\n"
+                md_content += f"<summary>{name.capitalize()}</summary>\n\n"
+                md_content += f"- **Mean Time**: {mean_time:.6f} seconds\n"
+                md_content += f"- **Standard Deviation**: {std_dev:.6f} seconds\n"
+                md_content += f"- **Number of Rounds**: {number_of_rounds}\n"
+                md_content += f"</details>\n\n"
+
+            md_content += f"</details>\n\n"
 
         return md_content
     except Exception as e:
@@ -258,8 +272,7 @@ def generate_summary():
 
 
 if __name__ == "__main__":
-    generate_summary()
+    # generate_summary()
+    with open('test.md', 'w',encoding='utf-8') as f:
+        f.write(parse_benchmark("../../results/unit-benchmark-results.json"))
     print(f"Test summary generated at {SUMMARY_FILE}")
-
-
-
