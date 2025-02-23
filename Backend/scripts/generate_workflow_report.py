@@ -86,7 +86,6 @@ def parse_mypy_log(file_path):
             </details>
             """.strip()+"\n"
 
-
 def parse_bandit_log(file_path):
     """Parse Bandit security scan results."""
     if not os.path.exists(file_path):
@@ -99,7 +98,6 @@ def parse_bandit_log(file_path):
         issues = data.get("results", [])
         if not issues:
             return "No security vulnerabilities found."
-
         summary = f"❌ {len(issues)} security issues found:\n"
         formatted_issues = "\n".join(
             [f"<li>{issue['test_id']} ({issue['issue_severity']}): {issue['issue_text']}</li>" for issue in issues]
@@ -143,8 +141,6 @@ def parse_test_results(file_path):
     except Exception as e:
         return f"❌ Error parsing results: {str(e)}\n"
 
-
-import json
 
 
 def parse_benchmark(benchmark_json_path):
@@ -254,6 +250,7 @@ def generate_summary():
             if coverage_file:
                 f.write("#### " + parse_coverage(RESULTS_DIR + coverage_file) + "\n")
 
+
         f.write("\n## Benchmarking\n")
         for benchmark_name, file_name in BENCHMARK_FILES.items():
             path = RESULTS_DIR + file_name
@@ -261,6 +258,7 @@ def generate_summary():
 
             f.write(f"### {benchmark_name}\n")
             f.write(parse_benchmark(path) + "\n")
+
 
         if not os.path.exists(CDK_DEPLOY_LOG):
             return
@@ -274,3 +272,6 @@ def generate_summary():
 if __name__ == "__main__":
     generate_summary()
     print(f"Test summary generated at {SUMMARY_FILE}")
+
+
+
