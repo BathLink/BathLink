@@ -1,5 +1,7 @@
 import requests
+import pytest
 
-
-def test_example_live_api():
+@pytest.mark.benchmark(group='Manage Profiles')
+def test_example_1(benchmark):
+    benchmark(lambda: True)
     assert True

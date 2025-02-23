@@ -74,20 +74,30 @@ jobs:
           pip install -r Backend/requirements.txt
           pip install -r Backend/requirements-dev.txt
 
+      - name: Create Results Directory
+        run: mkdir results
+
       - name: Run Unit Tests
-        run: pytest Backend/tests/unit --junitxml=results/unit-results.xml --cov=Backend/tests/unit --cov-report=xml:results/unit-coverage/coverage.xml --cov-report=html:results/unit-coverage
+        run: pytest Backend/tests/unit --junitxml=results/unit-results.xml --cov=Backend/tests/unit --cov-report=xml:results/unit-coverage/coverage.xml --cov-report=html:results/unit-coverage --benchmark-compare --benchmark-json=results/unit-benchmark-results.json
 
       - name: Upload Unit Results
         uses: actions/upload-artifact@v4
         with:
           name: unit-results
-          path: results/
+          path: results/unit-results.xml
+
+      - name: Upload Benchmark Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-benchmark-results
+          path: results/unit-benchmark-results.json
 
       - name: Upload Unit Coverage
         uses: actions/upload-artifact@v4
         with:
           name: unit-coverage
           path: results/unit-coverage
+
 
   integration-tests:
     name: Run Integration Tests

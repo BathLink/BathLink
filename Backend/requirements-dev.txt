@@ -4,3 +4,5 @@ pytest-cov
 flake8
 mypy
 bandit
+pytest-benchmark
+

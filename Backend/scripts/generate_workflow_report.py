@@ -13,6 +13,10 @@ TEST_FILES = {
     "E2E Tests": "e2e-results/e2e-results.xml",
 }
 
+BENCHMARK_FILES = {
+    "Unit Benchmarks": "unit-benchmark-results/unit-benchmark-results.json"
+}
+
 COVERAGE_FILES = {
     "Unit Tests": "unit-coverage/coverage.xml",
     "Integration Tests": "integration-coverage/coverage.xml",
@@ -25,6 +29,7 @@ STATIC_ANALYSIS_FILES = {
     "Mypy": "static-analysis/mypy.txt",
     "Bandit": "static-analysis/bandit.json",
 }
+
 
 def parse_flake8_log(file_path):
     """Parse Flake8 linting log."""
@@ -81,7 +86,6 @@ def parse_mypy_log(file_path):
             </details>
             """.strip()+"\n"
 
-
 def parse_bandit_log(file_path):
     """Parse Bandit security scan results."""
     if not os.path.exists(file_path):
@@ -94,7 +98,6 @@ def parse_bandit_log(file_path):
         issues = data.get("results", [])
         if not issues:
             return "No security vulnerabilities found."
-
         summary = f"❌ {len(issues)} security issues found:\n"
         formatted_issues = "\n".join(
             [f"<li>{issue['test_id']} ({issue['issue_severity']}): {issue['issue_text']}</li>" for issue in issues]
@@ -137,6 +140,49 @@ def parse_test_results(file_path):
         """.strip()
     except Exception as e:
         return f"❌ Error parsing results: {str(e)}\n"
+
+
+
+def parse_benchmark(benchmark_json_path):
+    try:
+        with open(benchmark_json_path, 'r') as f:
+            data = json.load(f)
+
+        # Organize benchmarks by group
+        groups = {}
+        for benchmark in data['benchmarks']:
+            group_name = benchmark['group']
+            if not group_name:
+                group_name = 'Unassigned'
+            if group_name not in groups:
+                groups[group_name] = []
+            groups[group_name].append(benchmark)
+
+        md_content = ""
+
+        for group_name, benchmarks in groups.items():
+            md_content += f"<details>\n"
+            md_content += f"<summary>{group_name.capitalize()}</summary>\n\n"
+
+            for benchmark in benchmarks:
+                name = benchmark['name']
+                stats = benchmark['stats']
+                mean_time = stats['mean']
+                std_dev = stats['stddev']
+                number_of_rounds = stats['rounds']
+
+                md_content += f"<details>\n"
+                md_content += f"<summary>{name.capitalize()}</summary>\n\n"
+                md_content += f"- **Mean Time**: {mean_time:.6f} seconds\n"
+                md_content += f"- **Standard Deviation**: {std_dev:.6f} seconds\n"
+                md_content += f"- **Number of Rounds**: {number_of_rounds}\n"
+                md_content += f"</details>\n\n"
+
+            md_content += f"</details>\n\n"
+
+        return md_content
+    except Exception as e:
+        return f"❌ Error parsing benchmarks: {str(e)}\n"
 
 
 def parse_coverage(file_path):
@@ -204,11 +250,21 @@ def generate_summary():
             if coverage_file:
                 f.write("#### " + parse_coverage(RESULTS_DIR + coverage_file) + "\n")
 
+
+        f.write("\n## Benchmarking\n")
+        for benchmark_name, file_name in BENCHMARK_FILES.items():
+            path = RESULTS_DIR + file_name
+            if not os.path.exists(path): continue
+
+            f.write(f"### {benchmark_name}\n")
+            f.write(parse_benchmark(path) + "\n")
+
+
         if not os.path.exists(CDK_DEPLOY_LOG):
             return
 
         # Add CDK Deployment Results
-        f.write("\n## 🚀 CDK Deployment\n")
+        f.write("\n## CDK Deployment\n")
 
         f.write(read_cdk_log(CDK_DEPLOY_LOG, "CDK Deploy"))
 
