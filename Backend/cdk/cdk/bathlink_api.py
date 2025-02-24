@@ -8,12 +8,19 @@ from aws_cdk import (
 class BathLinkAPI:
 
     
-    def create_api(self,stack, lambdas):
-        def add_method(root, method, lambda_handler):
+    def create_api(self, stack, user_pool, lambdas):
+        def add_method(root, method, lambda_handler, authorization = True):
             root.add_method(
                 method,
                 apigateway.LambdaIntegration(lambdas[lambda_handler]),
+                authorization_type=apigateway.AuthorizationType.COGNITO if authorization else apigateway.AuthorizationType.NONE,
+                authorizer=authorizer if authorization else None
             )
+
+        authorizer = apigateway.CognitoUserPoolsAuthorizer(
+            stack, "BathLinkAuthorizer",
+            cognito_user_pools=[user_pool]
+        )
         
         api = apigateway.RestApi(
             stack,
@@ -23,6 +30,7 @@ class BathLinkAPI:
                 "allow_origins": apigateway.Cors.ALL_ORIGINS,
                 "allow_methods": apigateway.Cors.ALL_METHODS
             },
+
         )
 
 
@@ -50,7 +58,7 @@ class BathLinkAPI:
         add_method(profile, "POST", 'manage_profiles_lambda') #Add Profile
         add_method(profile, "PUT", 'manage_profiles_lambda') #Update Profile
 
-        sign_up = api.root.add_resource("sign_up")
+        sign_up = api.root.add_resource("sign_up",False)
         add_method(sign_up,"POST",'sign_up_lambda') #Signup user
 
         chats = api.root.add_resource("chats")
