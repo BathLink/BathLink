@@ -58,8 +58,8 @@ class BathLinkAPI:
         add_method(profile, "POST", 'manage_profiles_lambda') #Add Profile
         add_method(profile, "PUT", 'manage_profiles_lambda') #Update Profile
 
-        sign_up = api.root.add_resource("sign_up",False)
-        add_method(sign_up,"POST",'sign_up_lambda') #Signup user
+        sign_up = api.root.add_resource("sign_up")
+        add_method(sign_up,"POST",'sign_up_lambda',False) #Signup user
 
         chats = api.root.add_resource("chats")
         chat = chats.add_resource("{chatId}")
