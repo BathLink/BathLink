@@ -50,7 +50,7 @@ class CdkStack(Stack):
 
         app_client = user_pool.add_client(
             "BathLinkAppClient",
-            generate_secret=True,
+            generate_secret=False,
             auth_flows=cognito.AuthFlow(
                 user_password=True,
                 user_srp=True
