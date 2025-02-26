@@ -1,4 +1,3 @@
-import requests
 import pytest
 
 @pytest.mark.benchmark(group='Search Meetup')

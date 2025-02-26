@@ -1,8 +1,10 @@
 pytest==6.2.5
 requests
+boto3
 pytest-cov
 flake8
 mypy
 bandit
 pytest-benchmark
+python-dotenv
 
