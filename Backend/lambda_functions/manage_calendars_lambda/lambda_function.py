@@ -1,7 +1,7 @@
 import json
 import boto3
 
-dynamodb = boto3.resource("dynamodb")
+dynamodb = boto3.resource("dynamodb",region_name="eu-west-2")
 table = dynamodb.Table("user-calendars")
 
 
@@ -10,17 +10,52 @@ table = dynamodb.Table("user-calendars")
 
 def GET(event, _):
     user_id = event["pathParameters"]["userId"]
-    response = table.get_item(Key=user_id)
+    response = table.get_item(Key={"userId":user_id})
     if "Item" not in response:
         return 400, {"error": f"Cannot find calendar associated with user id {user_id}"}
     return 200, response["Item"]
 
 def POST(event, _):
     user_id = event["pathParameters"]["userId"]
-    return event
+    calendar_data = event["body"].get("calendarData")
+
+    if not calendar_data:
+        return 400, {"error":"No calendar data provided"}
+
+    response = table.get_item(Key={"userId":user_id})
+    if "Item" not in response:
+        return 400, {"error": f"Cannot find calendar associated with user id {user_id}"}
+
+    busy = []
+    for event_data in calendar_data:
+        busy.append({"start":event_data["start"],"end":event_data["end"]})
+
+    dynamodb_maps = [{'M': {k: {'S' if isinstance(v, str) else 'N': str(v)} for k, v in item.items()}} for item in
+                     busy]
+
+    response = table.update_item(
+        Key={"userId":user_id},
+        UpdateExpression="SET busy = list_append(if_not_exists(busy, :empty_list), :new_values)",
+        ExpressionAttributeValues={
+            ':new_values': dynamodb_maps,
+            ':empty_list': {'L': []}
+        },
+        ReturnValues="UPDATED_NEW"
+    )
+
+    return 200, {"message": "Calendar Updated with new data"}
 
 
-methods = [GET,POST]
+def DELETE(event, _):
+    user_id = event["pathParameters"]["userId"]
+    response = table.delete_item(Key={"userId":user_id},ReturnValues="ALL_OLD")
+
+    if response['Attributes']:
+        return 200, {"message":"Calendar Deleted"}
+    return 404, {"error":"Calendar not Found"}
+
+
+methods = [GET,POST,DELETE]
 
 
 def lambda_handler(event, context):
