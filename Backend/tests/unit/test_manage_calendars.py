@@ -9,8 +9,6 @@ import boto3
 
 @pytest.fixture
 def dynamodb_setup():
-    os.environ["AWS_ACCESS_KEY_ID"] = "fake"
-    os.environ["AWS_SECRET_ACCESS_KEY"] = "fake"
     """Set up a mock DynamoDB table before each test."""
     with mock_aws():
         dynamodb = boto3.resource("dynamodb", region_name="eu-west-2")
@@ -34,7 +32,6 @@ from Backend.lambda_functions.manage_calendars_lambda.lambda_function import lam
     ]
 )
 @pytest.mark.benchmark(group='Manage Calendars')
-@mock_aws
 def test_get_calendar(benchmark,dynamodb_setup,user_id, expected_status, expected_response):
     print(os.environ.get("AWS_ACCESS_KEY_ID"), '?')
 
@@ -56,7 +53,6 @@ def test_get_calendar(benchmark,dynamodb_setup,user_id, expected_status, expecte
     ]
 )
 @pytest.mark.benchmark(group='Manage Calendars')
-@mock_aws
 def test_post_calendar(benchmark,dynamodb_setup,user_id, body ,expected_status, expected_response):
     event = {
         "httpMethod": "POST",
@@ -75,7 +71,6 @@ def test_post_calendar(benchmark,dynamodb_setup,user_id, body ,expected_status, 
         ("nonexistent", 404, {"error":"Calendar not Found"}),
     ]
 )
-@mock_aws
 def test_delete_calendar(dynamodb_setup,user_id ,expected_status, expected_response):
     event = {
         "httpMethod": "DELETE",
