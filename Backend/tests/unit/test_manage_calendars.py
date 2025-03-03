@@ -2,6 +2,10 @@ import pytest
 import json
 from moto import mock_aws
 import boto3
+import os
+
+os.environ["AWS_ACCESS_KEY_ID"] = "fake"
+os.environ["AWS_SECRET_ACCESS_KEY"] = "fake"
 
 @pytest.fixture
 def dynamodb_setup():
@@ -28,6 +32,7 @@ from Backend.lambda_functions.manage_calendars_lambda.lambda_function import lam
     ]
 )
 @pytest.mark.benchmark(group='Manage Calendars')
+@mock_aws
 def test_get_calendar(benchmark,dynamodb_setup,user_id, expected_status, expected_response):
     event = {
         "httpMethod":"GET",
@@ -47,6 +52,7 @@ def test_get_calendar(benchmark,dynamodb_setup,user_id, expected_status, expecte
     ]
 )
 @pytest.mark.benchmark(group='Manage Calendars')
+@mock_aws
 def test_post_calendar(benchmark,dynamodb_setup,user_id, body ,expected_status, expected_response):
     event = {
         "httpMethod": "POST",
@@ -65,7 +71,8 @@ def test_post_calendar(benchmark,dynamodb_setup,user_id, body ,expected_status, 
         ("nonexistent", 404, {"error":"Calendar not Found"}),
     ]
 )
-def test_delete_calendar(benchmark,dynamodb_setup,user_id ,expected_status, expected_response):
+@mock_aws
+def test_delete_calendar(dynamodb_setup,user_id ,expected_status, expected_response):
     event = {
         "httpMethod": "DELETE",
         "pathParameters": {"userId": user_id},
