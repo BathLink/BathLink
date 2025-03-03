@@ -23,6 +23,7 @@ class BathLinkLambdas:
         create_lambda('manage_profiles_lambda')
         create_lambda('sign_up_lambda')
         create_lambda('manage_chats_lambda')
+        create_lambda('manage_calendars_lambda')
 
 
         return lambdas

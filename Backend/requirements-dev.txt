@@ -7,4 +7,5 @@ mypy
 bandit
 pytest-benchmark
 python-dotenv
+moto
 
