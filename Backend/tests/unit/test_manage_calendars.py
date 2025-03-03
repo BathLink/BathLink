@@ -2,7 +2,6 @@ import pytest
 import json
 from moto import mock_aws
 import boto3
-import os
 
 
 
