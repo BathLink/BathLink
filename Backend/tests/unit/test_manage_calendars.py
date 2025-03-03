@@ -4,8 +4,7 @@ from moto import mock_aws
 import boto3
 import os
 
-os.environ["AWS_ACCESS_KEY_ID"] = "fake"
-os.environ["AWS_SECRET_ACCESS_KEY"] = "fake"
+
 
 @pytest.fixture
 def dynamodb_setup():
