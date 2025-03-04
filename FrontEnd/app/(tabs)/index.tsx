@@ -28,7 +28,7 @@ export default function HomeScreen() {
       <View style={styles.titleContainer}>
         <MaterialIcons.Button name="person" size={28} color={primary_color} backgroundColor={transparent_color} onPress={testBtn}/>
         <ThemedText type="title" >BathLink</ThemedText>
-        <MaterialIcons.Button name="notifications" size={28} color={primary_color} backgroundColor={transparent_color} onPress={testBtn}/>
+        <MaterialIcons.Button name="notifications" size={28} color={transparent_color} backgroundColor={transparent_color} onPress={testBtn}/>
       </View>
     </View>
   );
