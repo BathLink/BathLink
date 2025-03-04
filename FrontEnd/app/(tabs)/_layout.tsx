@@ -28,23 +28,23 @@ export default function TabLayout() {
         }),
       }}>
       <Tabs.Screen
-        name="index"
+        name="meetup"
         options={{
-          title: 'Home',
+          title: 'Meetups',
           tabBarIcon: ({ color }) => <MaterialIcons name="home" size={24} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="message"
+        name="matches"
         options={{
-          title: 'Messages',
+          title: 'Matches',
           tabBarIcon: ({ color }) => <MaterialIcons name="send" size={28} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="meetup"
+        name="settings"
         options={{
-          title: 'Meetups',
+          title: 'Settings',
           tabBarIcon: ({ color }) => <MaterialIcons name="location-pin" size={24} color={color} />,
         }}
       />

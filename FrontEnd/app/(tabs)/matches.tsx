@@ -23,8 +23,8 @@ export default function HomeScreen() {
   };
 
   return (
-    // Top Bar
     <View>
+      {/* Top Menu App Bar */}
       <View style={styles.titleContainer}>
         <MaterialIcons.Button name="person" size={28} color={primary_color} backgroundColor={transparent_color} onPress={testBtn}/>
         <ThemedText type="title" >BathLink</ThemedText>
