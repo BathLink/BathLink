@@ -2,56 +2,48 @@
 
 This is the backend for the Bathlink API. It comprises of an API with a database hosted with AWS.
 
-### Installation
-Install AWS CDK:
-```
-$ npm install aws-cdk
-```
-Install AWS CLI:
-```
-https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
-```
 
-Install AWS SAM CLI:
-```
-https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html#install-sam-cli-instructions
-```
+### Databases
 
-Manually create a virtualenv on MacOS and Linux:
+#### Users table
+userId - key
+gender
+dob
+phoneNumber
+email
+profile - {
+    social - {type,value},
+    description,
+    pronouns
+}
+calendar
+matchPreferences - {
+    enabled
+    activites - [
+        {activity, frequency}
+    ]
+}
 
-```
-$ python3 -m venv .venv
-```
 
-Active Virtual Env MacOS and Linux:
+#### Meetups
+meetupId
+participants - [userId]
+activity
+startTime
+endTime
+done
 
-```
-$ source .venv/bin/activate
-```
+#### GroupChats
+chatId
+meetupId
+messages - [
+    {
+        userId
+        content
+        time
+    }
+]
 
-Activate Virtual Env Windows:
-
-```
-% .venv\Scripts\activate.bat
-```
-
-Install requirements:
-
-```
-$ python -m pip install -r requirements.txt
-```
-Boostrap AWS CDK:
-```
-$ cdk bootstrap
-```
-
-### Usage
-Deploy changes to AWS
-```
-cdk deploy
-```
-
-Run tests
-```
-pytest
-```
+#### Hobbies
+name
+potentialLocations
