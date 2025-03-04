@@ -31,21 +31,21 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Meetups',
-          tabBarIcon: ({ color }) => <MaterialIcons name="home" size={24} color={color} />,
+          tabBarIcon: ({ color }) => <MaterialIcons name="location-pin" size={24} color={color} />,
         }}
       />
       <Tabs.Screen
         name="matches"
         options={{
           title: 'Matches',
-          tabBarIcon: ({ color }) => <MaterialIcons name="send" size={28} color={color} />,
+          tabBarIcon: ({ color }) => <MaterialIcons name="groups" size={28} color={color} />,
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
           title: 'Settings',
-          tabBarIcon: ({ color }) => <MaterialIcons name="location-pin" size={24} color={color} />,
+          tabBarIcon: ({ color }) => <MaterialIcons name="settings" size={24} color={color} />,
         }}
       />
     </Tabs>
