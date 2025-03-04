@@ -28,7 +28,7 @@ export default function TabLayout() {
         }),
       }}>
       <Tabs.Screen
-        name="meetup"
+        name="index"
         options={{
           title: 'Meetups',
           tabBarIcon: ({ color }) => <MaterialIcons name="home" size={24} color={color} />,
