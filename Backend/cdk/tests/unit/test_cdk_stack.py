@@ -10,7 +10,7 @@ def test_lambdas_created():
     template = assertions.Template.from_stack(stack)
 
     lambdas = template.find_resources("AWS::Lambda::Function")
-    assert len(lambdas) == 6
+    assert len(lambdas) == 7
 
 
 def test_cognito_created():
