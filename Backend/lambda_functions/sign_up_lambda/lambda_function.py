@@ -1,5 +1,5 @@
 import json
-
+#will implement need clarifaction on which user pool
 def lambda_handler(event, context):
 
     return {

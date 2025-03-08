@@ -1,5 +1,5 @@
 import json
-
+#need clarification on search api
 def lambda_handler(event, context):
 
     return {
