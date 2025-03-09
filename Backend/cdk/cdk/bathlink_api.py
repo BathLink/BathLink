@@ -96,6 +96,10 @@ class BathLinkAPI:
             }
         ])
 
+        add_method(calendar,"GET",'manage_calendars_lambda') #Get calendar info
+        add_method(calendar,"POST",'manage_calendars_lambda') #Post calendar data
+        add_method(calendar, "DELETE", 'manage_calendars_lambda') #Delete calendar info
+
         sign_up = api.root.add_resource("sign_up")
         add_method(sign_up, "POST", 'sign_up_lambda', authorization=False)  # Signup user
 
