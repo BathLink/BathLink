@@ -12,8 +12,8 @@ def GET(event, _):
     user_id = event["pathParameters"]["userId"]
     response = table.get_item(Key={"userId":user_id})
     if "Item" not in response:
-        return 400, {"error": f"Cannot find calendar associated with user id {user_id}"}
-    return 200, response["Item"]["Calendar"]
+        return 404, {"error": f"Cannot find user {user_id}"}
+    return 200, response["Item"]["calendar"]
 
 def POST(event, _):
     user_id = event["pathParameters"]["userId"]
@@ -24,13 +24,13 @@ def POST(event, _):
 
     response = table.get_item(Key={"userId":user_id})
     if "Item" not in response:
-        return 400, {"error": f"Cannot find calendar associated with user id {user_id}"}
+        return 404, {"error": f"Cannot find user {user_id}"}
 
     busy = [{"start": event_data["start"], "end": event_data["end"]} for event_data in calendar_data]
 
     response = table.update_item(
         Key={"userId": user_id},
-        UpdateExpression="SET calendar = list_append(if_not_exists(calendar, :empty_list), :new_values)",
+        UpdateExpression="SET calendar.busy = list_append(if_not_exists(calendar.busy, :empty_list), :new_values)",
         ExpressionAttributeValues={
             ':new_values': busy,
             ':empty_list': []
@@ -43,15 +43,18 @@ def POST(event, _):
 
 def DELETE(event, _):
     user_id = event["pathParameters"]["userId"]
+    response = table.get_item(Key={"userId": user_id})
+    if "Item" not in response:
+        return 404, {"error": f"Cannot find user {user_id}"}
+
     response = table.update_item(
         Key={"userId": user_id},
-        UpdateExpression="REMOVE calendar",
-        ReturnValues="UPDATED_OLD"
+        UpdateExpression="SET calendar = :empty_calendar",
+        ExpressionAttributeValues={":empty_calendar": {"busy": []}},
+        ReturnValues="UPDATED_NEW"
     )
 
-    if "Attributes" in response:
-        return 200, {"message": "Calendar deleted"}
-    return 404, {"error": "Calendar not found"}
+    return 200, {"message": "Calendar cleared"}
 
 
 methods = [GET,POST,DELETE]
