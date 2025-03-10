@@ -15,6 +15,7 @@ def GET(event, _):
         return 404, {"error": f"Cannot find user {user_id}"}
     return 200, response["Item"]["calendar"]
 
+
 def POST(event, _):
     user_id = event["pathParameters"]["userId"]
     calendar_data = event["body"].get("calendarData")
@@ -25,6 +26,7 @@ def POST(event, _):
     response = table.get_item(Key={"userId":user_id})
     if "Item" not in response:
         return 404, {"error": f"Cannot find user {user_id}"}
+
 
     busy = [{"start": event_data["start"], "end": event_data["end"]} for event_data in calendar_data]
 
