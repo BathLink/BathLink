@@ -13,7 +13,7 @@ def dynamodb_setup():
     with mock_aws():
         dynamodb = boto3.resource("dynamodb", region_name="eu-west-2")
         table = dynamodb.create_table(
-            TableName="users",
+            TableName="users-table",
             KeySchema=[{"AttributeName": "userId", "KeyType": "HASH"}],
             AttributeDefinitions=[{"AttributeName": "userId", "AttributeType": "S"}],
             ProvisionedThroughput={"ReadCapacityUnits": 1, "WriteCapacityUnits": 1},
