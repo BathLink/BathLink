@@ -2,6 +2,8 @@ from aws_cdk import (
     aws_apigateway as apigateway,
 )
 
+from .bathlink_lambdas import BathLinkLambdas
+
 
 class BathLinkAPI:
 

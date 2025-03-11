@@ -260,13 +260,15 @@ jobs:
 
       - name: Export OpenAPI from API Gateway
         run: |
-          aws apigateway get-export \
-          --rest-api-id mdwq3r92te \
-          --stage-name prod \
-          --export-type swagger openapi-raw.json
-          
-          jq 'del(.paths[].options)' openapi-raw.json > openapi.json
-          rm openapi-raw.json
+           aws apigateway get-export \
+           --rest-api-id mdwq3r92te \
+           --stage-name prod \
+           --export-type swagger \
+           --region eu-west-2 \
+           openapi-raw.json
+           
+           jq 'del(.paths[].options)' openapi-raw.json > openapi.json
+           rm openapi-raw.json
 
       - name: Commit and push openapi.json to repository
         run: |
