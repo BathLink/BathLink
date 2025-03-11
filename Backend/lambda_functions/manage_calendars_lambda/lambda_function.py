@@ -10,7 +10,7 @@ table = dynamodb.Table("users-table")
 
 def GET(event, _):
     user_id = event["pathParameters"]["userId"]
-    response = table.get_item(Key={"userId":user_id})
+    response = table.get_item(Key={"student-id":user_id})
     if "Item" not in response:
         return 404, {"error": f"Cannot find user {user_id}"}
     return 200, response["Item"]["calendar"]
@@ -23,7 +23,7 @@ def POST(event, _):
     if not calendar_data:
         return 400, {"error":"No calendar data provided"}
 
-    response = table.get_item(Key={"userId":user_id})
+    response = table.get_item(Key={"student-id":user_id})
     if "Item" not in response:
         return 404, {"error": f"Cannot find user {user_id}"}
 
@@ -31,7 +31,7 @@ def POST(event, _):
     busy = [{"start": event_data["start"], "end": event_data["end"]} for event_data in calendar_data]
 
     response = table.update_item(
-        Key={"userId": user_id},
+        Key={"student-id": user_id},
         UpdateExpression="SET calendar.busy = list_append(if_not_exists(calendar.busy, :empty_list), :new_values)",
         ExpressionAttributeValues={
             ':new_values': busy,
@@ -45,12 +45,12 @@ def POST(event, _):
 
 def DELETE(event, _):
     user_id = event["pathParameters"]["userId"]
-    response = table.get_item(Key={"userId": user_id})
+    response = table.get_item(Key={"student-id": user_id})
     if "Item" not in response:
         return 404, {"error": f"Cannot find user {user_id}"}
 
     response = table.update_item(
-        Key={"userId": user_id},
+        Key={"student-id": user_id},
         UpdateExpression="SET calendar = :empty_calendar",
         ExpressionAttributeValues={":empty_calendar": {"busy": []}},
         ReturnValues="UPDATED_NEW"

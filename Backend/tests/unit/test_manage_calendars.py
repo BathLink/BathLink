@@ -14,11 +14,11 @@ def dynamodb_setup():
         dynamodb = boto3.resource("dynamodb", region_name="eu-west-2")
         table = dynamodb.create_table(
             TableName="users-table",
-            KeySchema=[{"AttributeName": "userId", "KeyType": "HASH"}],
-            AttributeDefinitions=[{"AttributeName": "userId", "AttributeType": "S"}],
+            KeySchema=[{"AttributeName": "student-id", "KeyType": "HASH"}],
+            AttributeDefinitions=[{"AttributeName": "student-id", "AttributeType": "S"}],
             ProvisionedThroughput={"ReadCapacityUnits": 1, "WriteCapacityUnits": 1},
         )
-        table.put_item(Item={"userId": "test-user-id","calendar":{"busy": []}})
+        table.put_item(Item={"student-id": "test-user-id","calendar":{"busy": []}})
         yield table
 
 # Import lambda functions after initialising mocked dynamodb
