@@ -2,10 +2,12 @@ from aws_cdk import (
     aws_apigateway as apigateway,
 )
 
+from .bathlink_lambdas import BathLinkLambdas
+
 
 class BathLinkAPI:
 
-    def create_api(self, stack, user_pool, lambdas):
+    def create_api(self, stack, user_pool, lambdas:BathLinkLambdas):
         def add_method(root, method, lambda_handler, name="", method_responses=None,request_parameters = None, authorization=True):
             root.add_method(
                 method,
