@@ -60,6 +60,55 @@ class BathLinkAPI:
         profile = user.add_resource("profile")
         calendar = user.add_resource("calendar")
 
+
+        add_method(user, "GET", 'manage_users_lambda')  # Get user info
+        add_method(user, "DELETE", 'manage_users_lambda')  # Delete user
+        add_method(user, "PUT", 'manage_users_lambda')  # Update user
+
+        add_method(profile, "GET", 'manage_profiles_lambda')  # Get Profile
+        add_method(profile, "POST", 'manage_profiles_lambda')  # Add Profile
+        add_method(profile, "PUT", 'manage_profiles_lambda')  # Update Profile
+
+        add_method(calendar, "GET", 'manage_calendars_lambda', "GetUserCalendar", [
+
+            {
+                'statusCode': '200',
+                'description': 'User calendar returned',
+            },
+            {
+                'statusCode': '404',
+                'description': 'User not Found',
+            }
+
+        ])
+        add_method(calendar, "POST", 'manage_calendars_lambda', "PostCalendarData", [
+            {
+                'statusCode':'200',
+                'description':'Calendar Updated'
+            },
+            {
+                'statusCode': '404',
+                'description': 'User not Found'
+            },
+            {
+                'statusCode': '400',
+                'description': 'No Post Data Provided'
+            },
+        ],{
+            "method.request.querystring.calendarData": True
+        })  # Post calendar data
+        add_method(calendar, "DELETE", 'manage_calendars_lambda',"Delete Calendar",[
+            {
+                'statusCode': '200',
+                'description': 'User calendar returned',
+            },
+            {
+                'statusCode': '404',
+                'description': 'Calendar not Found',
+            }
+        ])
+
+
         chats = api.root.add_resource("chats")
         chat = chats.add_resource("{chatId}")
 
@@ -76,11 +125,10 @@ class BathLinkAPI:
         add_method(chat, "POST", "manage_chats_lambda")  # Send messages
         add_method(chat, "DELETE", "manage_chats_lambda")  # Delete chat
 
-        # We are not storing profiles seperately so the below code is not needed
 
-        # add_method(profile, "GET", 'manage_profiles_lambda')  # Get Profile
-        # add_method(profile, "POST", 'manage_profiles_lambda')  # Add Profile
-        # add_method(profile, "PUT", 'manage_profiles_lambda')  # Update Profile
+        add_method(profile, "GET", 'manage_profiles_lambda')  # Get Profile
+        add_method(profile, "POST", 'manage_profiles_lambda')  # Add Profile
+        add_method(profile, "PUT", 'manage_profiles_lambda')  # Update Profile
 
         add_method(
             calendar,
