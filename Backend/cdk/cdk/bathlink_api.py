@@ -98,9 +98,6 @@ class BathLinkAPI:
             }
         ])
 
-        sign_up = api.root.add_resource("sign_up")
-        add_method(sign_up, "POST", 'sign_up_lambda', authorization=False)  # Signup user
-
         chats = api.root.add_resource("chats")
         chat = chats.add_resource("{chatId}")
 
