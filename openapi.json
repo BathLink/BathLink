@@ -1,0 +1,340 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "2025-03-11T13:41:39Z",
+    "title": "BathLinkApi"
+  },
+  "host": "mdwq3r92te.execute-api.eu-west-2.amazonaws.com",
+  "basePath": "/prod",
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/": {},
+    "/chats": {},
+    "/chats/{chatId}": {
+      "get": {
+        "parameters": [
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {},
+        "security": [
+          {
+            "CdkStackBathLinkAuthorizer4C1B9A67": []
+          }
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {},
+        "security": [
+          {
+            "CdkStackBathLinkAuthorizer4C1B9A67": []
+          }
+        ]
+      },
+      "delete": {
+        "parameters": [
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {},
+        "security": [
+          {
+            "CdkStackBathLinkAuthorizer4C1B9A67": []
+          }
+        ]
+      }
+    },
+    "/meetups": {},
+    "/meetups/search": {
+      "post": {
+        "responses": {},
+        "security": [
+          {
+            "CdkStackBathLinkAuthorizer4C1B9A67": []
+          }
+        ]
+      }
+    },
+    "/meetups/{meetupId}": {
+      "get": {
+        "parameters": [
+          {
+            "name": "meetupId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {},
+        "security": [
+          {
+            "CdkStackBathLinkAuthorizer4C1B9A67": []
+          }
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "name": "meetupId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {},
+        "security": [
+          {
+            "CdkStackBathLinkAuthorizer4C1B9A67": []
+          }
+        ]
+      },
+      "put": {
+        "parameters": [
+          {
+            "name": "meetupId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {},
+        "security": [
+          {
+            "CdkStackBathLinkAuthorizer4C1B9A67": []
+          }
+        ]
+      },
+      "delete": {
+        "parameters": [
+          {
+            "name": "meetupId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {},
+        "security": [
+          {
+            "CdkStackBathLinkAuthorizer4C1B9A67": []
+          }
+        ]
+      }
+    },
+    "/sign_up": {
+      "post": {
+        "responses": {}
+      }
+    },
+    "/users": {},
+    "/users/{userId}": {
+      "get": {
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {},
+        "security": [
+          {
+            "CdkStackBathLinkAuthorizer4C1B9A67": []
+          }
+        ]
+      },
+      "put": {
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {},
+        "security": [
+          {
+            "CdkStackBathLinkAuthorizer4C1B9A67": []
+          }
+        ]
+      },
+      "delete": {
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {},
+        "security": [
+          {
+            "CdkStackBathLinkAuthorizer4C1B9A67": []
+          }
+        ]
+      }
+    },
+    "/users/{userId}/calendar": {
+      "get": {
+        "operationId": "GetUserCalendar",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response"
+          },
+          "404": {
+            "description": "404 response"
+          }
+        },
+        "security": [
+          {
+            "CdkStackBathLinkAuthorizer4C1B9A67": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "PostCalendarData",
+        "parameters": [
+          {
+            "name": "calendarData",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response"
+          },
+          "400": {
+            "description": "400 response"
+          },
+          "404": {
+            "description": "404 response"
+          }
+        },
+        "security": [
+          {
+            "CdkStackBathLinkAuthorizer4C1B9A67": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "Delete Calendar",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response"
+          },
+          "404": {
+            "description": "404 response"
+          }
+        },
+        "security": [
+          {
+            "CdkStackBathLinkAuthorizer4C1B9A67": []
+          }
+        ]
+      }
+    },
+    "/users/{userId}/profile": {
+      "get": {
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {},
+        "security": [
+          {
+            "CdkStackBathLinkAuthorizer4C1B9A67": []
+          }
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {},
+        "security": [
+          {
+            "CdkStackBathLinkAuthorizer4C1B9A67": []
+          }
+        ]
+      },
+      "put": {
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {},
+        "security": [
+          {
+            "CdkStackBathLinkAuthorizer4C1B9A67": []
+          }
+        ]
+      }
+    }
+  },
+  "securityDefinitions": {
+    "CdkStackBathLinkAuthorizer4C1B9A67": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "x-amazon-apigateway-authtype": "cognito_user_pools"
+    }
+  }
+}
