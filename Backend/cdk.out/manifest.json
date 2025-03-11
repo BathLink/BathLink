@@ -1,0 +1,677 @@
+{
+  "version": "39.0.0",
+  "artifacts": {
+    "CdkStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "CdkStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "CdkStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://376129876633/eu-west-2",
+      "properties": {
+        "templateFile": "CdkStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::376129876633:role/cdk-hnb659fds-deploy-role-376129876633-eu-west-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::376129876633:role/cdk-hnb659fds-cfn-exec-role-376129876633-eu-west-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-376129876633-eu-west-2/e5b502a99ab34e0d3c718e5ed7db1f47732c08b82dec878fdac00ee750666418.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "CdkStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::376129876633:role/cdk-hnb659fds-lookup-role-376129876633-eu-west-2",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "CdkStack.assets"
+      ],
+      "metadata": {
+        "/CdkStack/users-table": [
+          {
+            "type": "aws:cdk:hasPhysicalName",
+            "data": {
+              "Ref": "userstable4FB8B1A2"
+            }
+          }
+        ],
+        "/CdkStack/users-table/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "userstable4FB8B1A2"
+          }
+        ],
+        "/CdkStack/meetups-table": [
+          {
+            "type": "aws:cdk:hasPhysicalName",
+            "data": {
+              "Ref": "meetupstableFBA2C001"
+            }
+          }
+        ],
+        "/CdkStack/meetups-table/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "meetupstableFBA2C001"
+          }
+        ],
+        "/CdkStack/groupchats-table": [
+          {
+            "type": "aws:cdk:hasPhysicalName",
+            "data": {
+              "Ref": "groupchatstable5E55616F"
+            }
+          }
+        ],
+        "/CdkStack/groupchats-table/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "groupchatstable5E55616F"
+          }
+        ],
+        "/CdkStack/BathLinkUserPool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkUserPoolE14B5490"
+          }
+        ],
+        "/CdkStack/BathLinkUserPool/BathLinkAppClient/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkUserPoolBathLinkAppClient92E58658"
+          }
+        ],
+        "/CdkStack/BathLinkUserPool/PostConfirmationCognito": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkUserPoolPostConfirmationCognitoF7F9BEED"
+          }
+        ],
+        "/CdkStack/manage_meetups_lambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "managemeetupslambdaServiceRoleD2C31C51"
+          }
+        ],
+        "/CdkStack/manage_meetups_lambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "managemeetupslambdaE4344886"
+          }
+        ],
+        "/CdkStack/search_meetups_lambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "searchmeetupslambdaServiceRoleA4FC9B02"
+          }
+        ],
+        "/CdkStack/search_meetups_lambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "searchmeetupslambda9E293529"
+          }
+        ],
+        "/CdkStack/manage_users_lambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "manageuserslambdaServiceRoleAE574AA7"
+          }
+        ],
+        "/CdkStack/manage_users_lambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "manageuserslambda5A9F10DC"
+          }
+        ],
+        "/CdkStack/manage_users_lambda/CognitoTriggerPermission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "manageuserslambdaCognitoTriggerPermission90161762"
+          }
+        ],
+        "/CdkStack/manage_profiles_lambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "manageprofileslambdaServiceRole0A61BC3F"
+          }
+        ],
+        "/CdkStack/manage_profiles_lambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "manageprofileslambda3D8D6DB1"
+          }
+        ],
+        "/CdkStack/sign_up_lambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "signuplambdaServiceRole4D953B4B"
+          }
+        ],
+        "/CdkStack/sign_up_lambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "signuplambdaAB5914C4"
+          }
+        ],
+        "/CdkStack/manage_chats_lambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "managechatslambdaServiceRole58C1630C"
+          }
+        ],
+        "/CdkStack/manage_chats_lambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "managechatslambda70C5CD4C"
+          }
+        ],
+        "/CdkStack/manage_calendars_lambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "managecalendarslambdaServiceRole65FE60CC"
+          }
+        ],
+        "/CdkStack/manage_calendars_lambda/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "managecalendarslambdaServiceRoleDefaultPolicyFD023B7C"
+          }
+        ],
+        "/CdkStack/manage_calendars_lambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "managecalendarslambda9C091573"
+          }
+        ],
+        "/CdkStack/BathLinkAuthorizer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkAuthorizer1856A54C"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApi44287010"
+          }
+        ],
+        "/CdkStack/BathLinkApi/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiCloudWatchRole794AA1D5"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiAccount6C4AC977"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiDeployment607DFFFE2c4a647ee5add5ac53bbeb108ad89d67"
+          }
+        ],
+        "/CdkStack/BathLinkApi/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiDeploymentStageprod1E328831"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiEndpointF8932390"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiOPTIONSC2371BB1"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/meetups/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApimeetups3405319B"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/meetups/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApimeetupsOPTIONS9A0612A2"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/meetups/{meetupId}/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApimeetupsmeetupId0995A30A"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/meetups/{meetupId}/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApimeetupsmeetupIdOPTIONSB7C9534C"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/meetups/{meetupId}/GET/ApiPermission.CdkStackBathLinkApi7E118E75.GET..meetups.{meetupId}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApimeetupsmeetupIdGETApiPermissionCdkStackBathLinkApi7E118E75GETmeetupsmeetupId97CCFC2A"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/meetups/{meetupId}/GET/ApiPermission.Test.CdkStackBathLinkApi7E118E75.GET..meetups.{meetupId}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApimeetupsmeetupIdGETApiPermissionTestCdkStackBathLinkApi7E118E75GETmeetupsmeetupId6421FC9F"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/meetups/{meetupId}/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApimeetupsmeetupIdGETAFFE3A0F"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/meetups/{meetupId}/POST/ApiPermission.CdkStackBathLinkApi7E118E75.POST..meetups.{meetupId}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApimeetupsmeetupIdPOSTApiPermissionCdkStackBathLinkApi7E118E75POSTmeetupsmeetupIdAB30A0E8"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/meetups/{meetupId}/POST/ApiPermission.Test.CdkStackBathLinkApi7E118E75.POST..meetups.{meetupId}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApimeetupsmeetupIdPOSTApiPermissionTestCdkStackBathLinkApi7E118E75POSTmeetupsmeetupIdCFFDAA4D"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/meetups/{meetupId}/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApimeetupsmeetupIdPOSTAC7D0F3F"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/meetups/{meetupId}/DELETE/ApiPermission.CdkStackBathLinkApi7E118E75.DELETE..meetups.{meetupId}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApimeetupsmeetupIdDELETEApiPermissionCdkStackBathLinkApi7E118E75DELETEmeetupsmeetupIdC483C42F"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/meetups/{meetupId}/DELETE/ApiPermission.Test.CdkStackBathLinkApi7E118E75.DELETE..meetups.{meetupId}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApimeetupsmeetupIdDELETEApiPermissionTestCdkStackBathLinkApi7E118E75DELETEmeetupsmeetupIdE1F42D1A"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/meetups/{meetupId}/DELETE/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApimeetupsmeetupIdDELETEC74B0D07"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/meetups/{meetupId}/PUT/ApiPermission.CdkStackBathLinkApi7E118E75.PUT..meetups.{meetupId}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApimeetupsmeetupIdPUTApiPermissionCdkStackBathLinkApi7E118E75PUTmeetupsmeetupId425101CF"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/meetups/{meetupId}/PUT/ApiPermission.Test.CdkStackBathLinkApi7E118E75.PUT..meetups.{meetupId}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApimeetupsmeetupIdPUTApiPermissionTestCdkStackBathLinkApi7E118E75PUTmeetupsmeetupId27002A73"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/meetups/{meetupId}/PUT/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApimeetupsmeetupIdPUTBC157235"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/meetups/search/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApimeetupssearch9ADEADE3"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/meetups/search/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApimeetupssearchOPTIONS3CCF0EEC"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/meetups/search/POST/ApiPermission.CdkStackBathLinkApi7E118E75.POST..meetups.search": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApimeetupssearchPOSTApiPermissionCdkStackBathLinkApi7E118E75POSTmeetupssearch0F2BCC62"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/meetups/search/POST/ApiPermission.Test.CdkStackBathLinkApi7E118E75.POST..meetups.search": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApimeetupssearchPOSTApiPermissionTestCdkStackBathLinkApi7E118E75POSTmeetupssearch53479D44"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/meetups/search/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApimeetupssearchPOSTAA190423"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/users/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiusersDCC8A455"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/users/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiusersOPTIONS769C5CBF"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/users/{userId}/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiusersuserId5A870CBF"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/users/{userId}/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiusersuserIdOPTIONSB0394DA4"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/users/{userId}/profile/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiusersuserIdprofile12BFC4A1"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/users/{userId}/profile/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiusersuserIdprofileOPTIONS4D9775FB"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/users/{userId}/calendar/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiusersuserIdcalendar6EF4C40C"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/users/{userId}/calendar/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiusersuserIdcalendarOPTIONSA23D2FD5"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/users/{userId}/calendar/GET/ApiPermission.CdkStackBathLinkApi7E118E75.GET..users.{userId}.calendar": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiusersuserIdcalendarGETApiPermissionCdkStackBathLinkApi7E118E75GETusersuserIdcalendar1FDA59FD"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/users/{userId}/calendar/GET/ApiPermission.Test.CdkStackBathLinkApi7E118E75.GET..users.{userId}.calendar": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiusersuserIdcalendarGETApiPermissionTestCdkStackBathLinkApi7E118E75GETusersuserIdcalendarA4151163"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/users/{userId}/calendar/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiusersuserIdcalendarGETC3AD08EC"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/users/{userId}/calendar/POST/ApiPermission.CdkStackBathLinkApi7E118E75.POST..users.{userId}.calendar": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiusersuserIdcalendarPOSTApiPermissionCdkStackBathLinkApi7E118E75POSTusersuserIdcalendarD06273AF"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/users/{userId}/calendar/POST/ApiPermission.Test.CdkStackBathLinkApi7E118E75.POST..users.{userId}.calendar": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiusersuserIdcalendarPOSTApiPermissionTestCdkStackBathLinkApi7E118E75POSTusersuserIdcalendarD9161EF2"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/users/{userId}/calendar/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiusersuserIdcalendarPOST93A2CF47"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/users/{userId}/calendar/DELETE/ApiPermission.CdkStackBathLinkApi7E118E75.DELETE..users.{userId}.calendar": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiusersuserIdcalendarDELETEApiPermissionCdkStackBathLinkApi7E118E75DELETEusersuserIdcalendar4FA2868D"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/users/{userId}/calendar/DELETE/ApiPermission.Test.CdkStackBathLinkApi7E118E75.DELETE..users.{userId}.calendar": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiusersuserIdcalendarDELETEApiPermissionTestCdkStackBathLinkApi7E118E75DELETEusersuserIdcalendar3A3FCC41"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/users/{userId}/calendar/DELETE/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiusersuserIdcalendarDELETE93174C94"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/users/{userId}/GET/ApiPermission.CdkStackBathLinkApi7E118E75.GET..users.{userId}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiusersuserIdGETApiPermissionCdkStackBathLinkApi7E118E75GETusersuserId14A81CFE"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/users/{userId}/GET/ApiPermission.Test.CdkStackBathLinkApi7E118E75.GET..users.{userId}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiusersuserIdGETApiPermissionTestCdkStackBathLinkApi7E118E75GETusersuserId1B0A5715"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/users/{userId}/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiusersuserIdGETF73D00AF"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/users/{userId}/DELETE/ApiPermission.CdkStackBathLinkApi7E118E75.DELETE..users.{userId}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiusersuserIdDELETEApiPermissionCdkStackBathLinkApi7E118E75DELETEusersuserId5FC9502C"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/users/{userId}/DELETE/ApiPermission.Test.CdkStackBathLinkApi7E118E75.DELETE..users.{userId}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiusersuserIdDELETEApiPermissionTestCdkStackBathLinkApi7E118E75DELETEusersuserId0D4E4745"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/users/{userId}/DELETE/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiusersuserIdDELETE95061F10"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/users/{userId}/PUT/ApiPermission.CdkStackBathLinkApi7E118E75.PUT..users.{userId}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiusersuserIdPUTApiPermissionCdkStackBathLinkApi7E118E75PUTusersuserIdCA2448D9"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/users/{userId}/PUT/ApiPermission.Test.CdkStackBathLinkApi7E118E75.PUT..users.{userId}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiusersuserIdPUTApiPermissionTestCdkStackBathLinkApi7E118E75PUTusersuserId18F836F9"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/users/{userId}/PUT/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApiusersuserIdPUTCD34BF41"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/chats/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApichats6E747575"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/chats/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApichatsOPTIONSED85C12B"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/chats/{chatId}/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApichatschatIdC69472FE"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/chats/{chatId}/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApichatschatIdOPTIONS56F3A7EA"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/chats/{chatId}/GET/ApiPermission.CdkStackBathLinkApi7E118E75.GET..chats.{chatId}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApichatschatIdGETApiPermissionCdkStackBathLinkApi7E118E75GETchatschatIdE42908B5"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/chats/{chatId}/GET/ApiPermission.Test.CdkStackBathLinkApi7E118E75.GET..chats.{chatId}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApichatschatIdGETApiPermissionTestCdkStackBathLinkApi7E118E75GETchatschatId34BEA9AB"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/chats/{chatId}/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApichatschatIdGETE27D8862"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/chats/{chatId}/POST/ApiPermission.CdkStackBathLinkApi7E118E75.POST..chats.{chatId}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApichatschatIdPOSTApiPermissionCdkStackBathLinkApi7E118E75POSTchatschatId267AF788"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/chats/{chatId}/POST/ApiPermission.Test.CdkStackBathLinkApi7E118E75.POST..chats.{chatId}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApichatschatIdPOSTApiPermissionTestCdkStackBathLinkApi7E118E75POSTchatschatIdEE8541F6"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/chats/{chatId}/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApichatschatIdPOSTB4A616E4"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/chats/{chatId}/DELETE/ApiPermission.CdkStackBathLinkApi7E118E75.DELETE..chats.{chatId}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApichatschatIdDELETEApiPermissionCdkStackBathLinkApi7E118E75DELETEchatschatIdA72BE0A6"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/chats/{chatId}/DELETE/ApiPermission.Test.CdkStackBathLinkApi7E118E75.DELETE..chats.{chatId}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApichatschatIdDELETEApiPermissionTestCdkStackBathLinkApi7E118E75DELETEchatschatId87650D14"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/chats/{chatId}/DELETE/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApichatschatIdDELETE332EDD8E"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/sign_up/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApisignup4AA11308"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/sign_up/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApisignupOPTIONS5B23185E"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/sign_up/POST/ApiPermission.CdkStackBathLinkApi7E118E75.POST..sign_up": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApisignupPOSTApiPermissionCdkStackBathLinkApi7E118E75POSTsignup77812328"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/sign_up/POST/ApiPermission.Test.CdkStackBathLinkApi7E118E75.POST..sign_up": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApisignupPOSTApiPermissionTestCdkStackBathLinkApi7E118E75POSTsignup4B7D0861"
+          }
+        ],
+        "/CdkStack/BathLinkApi/Default/sign_up/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BathLinkApisignupPOSTB0FB5F4B"
+          }
+        ],
+        "/CdkStack/APIEndpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "APIEndpoint"
+          }
+        ],
+        "/CdkStack/UserPoolId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPoolId"
+          }
+        ],
+        "/CdkStack/AppClientId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AppClientId"
+          }
+        ],
+        "/CdkStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/CdkStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/CdkStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "CdkStack"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

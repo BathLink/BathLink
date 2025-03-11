@@ -20,9 +20,7 @@ def lambda_handler(event, context):
 
         if http_method == "GET":
             rsp = users_table.get_item(
-                Key={
-                    "student-id": userId
-                }  # The partition key used in the DynamoDB table
+                Key={"userId": userId}  # The partition key used in the DynamoDB table
             )
 
             if "Item" in rsp:
