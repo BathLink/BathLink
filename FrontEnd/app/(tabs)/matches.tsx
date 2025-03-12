@@ -1,12 +1,14 @@
-import { Image, View, StyleSheet, Platform } from 'react-native';
-import { Divider } from 'react-native-paper'; 
+import { View, Text, Button, StyleSheet, Platform } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Divider } from 'react-native-paper';
 import { Svg, Path } from 'react-native-svg';
 
 import { ThemedText } from '@/components/ThemedText';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
-export default function HomeScreen() {
+export default function MatchesScreen() {
+
   const colorScheme = useColorScheme();
   let primary_color = "black"
   let background_color = "white"
@@ -24,11 +26,14 @@ export default function HomeScreen() {
     console.log('Button pressed');
   };
 
+  const router = useRouter();
+
   return (
+
     <View>
       {/* Top Menu App Bar */}
       <View style={styles.titleContainer}>
-        <MaterialIcons.Button name="person" size={28} color={primary_color} backgroundColor={transparent_color} onPress={testBtn}/>
+        <MaterialIcons.Button name="person" size={28} color={primary_color} backgroundColor={transparent_color} onPress={() => router.push('/profile')}/>
         <ThemedText type="title" >BathLink</ThemedText>
         <MaterialIcons.Button name="notifications" size={28} color={transparent_color} backgroundColor={transparent_color} onPress={testBtn}/>
       </View>
@@ -97,8 +102,11 @@ export default function HomeScreen() {
 
 
     </View>
-  );
+
+
+);
 }
+
 
 const styles = StyleSheet.create({
   // Top Bar Style Part
@@ -110,7 +118,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 16,
     paddingHorizontal: 20,
-  }, 
+  },
   headLine: {
     position: "relative",
     flexShrink: 0,
@@ -118,14 +126,14 @@ const styles = StyleSheet.create({
     marginLeft: 16,
     fontSize: 24,
     fontWeight: 600,
-  }, 
+  },
   nameText: {
     flexShrink: 0,
     textAlign: "left",
     marginTop: 8,
     fontSize: 24,
     fontWeight: 600,
-  }, 
+  },
   headlineContainer: {
     position: "relative",
     flexDirection: "row",
@@ -225,5 +233,6 @@ const styles = StyleSheet.create({
     borderColor: "rgba(202, 196, 208, 1)",
     borderRadius: 12
   },
-    
+
 });
+
