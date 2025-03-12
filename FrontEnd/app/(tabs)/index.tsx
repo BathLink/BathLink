@@ -30,6 +30,12 @@ export default function HomeScreen() {
         <ThemedText type="title" >BathLink</ThemedText>
         <MaterialIcons.Button name="notifications" size={28} color={transparent_color} backgroundColor={transparent_color} onPress={testBtn}/>
       </View>
+
+      <View style={styles.headlineContainer}>
+        <ThemedText style={styles.headline}>
+          {`Next Meetup`}
+        </ThemedText>
+      </View>
     </View>
   );
 }
@@ -44,5 +50,22 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 16,
     paddingHorizontal: 20,
-  }
+  }, headlineContainer: {
+    position: "relative",
+    flexShrink: 0,
+    width: 412,
+    display: "flex",
+    alignItems: "flex-start",
+    columnGap: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 0
+    },
+    headline: {
+    position: "relative",
+    flexShrink: 0,
+    textAlign: "left",
+    color: "rgba(29, 27, 32, 1)",
+    fontSize: 20,
+    fontWeight: 600,
+    }
 });
