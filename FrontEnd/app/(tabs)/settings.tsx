@@ -6,18 +6,17 @@ import { ThemedText } from '@/components/ThemedText';
 
 export default function SettingsScreen() {
   const colorScheme = useColorScheme();
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  let primary_color = "black"
-  let background_color = "white"
-  let transparent_color = "rgba(0, 0, 0, 0)"
 
-  if (colorScheme === 'dark') {
-    primary_color = "white"
-    background_color = "rgba(0, 0, 0, 0)"
-  } else {
-    primary_color = "black"
-    background_color = "rgba(0, 0, 0, 0)"
-  }
+  // Independent switch states
+  const [switch1, setSwitch1] = useState(false);
+  const [switch2, setSwitch2] = useState(false);
+  const [switch3, setSwitch3] = useState(false);
+  const [switch4, setSwitch4] = useState(false);
+  const [switch5, setSwitch5] = useState(false);
+  const [switch6, setSwitch6] = useState(false);
+
+  let primary_color = colorScheme === 'dark' ? "white" : "black";
+  let background_color = "rgba(0, 0, 0, 0)";
 
   const handleLogout = () => {
     console.log("Logging out...");
@@ -26,22 +25,21 @@ export default function SettingsScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: background_color }]}>
-
       {/* Top Bar (App Bar) */}
       <View style={styles.titleContainer}>
         <MaterialIcons.Button
           name="person"
           size={28}
           color={primary_color}
-          backgroundColor={transparent_color}
+          backgroundColor="transparent"
           onPress={() => console.log('Profile pressed')}
         />
-        <ThemedText type="title" >BathLink</ThemedText>
+        <ThemedText type="title">BathLink</ThemedText>
         <MaterialIcons.Button
           name="notifications"
           size={28}
           color={primary_color}
-          backgroundColor={transparent_color}
+          backgroundColor="transparent"
           onPress={() => console.log('Notifications pressed')}
         />
       </View>
@@ -49,48 +47,30 @@ export default function SettingsScreen() {
       {/* Subheader: Settings */}
       <Text style={[styles.subheader, { color: primary_color }]}>Settings</Text>
 
-      {/* Settings Options */}
+      {/* Settings Options with Independent Switches */}
       <View style={styles.settingOption}>
         <Text style={[styles.optionText, { color: primary_color }]}>Setting 1</Text>
-        <Switch
-          value={isDarkMode}
-          onValueChange={(value) => setIsDarkMode(value)}
-        />
+        <Switch value={switch1} onValueChange={setSwitch1} />
       </View>
       <View style={styles.settingOption}>
         <Text style={[styles.optionText, { color: primary_color }]}>Setting 2</Text>
-        <Switch
-          value={isDarkMode}
-          onValueChange={(value) => setIsDarkMode(value)}
-        />
+        <Switch value={switch2} onValueChange={setSwitch2} />
       </View>
       <View style={styles.settingOption}>
         <Text style={[styles.optionText, { color: primary_color }]}>Setting 3</Text>
-        <Switch
-          value={isDarkMode}
-          onValueChange={(value) => setIsDarkMode(value)}
-        />
+        <Switch value={switch3} onValueChange={setSwitch3} />
       </View>
       <View style={styles.settingOption}>
         <Text style={[styles.optionText, { color: primary_color }]}>Setting 4</Text>
-        <Switch
-          value={isDarkMode}
-          onValueChange={(value) => setIsDarkMode(value)}
-        />
+        <Switch value={switch4} onValueChange={setSwitch4} />
       </View>
       <View style={styles.settingOption}>
         <Text style={[styles.optionText, { color: primary_color }]}>Setting 5</Text>
-        <Switch
-          value={isDarkMode}
-          onValueChange={(value) => setIsDarkMode(value)}
-        />
+        <Switch value={switch5} onValueChange={setSwitch5} />
       </View>
       <View style={styles.settingOption}>
         <Text style={[styles.optionText, { color: primary_color }]}>Setting 6</Text>
-        <Switch
-          value={isDarkMode}
-          onValueChange={(value) => setIsDarkMode(value)}
-        />
+        <Switch value={switch6} onValueChange={setSwitch6} />
       </View>
 
       <TouchableOpacity style={styles.settingOption} onPress={() => alert("Change Password")}>
@@ -102,35 +82,26 @@ export default function SettingsScreen() {
         <Text style={[styles.optionText, { color: "red" }]}>Log Out</Text>
         <MaterialIcons name="logout" size={24} color="red" />
       </TouchableOpacity>
-
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-
-  // Top Bar Style (BathLink Header)
   titleContainer: {
-      flexDirection: 'row',
-      flexGrow: 2,
-      marginTop: 52,
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      paddingVertical: 16,
-      paddingHorizontal: 20,
+    flexDirection: 'row',
+    flexGrow: 2,
+    marginTop: 52,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 16,
+    paddingHorizontal: 20,
   },
-  titleText: {
-    fontSize: 22,
-    fontWeight: 'bold',
-  },
-  // Subheader: Settings
   subheader: {
     fontSize: 25,
     fontWeight: 'bold',
     marginVertical: 10,
     paddingHorizontal: 20,
   },
-  // Settings Options
   settingOption: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -144,4 +115,3 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
 });
-
