@@ -11,7 +11,7 @@ export default function NotFoundScreen() {
   useEffect(() => {
     // Redirect to Meetups after 1 second
     setTimeout(() => {
-      router.replace('/(tabs)/meetups');
+      router.replace('/login');
     }, 2000);
   }, []);
 
