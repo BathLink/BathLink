@@ -125,56 +125,7 @@ class BathLinkAPI:
         add_method(profile, "POST", "manage_profiles_lambda")  # Add Profile
         add_method(profile, "PUT", "manage_profiles_lambda")  # Update Profile
 
-        add_method(
-            calendar,
-            "GET",
-            "manage_calendars_lambda",
-            "GetUserCalendar",
-            [
-                {
-                    "statusCode": "200",
-                    "description": "User calendar returned",
-                },
-                {
-                    "statusCode": "404",
-                    "description": "User not Found",
-                },
-            ],
-        )
-        add_method(
-            calendar,
-            "POST",
-            "manage_calendars_lambda",
-            "PostCalendarData",
-            [
-                {"statusCode": "200", "description": "Calendar Updated"},
-                {"statusCode": "404", "description": "User not Found"},
-                {"statusCode": "400", "description": "No Post Data Provided"},
-            ],
-            {"method.request.querystring.calendarData": True},
-        )  # Post calendar data
-        add_method(
-            calendar,
-            "DELETE",
-            "manage_calendars_lambda",
-            "Delete Calendar",
-            [
-                {
-                    "statusCode": "200",
-                    "description": "User calendar returned",
-                },
-                {
-                    "statusCode": "404",
-                    "description": "Calendar not Found",
-                },
-            ],
-        )
-
         chats = api.root.add_resource("chats")
         chat = chats.add_resource("{chatId}")
-
-        add_method(chat, "GET", "manage_chats_lambda")  # Get messages
-        add_method(chat, "POST", "manage_chats_lambda")  # Send messages
-        add_method(chat, "DELETE", "manage_chats_lambda")  # Delete chat
 
         return api
