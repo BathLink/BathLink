@@ -60,14 +60,6 @@ class BathLinkAPI:
         profile = user.add_resource("profile")
         calendar = user.add_resource("calendar")
 
-        add_method(user, "GET", "manage_users_lambda")  # Get user info
-        add_method(user, "DELETE", "manage_users_lambda")  # Delete user
-        add_method(user, "PUT", "manage_users_lambda")  # Update user
-
-        add_method(profile, "GET", "manage_profiles_lambda")  # Get Profile
-        add_method(profile, "POST", "manage_profiles_lambda")  # Add Profile
-        add_method(profile, "PUT", "manage_profiles_lambda")  # Update Profile
-
         add_method(
             calendar,
             "GET",
