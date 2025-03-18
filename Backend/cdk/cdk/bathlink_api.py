@@ -125,7 +125,4 @@ class BathLinkAPI:
         add_method(profile, "POST", "manage_profiles_lambda")  # Add Profile
         add_method(profile, "PUT", "manage_profiles_lambda")  # Update Profile
 
-        chats = api.root.add_resource("chats")
-        chat = chats.add_resource("{chatId}")
-
         return api
