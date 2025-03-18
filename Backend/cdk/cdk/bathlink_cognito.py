@@ -9,7 +9,7 @@ class BathLinkCognito:
 
     def create_cognito(self, stack):
         self.user_pool = cognito.UserPool(
-            stack, "BathLinkUserPool",
+            stack, "BathLinkUserPool",user_pool_name="BathLinkUserPool",
             self_sign_up_enabled=True,
             sign_in_aliases=cognito.SignInAliases(email=True),
             auto_verify=cognito.AutoVerifiedAttrs(email=True),
