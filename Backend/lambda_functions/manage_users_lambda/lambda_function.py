@@ -45,6 +45,15 @@ def handle_get_request(userId):
 
 
 def handle_put_request(userId, body):
+    body = json.loads(body)
+    print("In put, body:", body)
+    if len(body) > 1:
+        return {
+            "statusCode": 400,
+            "body": json.dumps(
+                {"error": "Send only ONE value to update, not multiple"}
+            ),
+        }
     try:
         rsp = users_table.get_item(Key={"student-id": userId})
 
@@ -61,7 +70,7 @@ def handle_put_request(userId, body):
                 "statusCode": 200,
                 "body": json.dumps(
                     {
-                        "message": f"Success! Updated the record for user-id {userId}), {attributeToChange}={newValue}"
+                        "message": f"Success! Updated the record for user-id {userId}, {attributeToChange}={newValue}"
                     }
                 ),
                 "headers": {"Content-Type": "application/json"},
@@ -94,17 +103,15 @@ def lambda_handler(event, context):
 
         elif http_method == "PUT":
             body = event.get("body")
-            if not body or len(body) > 1:
+            print(body)
+            print(not body)
+            if not body:
                 return {
                     "statusCode": 400,
-                    "body": json.dumps(
-                        {
-                            "error": "Content of body missing or you put more than one value to update!"
-                        }
-                    ),
+                    "body": json.dumps({"error": "Content of body"}),
                 }
             else:
-                return handle_put_request(userId)
+                return handle_put_request(userId, body)
 
         else:
             return {
