@@ -29,6 +29,51 @@ def PostConfirmation(event, context):
     return event
 
 
+def handle_get_request(userId):
+    rsp = users_table.get_item(
+        Key={"student-id": userId}  # The partition key used in the DynamoDB table
+    )
+
+    if "Item" in rsp:
+        user_data = rsp["Item"]
+        return {
+            "statusCode": 200,
+            "body": json.dumps(user_data),  # Return the user data in the response
+        }
+    else:
+        return {"statusCode": 404, "body": f"userId:{userId} not found!"}
+
+
+def handle_put_request(userId, body):
+    try:
+        rsp = users_table.get_item(Key={"student-id": userId})
+
+        if "Item" in rsp:
+            attributeToChange = list(body.keys())[0]
+            newValue = body[attributeToChange]
+
+            item = rsp["Item"]
+            item[attributeToChange] = newValue
+
+            users_table.put_item(Item=item)
+
+            return {
+                "statusCode": 200,
+                "body": json.dumps(
+                    {
+                        "message": f"Success! Updated the record for user-id {userId}), {attributeToChange}={newValue}"
+                    }
+                ),
+                "headers": {"Content-Type": "application/json"},
+            }
+
+        else:
+            return {"statusCode": 404, "body": f"userId:{userId} not found!"}
+    except Exception as e:
+        print(e)
+        return {"statusCode": 404, "body": f"Error: {e}"}
+
+
 def lambda_handler(event, context):
     if (
         "triggerSource" in event
@@ -45,26 +90,26 @@ def lambda_handler(event, context):
         userId = path.split("/")[2]
 
         if http_method == "GET":
-            rsp = users_table.get_item(
-                Key={
-                    "student-id": userId
-                }  # The partition key used in the DynamoDB table
-            )
+            return handle_get_request(userId)
 
-            if "Item" in rsp:
-                user_data = rsp["Item"]
+        elif http_method == "PUT":
+            body = event.get("body")
+            if not body or len(body) > 1:
                 return {
-                    "statusCode": 200,
+                    "statusCode": 400,
                     "body": json.dumps(
-                        user_data
-                    ),  # Return the user data in the response
+                        {
+                            "error": "Content of body missing or you put more than one value to update!"
+                        }
+                    ),
                 }
             else:
-                return {"statusCode": 404, "body": f"userId:{userId} not found!"}
+                return handle_put_request(userId)
+
         else:
             return {
                 "statusCode": 500,
-                "body": f"{http_method} not implemented for users yet",
+                "body": f"{http_method} does not exist for users",
             }
 
     except Exception as e:
