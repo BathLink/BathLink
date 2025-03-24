@@ -22,9 +22,9 @@ export default function HomeScreen() {
       const [match] = updatedMatches.splice(index, 1); // remove match
 
       if (type === 'check') {
-        Alert.alert("Confirmed", `You confirmed: ${match[0]} with ${match[1].join(', ')}`);
+        //alert("Confirmed", `You confirmed: ${match[0]} with ${match[1].join(', ')}`);
       } else {
-        Alert.alert("Cancelled", `You cancelled: ${match[0]} with ${match[1].join(', ')}`);
+        //alert("Cancelled", `You cancelled: ${match[0]} with ${match[1].join(', ')}`);
       }
 
       return updatedMatches;
