@@ -10,7 +10,7 @@ export default function TabLayout() {
         options={{ title: "Meetups", tabBarIcon: ({ color }) => <Ionicons name="calendar" size={24} color={color} /> }}
       />
       <Tabs.Screen
-        name="matches"
+        name="index"
         options={{ title: "Matches", tabBarIcon: ({ color }) => <Ionicons name="people" size={24} color={color} /> }}
       />
       <Tabs.Screen
