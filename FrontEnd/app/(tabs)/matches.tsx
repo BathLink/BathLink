@@ -8,7 +8,6 @@ export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const [selectedTab, setSelectedTab] = useState('Matches');
 
-  // Matches state (to dynamically remove items)
   const [matches, setMatches] = useState([
     ["Indoor Tennis", ["Nathaniel", "John"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
     ["Indoor Tennis", ["Nathaniel", "John", "James"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
@@ -17,40 +16,52 @@ export default function HomeScreen() {
     ["Indoor Tennis", ["Nathaniel", "John", "James"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
   ]);
 
-  const primary_color = colorScheme === 'dark' ? 'white' : 'black';
-  const background_color = colorScheme === 'dark' ? 'rgba(0, 0, 0, 0)' : 'rgba(0, 0, 0, 0)';
-
   const toggleButton = (index, type) => {
     setMatches(prevMatches => {
       const updatedMatches = [...prevMatches];
       const [match] = updatedMatches.splice(index, 1); // remove match
 
       if (type === 'check') {
-        //alert(`You confirmed: ${match[0]} with ${match[1].join(', ')}`);
-
+        Alert.alert("Confirmed", `You confirmed: ${match[0]} with ${match[1].join(', ')}`);
       } else {
-        //alert(`You cancelled: ${match[0]} with ${match[1].join(', ')}`);
-
+        Alert.alert("Cancelled", `You cancelled: ${match[0]} with ${match[1].join(', ')}`);
       }
 
       return updatedMatches;
     });
   };
 
+  // Dynamic colors
+  const isDark = colorScheme === 'dark';
+  const primaryColor = isDark ? '#ffffff' : '#000000';
+  const backgroundColor = isDark ? '#000000' : '#ffffff';
+  const cardBackground = isDark ? '#333333' : '#f5f5f5';
+  const textColor = isDark ? '#ffffff' : '#000000';
+
   return (
-    <View style={{ flex: 1, backgroundColor: background_color }}>
+    <View style={{ flex: 1, backgroundColor }}>
       {/* Top Menu App Bar */}
       <View style={styles.titleContainer}>
-        <MaterialIcons.Button name="person" size={28} color={primary_color} backgroundColor="transparent" onPress={() => {}} />
+        <MaterialIcons.Button name="person" size={28} color={primaryColor} backgroundColor="transparent" onPress={() => {}} />
         <ThemedText type="title">BathLink</ThemedText>
-        <MaterialIcons.Button name="notifications" size={28} color={primary_color} backgroundColor="transparent" onPress={() => {}} />
+        <MaterialIcons.Button name="notifications" size={28} color={primaryColor} backgroundColor="transparent" onPress={() => {}} />
       </View>
 
       {/* Tabs */}
-      <View style={styles.tabContainer}>
+      <View style={[styles.tabContainer, { borderBottomColor: isDark ? '#555' : '#ccc' }]}>
         {['Matches', 'Invitations', 'Preferences'].map(tab => (
           <TouchableOpacity key={tab} onPress={() => setSelectedTab(tab)}>
-            <Text style={[styles.tabText, selectedTab === tab && styles.tabTextSelected]}>
+            <Text style={[
+              styles.tabText,
+              { color: isDark ? '#aaa' : '#777' },
+              selectedTab === tab && {
+                color: primaryColor,
+                fontWeight: 'bold',
+                borderBottomWidth: 2,
+                borderBottomColor: primaryColor,
+                paddingBottom: 4
+              }
+            ]}>
               {tab}
             </Text>
           </TouchableOpacity>
@@ -60,11 +71,11 @@ export default function HomeScreen() {
       {/* Matches List */}
       <ScrollView style={styles.matchList}>
         {matches.map((match, index) => (
-          <View key={index} style={styles.matchCard}>
-            <Text style={styles.matchTitle}>{match[0]}</Text>
-            <Text style={styles.matchDetail}>With {match[1].join(', ')}</Text>
-            <Text style={styles.matchDetail}>{match[2]} {match[3]}</Text>
-            <Text style={styles.matchDetail}>{match[4]}</Text>
+          <View key={index} style={[styles.matchCard, { backgroundColor: cardBackground }]}>
+            <Text style={[styles.matchTitle, { color: textColor }]}>{match[0]}</Text>
+            <Text style={[styles.matchDetail, { color: textColor }]}>With {match[1].join(', ')}</Text>
+            <Text style={[styles.matchDetail, { color: textColor }]}>{match[2]} {match[3]}</Text>
+            <Text style={[styles.matchDetail, { color: textColor }]}>{match[4]}</Text>
             <View style={styles.buttonRow}>
               <TouchableHighlight
                 underlayColor="#346beb"
@@ -103,24 +114,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
   },
   tabText: {
     fontSize: 16,
-    color: '#777',
-  },
-  tabTextSelected: {
-    color: '#000',
-    fontWeight: 'bold',
-    borderBottomWidth: 2,
-    borderBottomColor: '#000',
-    paddingBottom: 4,
   },
   matchList: {
     paddingHorizontal: 16,
   },
   matchCard: {
-    backgroundColor: '#333333',
     padding: 16,
     borderRadius: 12,
     marginVertical: 8,
@@ -129,11 +130,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 4,
-    color: '#ffffff'
   },
   matchDetail: {
     fontSize: 16,
-    color: '#ffffff',
   },
   buttonRow: {
     flexDirection: 'row',
@@ -146,6 +145,3 @@ const styles = StyleSheet.create({
     padding: 4,
   },
 });
-
-
-
