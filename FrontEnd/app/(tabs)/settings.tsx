@@ -8,7 +8,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useRouter } from "expo-router";
 import * as Crypto from 'expo-crypto';
-import {signOut} from 'aws-amplify/auth';
+import {signOut, updatePassword, getCurrentUser} from 'aws-amplify/auth';
 
 export default function SettingsScreen() {
   const colorScheme = useColorScheme();
@@ -38,55 +38,19 @@ export default function SettingsScreen() {
 
   /** PASSWORD CHANGE FUNCTION */
 const handleChangePassword = async () => {
-  try {
-    // Retrieve user data from AsyncStorage
-    const storedUserData = await AsyncStorage.getItem('user');
-    if (!storedUserData) {
-      Alert.alert("Error", "No user data found.");
-      return;
+
+    try {
+        const {username, userID, signInDetails} = await getCurrentUser();
+    await updatePassword({oldPassword : currentPassword, newPassword : newPassword})
+        Alert.alert("Success", "Password changed successfully!");
+        setModalVisible(false);
+
     }
-
-    const storedUser = JSON.parse(storedUserData); // Parse stored user object
-
-    // Ensure storedUser has a password property
-    if (!storedUser.password) {
-      Alert.alert("Error", "Stored password not found.");
-      return;
-    }
-
-    const hashedCurrentPassword = await Crypto.digestStringAsync(
-      Crypto.CryptoDigestAlgorithm.SHA256,
-      currentPassword
-    );
-
-    // Validate current password
-    if (storedUser.password !== hashedCurrentPassword) {
-      Alert.alert("Error", "Current password is incorrect.");
-      return;
-    }
-
-    // Validate new passwords match
-    if (newPassword !== confirmNewPassword) {
-      Alert.alert("Error", "New passwords do not match.");
-      return;
-    }
-
-    const hashedNewPassword = await Crypto.digestStringAsync(
-      Crypto.CryptoDigestAlgorithm.SHA256,
-      newPassword
-    );
-
-    // Save the updated password
-    const updatedUser = { ...storedUser, password: hashedNewPassword };
-    await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
-
-    Alert.alert("Success", "Password changed successfully!");
-    setModalVisible(false);
-  } catch (error) {
-    console.error("Error changing password:", error);
-    Alert.alert("Error", "Something went wrong. Please try again.");
+    catch(e){
+        console.log(e)
+        }
   }
-};
+
 
 
   return (
