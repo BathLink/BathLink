@@ -8,6 +8,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useRouter } from "expo-router";
 import * as Crypto from 'expo-crypto';
+import {signOut} from 'aws-amplify/auth';
 
 export default function SettingsScreen() {
   const colorScheme = useColorScheme();
@@ -31,7 +32,7 @@ export default function SettingsScreen() {
 
   /** LOGOUT: Prevents auto-login but keeps credentials */
   const handleLogout = async () => {
-    await AsyncStorage.setItem('isLoggedIn', 'false'); // Mark as logged out
+    await signOut();
     router.replace("/login");
   };
 

@@ -63,7 +63,7 @@ export default function HomeScreen() {
       <View style={styles.titleContainer}>
         <MaterialIcons.Button name="person" size={28} color={primary_color} backgroundColor="transparent" nPress={() => router.push('/profile')} />
         <ThemedText type="title">BathLink</ThemedText>
-        <MaterialIcons.Button name="notifications" size={28} color={primary_color} backgroundColor="transparent" onPress={() => {testBtn}} />
+        <MaterialIcons.Button name="notifications" size={28} color={"transparent"} backgroundColor="transparent" onPress={() => {testBtn}} />
       </View>
 
 

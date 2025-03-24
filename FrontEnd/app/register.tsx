@@ -5,7 +5,7 @@ import * as Crypto from 'expo-crypto';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRouter } from 'expo-router';
-import {SignUp} from '../authentication/auth.ts'
+import {SignUp} from '@/authentication/auth';
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -34,14 +34,17 @@ export default function RegisterScreen() {
       Alert.alert('Error', 'Passwords do not match');
       return;
     }
+    console.log(phone)
+    formattedPhone = "+44" + phone.toString()
+
     console.log("pineapples")
-    await SignUp(username, password, email, name, gender, phone, dob)
+    await SignUp(username, password, email, name, gender, formattedPhone, formattedDate.toString())
 
     //const userData = { name, username, email, phone, gender, dob: formattedDate, password: hashedPassword };
     //await AsyncStorage.setItem('profile', JSON.stringify(userData));
     //await AsyncStorage.setItem('isLoggedIn', 'true');
     console.log("oranges")
-    router.push('/(tabs)/meetups');
+    router.push('/confirmEmail');
   };
 
   const handleDateChange = (event: any, selectedDate?: Date) => {

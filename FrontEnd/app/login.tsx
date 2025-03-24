@@ -3,6 +3,8 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Modal} from
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Crypto from 'expo-crypto';
 import {useRouter} from "expo-router";
+import {manualLogin} from '@/authentication/manualLogin';
+import {getCurrentUser} from 'aws-amplify/auth';
 
 
 export default function LoginScreen({ navigation }) {
@@ -46,20 +48,22 @@ const resetPassword = async () => {
 
 
 
-  useEffect(() => {
 
-    checkLoginStatus();
+  useEffect(() => {
+    async function autoSign(){
+          try{
+            await getCurrentUser();
+            router.replace('/(tabs)/meetups');
+        }
+        catch(e){
+            console.log(e)
+            }
+        }
+        autoSign();
+
+
   }, []);
 
-  const checkLoginStatus = async () => {
-    const storedUser = await AsyncStorage.getItem('isLoggedIn');
-
-
-    if (storedUser.trim() === "true") {
-
-      router.replace('/(tabs)/meetups');
-    }
-  };
 
 
 
@@ -71,19 +75,12 @@ const resetPassword = async () => {
       return;
     }
 
-    const hashedPassword = await Crypto.digestStringAsync(
-      Crypto.CryptoDigestAlgorithm.SHA256,
-      password
-    );
+    console.log("penguin")
+    await manualLogin(id, password)
+    console.log("ape")
+    router.replace('/(tabs)/meetups');
 
-    const storedUser = JSON.parse(await AsyncStorage.getItem('user'));
-    if (storedUser && (storedUser.username == id || storedUser.email == id) && storedUser.password === hashedPassword) {
 
-      await AsyncStorage.setItem('isLoggedIn', 'true');
-      router.replace('/(tabs)/meetups');
-    } else {
-      Alert.alert('Error', 'Invalid credentials');
-    }
   };
 
   return (
@@ -95,7 +92,7 @@ const resetPassword = async () => {
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => router.replace('/register')}>
+      <TouchableOpacity onPress={() => router.push('/register')}>
         <Text style={styles.switchText}>Register Now</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={ handleForgotPassword}>
