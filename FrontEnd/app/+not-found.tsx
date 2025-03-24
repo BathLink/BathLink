@@ -1,32 +1,37 @@
-import { Link, Stack } from 'expo-router';
-import { StyleSheet } from 'react-native';
+import { useEffect } from 'react';
+import { useRouter } from 'expo-router';
+import { View, Text, StyleSheet } from 'react-native';
 
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+
+
 
 export default function NotFoundScreen() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Redirect to Meetups after 1 second
+    setTimeout(() => {
+      router.replace('/(tabs)/meetups');
+    }, 2000);
+  }, []);
+
   return (
-    <>
-      <Stack.Screen options={{ title: 'Oops!' }} />
-      <ThemedView style={styles.container}>
-        <ThemedText type="title">This screen doesn't exist.</ThemedText>
-        <Link href="/" style={styles.link}>
-          <ThemedText type="link">Go to home screen!</ThemedText>
-        </Link>
-      </ThemedView>
-    </>
+    <View style={styles.container}>
+      <Text style={styles.title}>BathLink</Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f8edf8", // Change to your app theme color
   },
-  link: {
-    marginTop: 15,
-    paddingVertical: 15,
+  title: {
+    fontSize: 32,
+    fontWeight: "bold",
+    color: "white",
   },
 });
