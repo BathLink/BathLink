@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableHighlight, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableHighlight, TouchableOpacity, Alert } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { ThemedText } from '@/components/ThemedText';
@@ -8,37 +8,32 @@ export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const [selectedTab, setSelectedTab] = useState('Matches');
 
-  // Track which button is selected for each match
-  const [buttonStates, setButtonStates] = useState(
-    Array(5).fill({ checkSelected: false, cancelSelected: false })
-  );
+  // Matches state (to dynamically remove items)
+  const [matches, setMatches] = useState([
+    ["Indoor Tennis", ["Nathaniel", "John"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
+    ["Indoor Tennis", ["Nathaniel", "John", "James"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
+    ["Outdoor Tennis", ["Nathaniel", "John", "James", "Jim"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
+    ["Indoor Tennis", ["John", "James"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
+    ["Indoor Tennis", ["Nathaniel", "John", "James"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
+  ]);
 
   const primary_color = colorScheme === 'dark' ? 'white' : 'black';
   const background_color = colorScheme === 'dark' ? 'rgba(0, 0, 0, 0)' : 'rgba(0, 0, 0, 0)';
 
-  const matches = [
-    ["Indoor Tennis", ["Nathaniel", "John",], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
-    ["Indoor Tennis", ["Nathaniel", "John", "James"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
-    ["Outdoor Tennis", ["Nathaniel", "John", "James","Jim"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
-    ["Indoor Tennis", [ "John", "James"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
-    ["Indoor Tennis", ["Nathaniel", "John", "James"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
-  ];
-
   const toggleButton = (index, type) => {
-    setButtonStates(prevState => {
-      const newState = [...prevState];
+    setMatches(prevMatches => {
+      const updatedMatches = [...prevMatches];
+      const [match] = updatedMatches.splice(index, 1); // remove match
+
       if (type === 'check') {
-        newState[index] = {
-          checkSelected: !newState[index].checkSelected,
-          cancelSelected: false, // Unselect cancel if check is selected
-        };
+        alert(`You confirmed: ${match[0]} with ${match[1].join(', ')}`);
+
       } else {
-        newState[index] = {
-          checkSelected: false,
-          cancelSelected: !newState[index].cancelSelected,
-        };
+        alert(`You cancelled: ${match[0]} with ${match[1].join(', ')}`);
+
       }
-      return newState;
+
+      return updatedMatches;
     });
   };
 
@@ -53,9 +48,11 @@ export default function HomeScreen() {
 
       {/* Tabs */}
       <View style={styles.tabContainer}>
-        {[ 'Invitations', 'Preferences'].map(tab => (
+        {['Matches', 'Invitations', 'Preferences'].map(tab => (
           <TouchableOpacity key={tab} onPress={() => setSelectedTab(tab)}>
-            <Text style={[styles.tabText, selectedTab === tab && styles.tabTextSelected]}>{tab}</Text>
+            <Text style={[styles.tabText, selectedTab === tab && styles.tabTextSelected]}>
+              {tab}
+            </Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -70,33 +67,19 @@ export default function HomeScreen() {
             <Text style={styles.matchDetail}>{match[4]}</Text>
             <View style={styles.buttonRow}>
               <TouchableHighlight
-                underlayColor="#ddd"
-                style={[
-                  styles.iconContainer,
-                  buttonStates[index].checkSelected && styles.iconSelectedCheck,
-                ]}
+                underlayColor="#346beb"
+                style={styles.iconContainer}
                 onPress={() => toggleButton(index, 'check')}
               >
-                <MaterialIcons
-                  name="check-circle"
-                  size={30}
-                  color={buttonStates[index].checkSelected ? "#fff" : "#5e4bb7"}
-                />
+                <MaterialIcons name="check-circle" size={30} color="#5e4bb7" />
               </TouchableHighlight>
 
               <TouchableHighlight
-                underlayColor="#ddd"
-                style={[
-                  styles.iconContainer,
-                  buttonStates[index].cancelSelected && styles.iconSelectedCancel,
-                ]}
+                underlayColor="#9c0b0b"
+                style={styles.iconContainer}
                 onPress={() => toggleButton(index, 'cancel')}
               >
-                <MaterialIcons
-                  name="cancel"
-                  size={30}
-                  color={buttonStates[index].cancelSelected ? "#fff" : "#b79dcf"}
-                />
+                <MaterialIcons name="cancel" size={30} color="#b79dcf" />
               </TouchableHighlight>
             </View>
           </View>
@@ -137,19 +120,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   matchCard: {
-    backgroundColor: '#f5f5fa',
+    backgroundColor: '#333333',
     padding: 16,
     borderRadius: 12,
     marginVertical: 8,
   },
   matchTitle: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 4,
+    color: '#ffffff'
   },
   matchDetail: {
-    fontSize: 14,
-    color: '#333',
+    fontSize: 16,
+    color: '#ffffff',
   },
   buttonRow: {
     flexDirection: 'row',
@@ -161,12 +145,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 4,
   },
-  iconSelectedCheck: {
-    backgroundColor: '#5e4bb7',
-  },
-  iconSelectedCancel: {
-    backgroundColor: '#b79dcf',
-  },
 });
+
 
 
