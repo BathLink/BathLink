@@ -7,10 +7,9 @@ class BathLinkBuckets:
         self.pfp_bucket = None
 
     def create_buckets(self, stack):
-        self.pfp_bucket = s3.Bucket(
+        self.pfp_bucket = s3.Bucket.from_bucket_name(
             stack, "BathLinkPFPBucket",
-            bucket_name="bathlink-pfp",
-            block_public_access=None
+            bucket_name="bathlink-pfp"
         )
 
 
