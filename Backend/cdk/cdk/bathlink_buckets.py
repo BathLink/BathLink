@@ -10,7 +10,7 @@ class BathLinkBuckets:
         self.pfp_bucket = s3.Bucket(
             stack, "BathLinkPFPBucket",
             bucket_name="bathlink-pfp",
-            block_public_access=s3.BlockPublicAccess.BLOCK_ACLS
+            block_public_access=None
         )
 
 
