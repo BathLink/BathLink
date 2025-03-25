@@ -9,8 +9,6 @@ export default function RootLayout() {
   const router = useRouter();
 
 
-
-
   return (
     <Stack initialRouteName="(tabs)">
       <Stack.Screen name="(tabs)" options={{ headerShown: false}} />
