@@ -1,7 +1,7 @@
 import json
 import boto3
 
-dynamodb = boto3.resource("dynamodb",region_name="eu-west-2")
+dynamodb = boto3.resource("dynamodb", region_name="eu-west-2")
 table = dynamodb.Table("users-table")
 
 
@@ -10,7 +10,7 @@ table = dynamodb.Table("users-table")
 
 def GET(event, _):
     user_id = event["pathParameters"]["userId"]
-    response = table.get_item(Key={"student-id":user_id})
+    response = table.get_item(Key={"student-id": user_id})
     if "Item" not in response:
         return 404, {"error": f"Cannot find user {user_id}"}
     return 200, response["Item"]["calendar"]
@@ -21,20 +21,19 @@ def POST(event, _):
     calendar_data = event["body"].get("calendarData")
 
     if not calendar_data:
-        return 400, {"error":"No calendar data provided"}
+        return 400, {"error": "No calendar data provided"}
 
-    response = table.get_item(Key={"student-id":user_id})
+    response = table.get_item(Key={"student-id": user_id})
     if "Item" not in response:
         return 404, {"error": f"Cannot find user {user_id}"}
 
-
-    busy = [{"start": event_data["start"], "end": event_data["end"]} for event_data in calendar_data]
+    available = [{"start": event_data["start"]} for event_data in calendar_data]
 
     response = table.update_item(
         Key={"student-id": user_id},
-        UpdateExpression="SET calendar.busy = list_append(if_not_exists(calendar.busy, :empty_list), :new_values)",
+        UpdateExpression="SET calendar.available = list_append(if_not_exists(calendar.available, :empty_list), :new_values)",
         ExpressionAttributeValues={
-            ':new_values': busy,
+            ':new_values': available,
             ':empty_list': []
         },
         ReturnValues="UPDATED_NEW"
@@ -52,14 +51,14 @@ def DELETE(event, _):
     response = table.update_item(
         Key={"student-id": user_id},
         UpdateExpression="SET calendar = :empty_calendar",
-        ExpressionAttributeValues={":empty_calendar": {"busy": []}},
+        ExpressionAttributeValues={":empty_calendar": {"available": []}},
         ReturnValues="UPDATED_NEW"
     )
 
     return 200, {"message": "Calendar cleared"}
 
 
-methods = [GET,POST,DELETE]
+methods = [GET, POST, DELETE]
 
 
 def lambda_handler(event, context):
