@@ -25,6 +25,8 @@ def handle_get_request(userId):
 
 def handle_post_request(userId, body):
     try:
+        if type(body) == str:
+            body = json.loads(body)
         social = body["social"]
         description = body["description"]
         pronouns = body["pronouns"]
@@ -63,6 +65,8 @@ def handle_post_request(userId, body):
 
 def handle_put_request(userId, body):
     try:
+        if type(body) == str:
+            body = json.loads(body)
         if len(body) > 1:
             return {
                 "statusCode": 404,
