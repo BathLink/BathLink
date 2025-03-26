@@ -43,7 +43,7 @@ class BathLinkLambdas:
 
         self.manage_meetups = create_lambda('manage_meetups_lambda',[tables.meetups_table])
         self.search_meetups = create_lambda('search_meetups_lambda',[tables.meetups_table,tables.users_table])
-        self.manage_users = create_lambda('manage_users_lambda',[tables.users_table])
+        self.manage_users = create_lambda('manage_users_lambda',[tables.users_table,tables.meetups_table])
         self.manage_users.add_permission(
             "CognitoTriggerPermission",
             principal=iam.ServicePrincipal("cognito-idp.amazonaws.com"),

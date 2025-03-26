@@ -59,6 +59,9 @@ class BathLinkAPI:
         user = users.add_resource("{userId}")
         profile = user.add_resource("profile")
         calendar = user.add_resource("calendar")
+        user_meetups = user.add_resource("meetups")
+
+        add_method(user_meetups, "GET", "manage_users_lambda")  # Get user meetups
 
         add_method(
             calendar,
@@ -116,6 +119,8 @@ class BathLinkAPI:
         add_method(user, "GET", "manage_users_lambda")  # Get user info
         add_method(user, "DELETE", "manage_users_lambda")  # Delete user
         add_method(user, "PUT", "manage_users_lambda")  # Update user
+
+
 
         add_method(chat, "GET", "manage_chats_lambda")  # Get messages
         add_method(chat, "POST", "manage_chats_lambda")  # Send messages
