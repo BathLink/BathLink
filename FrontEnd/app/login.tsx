@@ -4,7 +4,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Crypto from 'expo-crypto';
 import {useRouter} from "expo-router";
 import {manualLogin} from '@/authentication/manualLogin';
-import {getCurrentUser} from 'aws-amplify/auth';
+import {getCurrentUser, updatePassword} from 'aws-amplify/auth';
+import {getForgotCode, confirmForgotCode} from '@/authentication/forgotPass';
+
+
 
 
 export default function LoginScreen({ navigation }) {
@@ -13,38 +16,42 @@ export default function LoginScreen({ navigation }) {
   const [id, setID] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
+  const [showCodeModal, setShowCodeModal] = useState(false);
   const router = useRouter();
+
+
+
     const handleForgotPassword = async () => {
       setShowForgotPasswordModal(true);
+
     };
 
-const resetPassword = async () => {
-  const storedUserData = await AsyncStorage.getItem("user");
-  if (!storedUserData) {
-    Alert.alert("Error", "No user found.");
-    return;
-  }
+  const getCode = async () => {
+    try {
+      await getForgotCode( email );
+      setShowForgotPasswordModal(false);  // Close the email entry modal
+      setShowCodeModal(true);  // Open the code entry modal
+    } catch (e) {
+      console.log(e);
+      Alert.alert('Error', 'Failed to send reset code. Please try again.');
+    }
+  };
 
-  const storedUser = JSON.parse(storedUserData);
-  if (storedUser.email !== email) {
-    Alert.alert("Error", "Email not found.");
-    return;
-  }
+  const resetPassword = async () => {
+    try {
+      const newPassword = Math.random().toString(36).slice(-8); // Generate a random password
 
-  // Generate a random 8-character password
-  const newPassword = Math.random().toString(36).slice(-8);
-  const hashedNewPassword = await Crypto.digestStringAsync(
-    Crypto.CryptoDigestAlgorithm.SHA256,
-    newPassword
-  );
+      await confirmForgotCode(  email,  code,newPassword );
 
-  storedUser.password = hashedNewPassword;
-  await AsyncStorage.setItem("user", JSON.stringify(storedUser));
-
-  Alert.alert("Password Reset", `Your new password is: ${newPassword}`);
-  setShowForgotPasswordModal(false);
-};
+      Alert.alert("Password Reset", `Your new password is: ${newPassword}`);
+      setShowCodeModal(false);  // Close the code entry modal
+    } catch (e) {
+      console.log(e);
+      Alert.alert('Error', 'Failed to reset password. Please check the code and try again.');
+    }
+  };
 
 
 
@@ -54,6 +61,7 @@ const resetPassword = async () => {
           try{
             await getCurrentUser();
             router.replace('/(tabs)/meetups');
+
         }
         catch(e){
             console.log(e)
@@ -69,19 +77,31 @@ const resetPassword = async () => {
 
 
 
-  const handleLogin = async () => {
-    if (!id || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
-      return;
-    }
+    const handleLogin = async () => {
+        if (!id || !password) {
+            Alert.alert('Error', 'Please fill in all fields');
+            return;
+        }
 
-    console.log("penguin")
-    await manualLogin(id, password)
-    console.log("ape")
-    router.replace('/(tabs)/meetups');
+        try {
+            await manualLogin(id, password); // Call login function
 
+            router.replace('/(tabs)/meetups'); // Navigate only if successful
 
-  };
+        } catch (error: any) {
+            console.error("Caught Login Error:", error); // Debugging log
+
+            const errorMessage = String(error);
+
+            if (errorMessage.includes("NotAuthorizedException")) {
+                Alert.alert("Login Failed", "Incorrect username or password. Please try again.");
+            } else if (errorMessage.includes("UserNotFoundException")){
+                Alert.alert("Login Failed", "No user found. Please try again.");
+                } else {
+                Alert.alert("Error", errorMessage);
+            }
+        }
+    };
 
   return (
     <View style={styles.container}>
@@ -92,14 +112,14 @@ const resetPassword = async () => {
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => router.push('/register')}>
+      <TouchableOpacity onPress={() => router.replace('/register')}>
         <Text style={styles.switchText}>Register Now</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={ handleForgotPassword}>
-        <Text style={styles.switchText}>Forogt Password?</Text>
+        <Text style={styles.switchText}>Forgot Password?</Text>
       </TouchableOpacity>
 
-      {/* Forgot Password Modal */}
+      {/* Forgot Password Modal (Email Entry) */}
       <Modal visible={showForgotPasswordModal} transparent animationType="slide">
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
@@ -111,10 +131,32 @@ const resetPassword = async () => {
               value={email}
               onChangeText={setEmail}
             />
+            <TouchableOpacity style={styles.modalButton} onPress={getCode}>
+              <Text style={styles.modalButtonText}>Send Reset Code</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setShowForgotPasswordModal(false)}>
+              <Text style={styles.closeModalText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Confirmation Code Modal (Code Entry) */}
+      <Modal visible={showCodeModal} transparent animationType="slide">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Enter Confirmation Code</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter the code sent to your email"
+              placeholderTextColor="#888"
+              value={code}
+              onChangeText={setCode}
+            />
             <TouchableOpacity style={styles.modalButton} onPress={resetPassword}>
               <Text style={styles.modalButtonText}>Reset Password</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setShowForgotPasswordModal(false)}>
+            <TouchableOpacity onPress={() => setShowCodeModal(false)}>
               <Text style={styles.closeModalText}>Cancel</Text>
             </TouchableOpacity>
           </View>

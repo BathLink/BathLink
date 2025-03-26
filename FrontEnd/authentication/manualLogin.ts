@@ -1,10 +1,12 @@
 import {signIn} from "@aws-amplify/auth";
+import {Simulate} from "react-dom/test-utils";
+import error = Simulate.error;
 
 
-export async function manualLogin(username: string, password: string){
+export async function manualLogin(username: string, password: string) {
     console.log("capybarra")
-    try{
-        const { nextStep: signInNextStep } = await signIn({
+    try {
+        const {nextStep: signInNextStep} = await signIn({
             username: username,
             password: password,
             options: {
@@ -16,9 +18,13 @@ export async function manualLogin(username: string, password: string){
         if (signInNextStep.signInStep === 'DONE') {
             console.log('Sign in successful!');
         }
-    // Check for other values of signInNextStep.signInStep
+
+        // Check for other values of signInNextStep.signInStep
+    } catch (error: any) {
+        console.log(error)
+        throw new Error(error);
     }
-    catch(e){
-        console.log(e)}
+
+
 
 }

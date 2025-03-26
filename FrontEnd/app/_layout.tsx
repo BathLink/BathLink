@@ -14,10 +14,11 @@ export default function RootLayout() {
   return (
     <Stack initialRouteName="(tabs)">
       <Stack.Screen name="(tabs)" options={{ headerShown: false}} />
-      <Stack.Screen name="profile" Options = {{ headerShown: false}}  />
-      <Stack.Screen name="login" options={{ title: "" }}/>
-      <Stack.Screen name="register" options={{ title: "" }}/>
-      <Stack.Screen name="+not-found" options={{ title: "" }}/>
+      <Stack.Screen name="profile" options = {{title: "", headerShown: false}}  />
+      <Stack.Screen name="login" options={{ title: "" , headerShown: false}}/>
+      <Stack.Screen name="register" options={{ title: "", headerShown: false }}/>
+      <Stack.Screen name="confirmEmail" options={{ title: "", headerShown: false }}/>
+      <Stack.Screen name="+not-found" options={{ title: "", headerShown: false}}/>
 
     </Stack>
   );

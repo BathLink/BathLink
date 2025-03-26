@@ -1,6 +1,7 @@
 import { View, Text, Button, StyleSheet, Platform, ScrollView, TouchableHighlight, TouchableOpacity } from 'react-native';
 import {useState} from 'react';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Divider } from 'react-native-paper';
 import { Svg, Path } from 'react-native-svg';
 
@@ -57,11 +58,16 @@ export default function HomeScreen() {
     });
   };
 
+  const profileBtn = async () => {
+      await AsyncStorage.setItem("page", "/matches");
+      router.replace('/profile')
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: background_color }}>
       {/* Top Menu App Bar */}
       <View style={styles.titleContainer}>
-        <MaterialIcons.Button name="person" size={28} color={primary_color} backgroundColor="transparent" nPress={() => router.push('/profile')} />
+        <MaterialIcons.Button name="person" size={28} color={primary_color} backgroundColor="transparent" onPress={profileBtn} />
         <ThemedText type="title">BathLink</ThemedText>
         <MaterialIcons.Button name="notifications" size={28} color={"transparent"} backgroundColor="transparent" onPress={() => {testBtn}} />
       </View>

@@ -9,6 +9,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { useRouter } from "expo-router";
 import * as Crypto from 'expo-crypto';
 import {signOut, updatePassword, getCurrentUser} from 'aws-amplify/auth';
+import { ThemedText } from '@/components/ThemedText';
 
 export default function SettingsScreen() {
   const colorScheme = useColorScheme();
@@ -40,7 +41,7 @@ export default function SettingsScreen() {
 const handleChangePassword = async () => {
 
     try {
-        const {username, userID, signInDetails} = await getCurrentUser();
+        const {username, userId, signInDetails} = await getCurrentUser();
     await updatePassword({oldPassword : currentPassword, newPassword : newPassword})
         Alert.alert("Success", "Password changed successfully!");
         setModalVisible(false);
@@ -51,6 +52,13 @@ const handleChangePassword = async () => {
         }
   }
 
+  const profileBtn = async () => {
+      await AsyncStorage.setItem("page", "/settings");
+      router.replace('/profile')
+  };
+
+
+
 
 
   return (
@@ -59,9 +67,9 @@ const handleChangePassword = async () => {
       <View style={styles.titleContainer}>
         <MaterialIcons.Button
           name="person" size={28} color={primary_color} backgroundColor="transparent"
-          onPress={() => router.push('/profile')}
+          onPress={profileBtn}
         />
-        <Text style={styles.titleText}>BathLink</Text>
+          <ThemedText type="title" >BathLink</ThemedText>
         <MaterialIcons.Button
           name="notifications" size={28} color="transparent" backgroundColor="transparent"
         />
@@ -168,7 +176,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 20,
   },
-  titleText: { fontSize: 22, fontWeight: 'bold' },
+  titleText: { fontSize: 28, fontWeight: 'bold' },
   subheader: { fontSize: 25, fontWeight: 'bold', marginVertical: 10, paddingHorizontal: 20 },
   settingOption: {
     flexDirection: 'row',

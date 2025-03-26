@@ -21,8 +21,9 @@ export async function ConfirmEmailAddy(username: string, code: string){
             }
         }
     }
-catch(e){
-        console.log(e)
+catch (error: any) {
+        console.log(error)
+        throw new Error(error);
     }
 
 }

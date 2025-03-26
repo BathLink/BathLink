@@ -1,5 +1,5 @@
 import {signUp} from "@aws-amplify/auth";
-import './aws-exports'; //Change to whatever the path of the file is
+
 
 
 export async function SignUp(username: string,password: string, email: string, firstName: string, lastName: string, phone: string, dob: string){
@@ -30,9 +30,10 @@ export async function SignUp(username: string,password: string, email: string, f
         console.log(signUpNextStep)
 
     }
-    catch(e){
-        console.log(e)
-    }
+    catch (error: any) {
+            console.log(error)
+            throw new Error(error);
+        }
 
 
 

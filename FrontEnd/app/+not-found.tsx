@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import { View, Text, StyleSheet } from 'react-native';
+import '@/authentication/aws-exports' //Change to whatever the path of the file is
 
 
 

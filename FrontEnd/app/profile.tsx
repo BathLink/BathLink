@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Image, TouchableOpacity, Platform, Alert, Modal } from "react-native";
+import { View, Text, TextInput, Button, StyleSheet, Image, TouchableOpacity, Platform, Alert, Modal, KeyboardAvoidingView, ScrollView, TouchableWithoutFeedback, Keyboard  } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import * as ImagePicker from "expo-image-picker";
+import {uploadData} from 'aws-amplify/storage';
+import {getCurrentUser} from 'aws-amplify/auth';
+import '@/authentication/aws-exports'
+import { useRouter } from 'expo-router';
+import {ThemedText} from "@/components/ThemedText";
 
 export default function ProfileScreen() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -16,6 +21,7 @@ export default function ProfileScreen() {
   const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
   const [formattedDate, setFormattedDate] = useState("");
+  const router = useRouter();
 
   // Load profile data from AsyncStorage when the component mounts
   useEffect(() => {
@@ -55,15 +61,36 @@ export default function ProfileScreen() {
       Alert.alert("Permission Required", "Please allow access to upload a profile picture.");
       return;
     }
-    const result = await ImagePicker.launchImageLibraryAsync({
+    const imageResult = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
     });
-    if (!result.canceled) {
-      setProfileImage(result.assets[0].uri);
+    if (!imageResult.canceled) {
+      setProfileImage(imageResult.assets[0].uri);
     }
+    try{
+        const {username, userId, signInDetails} = await getCurrentUser();
+        const response = await fetch(imageResult.assets![0].uri)
+        const blob = await response.blob()
+        const result = await uploadData({
+            path: userId + ".png",
+            data: blob,
+            options: {
+                bucket: {
+                    bucketName: "bathlink-pfp",
+                    region: 'eu-west-2',
+                    }
+                }
+            }).result;
+        console.log(result);
+        }
+    catch(e){
+        console.log(e)
+        }
+
+
   };
 
   const handleDateChange = (event: any, selectedDate?: Date) => {
@@ -84,166 +111,214 @@ export default function ProfileScreen() {
     return `${day}/${month}/${year}`;
   };
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.profileImageContainer}>
-          <Image style={styles.profileImage} source={profileImage ? { uri: profileImage } : require("../assets/images/default-profile.png")} />
-          <TouchableOpacity style={styles.editIcon} onPress={pickImage}>
-            <MaterialIcons name="edit" size={20} color="black" />
-          </TouchableOpacity>
-        </View>
-        <Text style={styles.profileTitle}>My Profile</Text>
-      </View>
+  const returnBtn = async () => {
+      const returnPage = "/(tabs)" + await AsyncStorage.getItem("page");
+      console.log(returnPage)
+      router.replace(returnPage)
+  };
 
-      <TextInput style={styles.input} placeholder="Name" value={name || "Enter your name"} onChangeText={setName} />
-      <TextInput style={styles.input} placeholder="Description" value={description || "Enter your description"} onChangeText={setDescription} />
+    const testBtn = () => {
+        console.log('Button pressed');
+    };
+    return (
+        <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={{ flex: 1 }}
+        >
+            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+                <ScrollView contentContainerStyle={styles.scrollContainer}>
+                    <View style={styles.titleContainer}>
+                        <MaterialIcons.Button name="arrow-back" size={28} color={"black"} backgroundColor="transparent" onPress={returnBtn} />
+                        <ThemedText type="title">My Profile</ThemedText>
+                        <MaterialIcons.Button name="notifications" size={28} color={"transparent"} backgroundColor="transparent" onPress={testBtn} />
+                    </View>
 
-      <TextInput style={styles.input} placeholder="Pronouns" value={pronouns || "Enter your pronouns"} onChangeText={setPronouns} />
+                    <View style={styles.container}>
 
-      {/* Date of Birth Input */}
-      <TouchableOpacity onPress={() => setShowPicker(true)} style={styles.inputContainer}>
-        <Text style={formattedDate ? styles.inputText : styles.placeholderText}>
-          {formattedDate || "Date of Birth"}
-        </Text>
-        <MaterialIcons name="calendar-today" size={24} color="black" />
-      </TouchableOpacity>
+                            <View style={styles.profileImageContainer}>
+                                <Image style={styles.profileImage} source={profileImage ? { uri: profileImage } : require("../assets/images/default-profile.png")} />
+                                <TouchableOpacity style={styles.editIcon} onPress={pickImage}>
+                                    <MaterialIcons name="edit" size={20} color="black" />
+                                </TouchableOpacity>
+                            </View>
 
-      {/* Date Picker with Confirm Button */}
-      {showPicker && (
-        <Modal transparent={true} animationType="slide">
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <DateTimePicker
-                value={date}
-                mode="date"
-                display={Platform.OS === "ios" ? "spinner" : "default"}
-                onChange={handleDateChange}
-              />
-              <TouchableOpacity style={styles.confirmButton} onPress={confirmDateSelection}>
-                <Text style={styles.buttonText}>Confirm</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-      )}
 
-      <TextInput style={styles.input} placeholder="Phone Number" value={phone || "Enter your phone number"} onChangeText={setPhone} keyboardType="phone-pad" />
-      <TextInput style={styles.input} placeholder="Email" value={email || "Enter your email"} onChangeText={setEmail} keyboardType="email-address" />
-      <TextInput style={styles.input} placeholder="Confirm Email" value={confirmEmail || "Confirm your email"} onChangeText={setConfirmEmail} keyboardType="email-address" />
+                        <TextInput style={[styles.input, { width: "80%" }]} placeholder="Name" value={name || "Enter your name"} onChangeText={setName} />
+                        <TextInput style={[styles.input, { width: "80%" }]} placeholder="Description" value={description || "Enter your description"} onChangeText={setDescription} />
 
-      <Button title="Save" onPress={saveProfile} />
-    </View>
-  );
+                        <TextInput style={[styles.input, { width: "80%" }]} placeholder="Pronouns" value={pronouns || "Enter your pronouns"} onChangeText={setPronouns} />
+
+                        {/* Date of Birth Input */}
+                        <TouchableOpacity onPress={() => setShowPicker(true)} style={[styles.inputContainer, { width: "80%" }]}>
+                            <Text style={formattedDate ? styles.inputText : styles.placeholderText}>
+                                {formattedDate || "Date of Birth"}
+                            </Text>
+                            <MaterialIcons name="calendar-today" size={24} color="black" />
+                        </TouchableOpacity>
+
+                        {/* Date Picker with Confirm Button */}
+                        {showPicker && (
+                            <Modal transparent={true} animationType="slide">
+                                <View style={styles.modalContainer}>
+                                    <View style={styles.modalContent}>
+                                        <DateTimePicker
+                                            value={date}
+                                            mode="date"
+                                            display={Platform.OS === "ios" ? "spinner" : "default"}
+                                            onChange={handleDateChange}
+                                        />
+                                        <TouchableOpacity style={styles.confirmButton} onPress={confirmDateSelection}>
+                                            <Text style={styles.buttonText}>Confirm</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </Modal>
+                        )}
+
+                        <TextInput style={[styles.input, { width: "80%" }]} placeholder="Phone Number" value={phone || "Enter your phone number"} onChangeText={setPhone} keyboardType="phone-pad" />
+                        <TextInput style={[styles.input, { width: "80%" }]} placeholder="Email" value={email || "Enter your email"} onChangeText={setEmail} keyboardType="email-address" />
+                        <TextInput style={[styles.input, { width: "80%" }]} placeholder="Confirm Email" value={confirmEmail || "Confirm your email"} onChangeText={setConfirmEmail} keyboardType="email-address" />
+
+                        <Button title="Save" onPress={saveProfile} />
+                    </View>
+                </ScrollView>
+            </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
+    );
 }
 const styles = StyleSheet.create({
+    buttonText: { color: '#fff', fontWeight: 'bold' },
 
-  modalContainer: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      backgroundColor: "rgba(0, 0, 0, 0.5)",
+    scrollContainer: {
+
+        backgroundColor: '#f8f4ff',
+        width: "100%",
+        flexGrow: 1,
+        justifyContent: 'flex-start',
+        alignItems: 'center', // Ensures inputs stay centered
+        paddingVertical: 50, // Prevents inputs from getting too close to the screen edges
+    },
+
+    titleContainer: {
+        width: "100%",
+        flexDirection: 'row',
+        flexGrow: 0,
+
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingVertical: 20,
+        paddingHorizontal: 20,
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
     },
     modalContent: {
-      backgroundColor: "white",
-      padding: 20,
-      borderRadius: 10,
-      alignItems: "center",
-      width: "80%",
+        backgroundColor: "white",
+        padding: 20,
+        borderRadius: 10,
+        alignItems: "center",
+        width: "80%",
     },
     confirmButton: {
-      marginTop: 10,
-      backgroundColor: "#6c5b7b",
-      padding: 10,
-      borderRadius: 5,
-      alignItems: "center",
-      width: "80%",
+        marginTop: 10,
+        backgroundColor: "#6c5b7b",
+        padding: 10,
+        borderRadius: 5,
+        alignItems: "center",
+        width: "80%",
     },
 
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  input: {
-    width: "100%",
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    marginBottom: 10,
-    backgroundColor: "white",
-  },
-pickerContainer: {
-    width: "100%",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    marginBottom: 10,
-    backgroundColor: "white",
-    height: 40,
-    justifyContent: "center",
-  },
-  picker: {
-    height: 40,
-  },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "100%",
-    padding: 10,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 10,
-    backgroundColor: "#fff",
-    justifyContent: "space-between",
-  },
-  inputText: {
-    fontSize: 16,
-  },
-  placeholderText: {
-    fontSize: 14,
-    color: "#aaa",
-  },
-  inputField: {
-    flex: 1,
-    paddingVertical: 10,
-  },
-  icon: {
-    padding: 10,
-  },
-  header: {
-    alignItems: "center",
-    paddingVertical: 20,
-    backgroundColor: "#f8edf8",
-    width: "100%",
-  },
-  profileTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginTop: 10,
-  },
-  profileImageContainer: {
-    position: "relative",
-    width: 100,
-    height: 100,
-  },
-  profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: "#e0e0e0",
-  },
-  editIcon: {
-    position: "absolute",
-    bottom: 0,
-    right: 0,
-    backgroundColor: "white",
-    borderRadius: 12,
-    padding: 5,
-    elevation: 3,
-  },
+    container: {
+        width: "100%",
+        flex: 0.5,
+        justifyContent: "center", // Align items to the top for better layout
+        alignItems: "center",
+        backgroundColor: '#f8f4ff' // Optional, for visual separation
+    },
+    input: {
+        width: "80%",
+        padding: 10,
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 5,
+        marginBottom: 15, // Increased margin for better spacing
+        backgroundColor: "white",
+    },
+    pickerContainer: {
+        width: "100%",
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 5,
+        marginBottom: 15, // Increased margin for better spacing
+        backgroundColor: "white",
+        height: 40,
+        justifyContent: "center",
+    },
+    picker: {
+        height: 40,
+    },
+    inputContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        width: "100%",
+        padding: 10,
+        borderColor: "#ccc",
+        borderWidth: 1,
+        borderRadius: 5,
+        marginBottom: 15, // Increased margin for better spacing
+        backgroundColor: "#fff",
+        justifyContent: "space-between",
+    },
+    inputText: {
+        fontSize: 16,
+    },
+    placeholderText: {
+        fontSize: 14,
+        color: "#aaa",
+    },
+    inputField: {
+        flex: 1,
+        paddingVertical: 10,
+    },
+    icon: {
+        padding: 10,
+    },
+
+    profileTitle: {
+        fontSize: 24,
+        fontWeight: "bold",
+        marginTop: 10,
+    },
+    profileImageContainer: {
+        position: "relative",
+        width: 100,
+        height: 100,
+        marginBottom: 50, // Added margin to prevent overlap
+    },
+    profileImage: {
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        backgroundColor: "#e0e0e0",
+    },
+    editIcon: {
+        position: "absolute",
+        bottom: 0,
+        right: 0,
+        backgroundColor: "white",
+        borderRadius: 12,
+        padding: 5,
+        elevation: 3,
+    },
+
+    backButton: {
+        position: "absolute",
+        top: 20, // Adjust for proper placement
+        left: 10, // Moves it to the left side
+        padding: 10,
+    },
 });
 

@@ -1,6 +1,6 @@
 import { FlatList, View, Text, Button, StyleSheet, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ThemedText } from '@/components/ThemedText';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -31,12 +31,17 @@ export default function HomeScreen() {
 
   ];
 
+  const profileBtn = async () => {
+      await AsyncStorage.setItem("page", "/meetups");
+      router.replace('/profile')
+  };
+
   // Header component for static content
   const renderHeader = () => (
     <View>
       {/* Top Menu App Bar */}
       <View style={styles.titleContainer}>
-        <MaterialIcons.Button name="person" size={28} color={primary_color} backgroundColor={transparent_color} onPress={() => router.push('/profile')}/>
+    <MaterialIcons.Button name="person" size={28} color={primary_color} backgroundColor={transparent_color} onPress={profileBtn}/>
         <ThemedText type="title" >BathLink</ThemedText>
         <MaterialIcons.Button name="notifications" size={28} color={transparent_color} backgroundColor={transparent_color} onPress={testBtn}/>
       </View>
@@ -67,6 +72,8 @@ export default function HomeScreen() {
     </View>
   );
 
+
+
   return (
     <FlatList
       data={meetups.slice(1)} // Start with the second item as we already display the first one above
@@ -92,6 +99,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1, // Ensures the FlatList takes up the full height
   },
+
+      scrollContainer: {
+
+        backgroundColor: '#f8f4ff',
+        width: "100%",
+        flexGrow: 1,
+        justifyContent: 'center',
+        alignItems: 'center', // Ensures inputs stay centered
+        paddingVertical: 20, // Prevents inputs from getting too close to the screen edges
+      },
   titleContainer: {
     flexDirection: 'row',
     flexGrow: 2,
