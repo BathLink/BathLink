@@ -1,23 +1,36 @@
 import { post } from 'aws-amplify/api';
 
-export async function postItem() {
+export async function postItem(path: string, data: any) {
     try {
+        console.log(`Making POST request to: ${path}`);
+        console.log("Data:", data);
+
         const restOperation = post({
-            apiName: 'myRestApi',
-            path: 'items',
-            options: {
-                body: {
-                    message: 'Mow the lawn'
-                }
-            }
+            apiName: 'BathLinkAPI',
+            path: path,
+            options: { body: data }
         });
 
-        const { body } = await restOperation.response;
-        const response = await body.json();
+        console.log("REST Operation:", restOperation);
+
+        // Wait for the request to finish
+        const response = await restOperation.response;
+
+        if (!response) {
+            throw new Error("No response received from API");
+        }
+
+        console.log("Full response:", response);
+
+        const { body } = response;
+        const jsonResponse = await body.json();
 
         console.log('POST call succeeded');
-        console.log(response);
+        console.log(jsonResponse);
+
+        return jsonResponse; // Return the response if needed
     } catch (error) {
-        console.log('POST call failed: ', JSON.parse(error.response.body));
+        console.error('POST call failed:', error);
+
     }
 }

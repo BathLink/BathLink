@@ -56,17 +56,28 @@ export default function ProfileScreen() {
     }, []);
 
     const saveProfile = async () => {
+        try {
+            const profileData = {
+                description,
+                pronouns,
+                socialLink,
+            };
 
-        const profileData = {
+            const { username, userId } = await getCurrentUser();
 
-            description,
-            pronouns,
-            socialLink,
+            console.log("Saving profile for user:", userId);
+            console.log("Profile data:", profileData);
 
-        };
-        await AsyncStorage.setItem("profile", JSON.stringify(profileData));
-        Alert.alert("Success", "Profile saved!");
+            const response = await postItem("users/" + userId + "/profile", profileData);
+
+            console.log("Save response:", response);  // Log the response
+            Alert.alert("Success", "Profile saved!");
+        } catch (e) {
+            console.error("Error saving profile:", e);
+            Alert.alert("Error", "Failed to save profile");
+        }
     };
+
 
     const pickImage = async () => {
         const {status} = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -188,17 +199,13 @@ export default function ProfileScreen() {
 
 
                         <TextInput style={[styles.input, {width: "80%"}]} placeholder="Description"
-                                   value={description || "Enter your description"} onChangeText={setDescription}/>
+                                   value={description} onChangeText={setDescription}/>
 
                         <TextInput style={[styles.input, {width: "80%"}]} placeholder="Pronouns"
-                                   value={pronouns || "Enter your pronouns"} onChangeText={setPronouns}/>
-
-                        <TextInput style={[styles.input, {width: "80%"}]} placeholder="Phone Number"
-                                   value={phone || "Enter your phone number"} onChangeText={setPhone}
-                                   keyboardType="phone-pad"/>
+                                   value={pronouns} onChangeText={setPronouns}/>
 
                         <TextInput style={[styles.input, {width: "80%"}]} placeholder="Link your social Media"
-                                   value={pronouns || "Link your social Media"} onChangeText={setSocialLink}/>
+                                   value={socialLink} onChangeText={setSocialLink}/>
 
 
                         <Button title="Save" onPress={saveProfile}/>
