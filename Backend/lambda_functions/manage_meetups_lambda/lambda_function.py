@@ -1,76 +1,105 @@
 import json
 import boto3
-#use uuid
-dynamodb = boto3.resource("dynamodb",region_name="eu-west-2")
-table = dynamodb.Table("meetups")
 
-def GET(event): 
-    meetup_id = event.get("pathParameters").get("meetupId")
-    if not meetup_id:
-        return {"statusCode": 400, "body": json.dumps({"error": "meetupId is required"})}
-    
-    response = table.get_item(Key={"meetupId":meetup_id})
+dynamodb = boto3.resource("dynamodb", region_name="eu-west-2")
+meetups_table = dynamodb.Table("meetups-table")
 
-    if "Item" not in response:
-        return {"statusCode": 404, "body": json.dumps({"error": "Meetup not found"})}
-    else:
-        return {"statusCode": 200, "body": json.dumps(response["Item"])}
 
-def POST(event):
-    #trigger chat creation
-    body = json.loads(event.get("body", "{}"))
-    if not body:
-        return {"statusCode": 400, "body": json.dumps({"error": "request body is missing"})}
+
+def handle_get_request(meetupId):
     try:
-        body = json.loads(event["body"])
-    except json.JSONDecodeError:
-        return {"statusCode": 400, "body": json.dumps({"error": "Invalid JSON format"})}
-    user_id = body.get("userId")
-    participants = body.get("participants")
-    if not user_id:
-            return {"statusCode": 400, "body": json.dumps({"error": "Missing userId"})}
-        
-    if not participants or not isinstance(participants, list):
-        return {"statusCode": 400, "body": json.dumps({"error": "Missing or invalid 'participants' field"})}
-    
+        rsp = meetups_table.get_item(Key={"meetup-id": meetupId})
 
-    meetup_id = generate_meetup_id
-    meetup_item = {"meetup_id" : meetup_id, "participants": participants, "meetup_info" : []}
-    table.put_item(Item=meetup_item)
-    return {
-            "statusCode": 200,
-            "body": json.dumps({"message": "meetup created", "meetupId": meetup_id})}
+        if "Item" in rsp:
+            meetup_data = rsp["Item"]
+            return {"statusCode": 200, "body": json.dumps(meetup_data)}
+        else:
+            return {"statusCode": 404, "body": f"meetupId:{meetupId} not found!"}
+    except Exception as e:
+        print(e)
+        return {"statusCode": 400, "body": f"error: {e}"}
 
-def generate_meetup_id(user_id):
-    #need more info as meetup id should be same for all participants
-    meetup_id = 0
-    return meetup_id
+def handle_put_request(meetupId,userId):
+    try:
+        rsp = meetups_table.get_item(Key={"meetup-id": meetupId})
+
+        if "Item" in rsp:
+            try:
+                response = meetups_table.update_item(
+            Key={"meetup_id": meetupId},
+            UpdateExpression="ADD confirmed_users :user",
+            ExpressionAttributeValues={":user": set([userId])},
+            ReturnValues="UPDATED_NEW"
+            )
+
+            except Exception as e:
+                return {"statusCode": 400, "body": f"error: {e}"}
+            
+            rsp = meetups_table.get_item(Key={"meetup-id": meetupId})
+            meetup = rsp.get("Item")
+            confirmed = meetup.get("confirmed_users",[])
+            partipants = meetup.get("participants",[])
+            if len(confirmed) == len(partipants):
+                try:
+                    response = meetups_table.update_item(
+                        Key={"meetup_id": meetupId},
+            UpdateExpression="SET meetup_confirmed = :confirmed",
+            ExpressionAttributeValues={
+                ":confirmed": True
+            },
+            ReturnValues="UPDATED_NEW"
+            )
+                except Exception as e:
+                    return {"statusCode": 400, "body": f"error: {e}"}
+        else:
+            return {"statusCode": 404, "body": f"meetupId:{meetupId} not found!"}
+    except Exception as e:
+        print(e)
+        return {"statusCode": 400, "body": f"error: {e}"}
 
 
-def DELETE(event):
-    meetup_id = event.get("pathParameters").get("meetupId")
-    if not meetup_id:
-        return {"statusCode": 400, "body": json.dumps({"error": "meetupId is required"})}
-    response = table.get_item(Key={"meetupId":meetup_id})
+def handle_delete_request(meetupId):
+    try:
+        rsp = meetups_table.get_item(Key={"meetup-id": meetupId})
 
-    if "Item" not in response:
-        return {"statusCode": 404, "body": json.dumps({"error": "meetup not found"})}
-    else:
-        table.delete_item(Key={"meetupId": meetup_id})
-        return {"statusCode": 200, "body": json.dumps(response["Item"])}
-    
-def PUT(event):
-    #not sure what to put here
-    return None
+        if "Item" in rsp:
+            try:
+                del_rsp = meetups_table.delete_item(Key={"meetup-id": meetupId})
 
-routes = {  
-    "GET": GET, 
-    "POST": POST,
-    "DELETE": DELETE,
-    "PUT" : PUT
-}
+                return {
+                    "statusCode": 200,
+                    "body": f"Successfully deleted meetup-id {meetupId}",
+                }
+
+            except Exception as e:
+                return {"statusCode": 400, "body": f"error: {e}"}
+
+        else:
+            return {"statusCode": 404, "body": f"meetupId:{meetupId} not found!"}
+    except Exception as e:
+        print(e)
+        return {"statusCode": 400, "body": f"error: {e}"}
+
 
 def lambda_handler(event, context):
     http_method = event["httpMethod"]
-    routes.get([http_method], lambda e : {"statusCode": 501, "headers": {"Content-Type": "application/json"}, "body": json.dumps({"error": "Http method not allowed"})
-        })(event)
+    path_parameters = event.get("pathParameters", {})
+    meetup_id = path_parameters.get("meetupId")
+    user_id = event.get("pathParameters", {}).get("user_id")
+
+    if not meetup_id:
+        return {
+            "statusCode": 400,
+            "body": "Missing meetupId in path parameters",
+            "headers": {"Content-Type": "application/json"},
+        }
+
+    if http_method == "GET":
+        return handle_get_request(meetup_id)
+
+    elif http_method == "DELETE":
+        return handle_delete_request(meetup_id)
+    elif http_method == "PUT":
+        return handle_put_request(meetup_id,user_id)
+    else:
+        return {"statusCode": 400, "body": f"{http_method} doesn't exist for meetups"}
