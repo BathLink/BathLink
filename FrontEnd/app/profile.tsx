@@ -1,121 +1,161 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Image, TouchableOpacity, Platform, Alert, Modal, KeyboardAvoidingView, ScrollView, TouchableWithoutFeedback, Keyboard  } from "react-native";
+import React, {useState, useEffect} from "react";
+import {
+    View,
+    Text,
+    TextInput,
+    Button,
+    StyleSheet,
+    Image,
+    TouchableOpacity,
+    Platform,
+    Alert,
+    Modal,
+    KeyboardAvoidingView,
+    ScrollView,
+    TouchableWithoutFeedback,
+    Keyboard
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import * as ImagePicker from "expo-image-picker";
-import {uploadData} from 'aws-amplify/storage';
+import {uploadData, downloadData} from 'aws-amplify/storage';
 import {getCurrentUser} from 'aws-amplify/auth';
+import {getInfo} from '@/authentication/getInfo';
+import {postItem} from '@/authentication/postInfo';
 import '@/authentication/aws-exports'
-import { useRouter } from 'expo-router';
+import {useRouter} from 'expo-router';
 import {ThemedText} from "@/components/ThemedText";
 
 export default function ProfileScreen() {
-  const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [pronouns, setPronouns] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [confirmEmail, setConfirmEmail] = useState("");
-  const [date, setDate] = useState(new Date());
-  const [showPicker, setShowPicker] = useState(false);
-  const [formattedDate, setFormattedDate] = useState("");
-  const router = useRouter();
+    const [profileImage, setProfileImage] = useState<string | null>(null);
 
-  // Load profile data from AsyncStorage when the component mounts
-  useEffect(() => {
-    const loadProfileData = async () => {
-      const storedProfile = await AsyncStorage.getItem("profile");
-      console.log(storedProfile)
-      if (storedProfile) {
-        const profileData = JSON.parse(storedProfile);
-        setName(profileData.name || "");
-        setDescription(profileData.description || "");
-        setPronouns(profileData.pronouns || "");
-        setPhone(profileData.phone || "");
-        setEmail(profileData.email || "");
-        setConfirmEmail(profileData.confirmEmail || "");
-        setDate(new Date(profileData.dob || new Date()));
-        setProfileImage(profileData.profileImage || null);
-        setFormattedDate(formatDate(new Date(profileData.dob || new Date())));
-      }
+    const [description, setDescription] = useState("");
+    const [pronouns, setPronouns] = useState("");
+    const [socialLink, setSocialLink] = useState("");
+    const [showPicker, setShowPicker] = useState(false);
+    const [formattedDate, setFormattedDate] = useState("");
+    const router = useRouter();
+
+    // Load profile data from AsyncStorage when the component mounts
+    useEffect(() => {
+        const loadProfileData = async () => {
+            const {username, userId, signInDetails} = await getCurrentUser();
+            const storedProfile:any = await getInfo("users/" + userId + "/profile");
+
+            console.log(storedProfile)
+            if (storedProfile) {
+
+                setDescription(storedProfile.description);
+                setPronouns(storedProfile.pronouns);
+                setSocialLink(storedProfile.socialLink);
+            }
+        };
+
+        loadProfileData();
+    }, []);
+
+    const saveProfile = async () => {
+
+        const profileData = {
+
+            description,
+            pronouns,
+            socialLink,
+
+        };
+        await AsyncStorage.setItem("profile", JSON.stringify(profileData));
+        Alert.alert("Success", "Profile saved!");
     };
 
-    loadProfileData();
-  }, []);
-
-  const saveProfile = async () => {
-    if ((!email && confirmEmail) || (email && !confirmEmail) || (email !== confirmEmail)) {
-      Alert.alert("Error", "Please ensure emails match.");
-      return;
-    }
-    const profileData = { name, description, pronouns, gender, phone, email, confirmEmail, dob: date.toISOString(), profileImage };
-    await AsyncStorage.setItem("profile", JSON.stringify(profileData));
-    Alert.alert("Success", "Profile saved!");
-  };
-
-  const pickImage = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") {
-      Alert.alert("Permission Required", "Please allow access to upload a profile picture.");
-      return;
-    }
-    const imageResult = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
-    if (!imageResult.canceled) {
-      setProfileImage(imageResult.assets[0].uri);
-    }
-    try{
-        const {username, userId, signInDetails} = await getCurrentUser();
-        const response = await fetch(imageResult.assets![0].uri)
-        const blob = await response.blob()
-        const result = await uploadData({
-            path: userId + ".png",
-            data: blob,
-            options: {
-                bucket: {
-                    bucketName: "bathlink-pfp",
-                    region: 'eu-west-2',
+    const pickImage = async () => {
+        const {status} = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== "granted") {
+            Alert.alert("Permission Required", "Please allow access to upload a profile picture.");
+            return;
+        }
+        const imageResult = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 1,
+        });
+        if (!imageResult.canceled) {
+            setProfileImage(imageResult.assets[0].uri);
+        }
+        try {
+            const {username, userId, signInDetails} = await getCurrentUser();
+            const response = await fetch(imageResult.assets![0].uri)
+            const blob = await response.blob()
+            const result = await uploadData({
+                path: userId + ".png",
+                data: blob,
+                options: {
+                    bucket: {
+                        bucketName: "bathlink-pfp",
+                        region: 'eu-west-2',
                     }
                 }
             }).result;
-        console.log(result);
+            console.log(result);
+        } catch (e) {
+            console.log(e)
         }
-    catch(e){
-        console.log(e)
-        }
 
 
-  };
+    };
 
-  const handleDateChange = (event: any, selectedDate?: Date) => {
-    if (selectedDate) {
-      setDate(selectedDate);
-    }
-  };
+    const blobToUri = (blob) => {
 
-  const confirmDateSelection = () => {
-    setFormattedDate(formatDate(date));
-    setShowPicker(false);
-  };
+        return new Promise((resolve, reject) => {
 
-  const formatDate = (date: Date) => {
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
+            const reader = new FileReader();
 
-  const returnBtn = async () => {
-      const returnPage = "/(tabs)" + await AsyncStorage.getItem("page");
-      console.log(returnPage)
-      router.replace(returnPage)
-  };
+            reader.onloadend = () => resolve(reader.result); // Base64 URI
+
+            reader.onerror = reject;
+
+            reader.readAsDataURL(blob); // Convert blob to Base64 URI
+
+        });
+
+    };
+
+
+    useEffect(() => {
+        const downloadImage = async () => {
+            try {
+                const {username, userId, signInDetails} = await getCurrentUser();
+                const result = await downloadData({
+                    path: userId + ".png",
+                    options: {
+                        bucket: {
+                            bucketName: "bathlink-pfp",
+                            region: 'eu-west-2',
+                        }
+                    }
+                }).result;
+                const blob = await result.body.blob()
+                const uri = await blobToUri(blob)
+                setProfileImage(uri)
+
+                console.log(result);
+            } catch (e) {
+                console.log(e)
+            }
+
+        };
+         downloadImage();
+
+    }, []);
+
+
+
+    const returnBtn = async () => {
+        const returnPage = "/(tabs)" + await AsyncStorage.getItem("page");
+        console.log(returnPage)
+        router.replace(returnPage)
+    };
 
     const testBtn = () => {
         console.log('Button pressed');
@@ -123,63 +163,45 @@ export default function ProfileScreen() {
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={{ flex: 1 }}
+            style={{flex: 1}}
         >
             <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
                     <View style={styles.titleContainer}>
-                        <MaterialIcons.Button name="arrow-back" size={28} color={"black"} backgroundColor="transparent" onPress={returnBtn} />
+                        <MaterialIcons.Button name="arrow-back" size={28} color={"black"} backgroundColor="transparent"
+                                              onPress={returnBtn}/>
                         <ThemedText type="title">My Profile</ThemedText>
-                        <MaterialIcons.Button name="notifications" size={28} color={"transparent"} backgroundColor="transparent" onPress={testBtn} />
+                        <MaterialIcons.Button name="notifications" size={28} color={"transparent"}
+                                              backgroundColor="transparent" onPress={testBtn}/>
                     </View>
 
                     <View style={styles.container}>
 
-                            <View style={styles.profileImageContainer}>
-                                <Image style={styles.profileImage} source={profileImage ? { uri: profileImage } : require("../assets/images/default-profile.png")} />
-                                <TouchableOpacity style={styles.editIcon} onPress={pickImage}>
-                                    <MaterialIcons name="edit" size={20} color="black" />
-                                </TouchableOpacity>
-                            </View>
+                        <View style={styles.profileImageContainer}>
+                            <Image style={styles.profileImage}
+                                   source={profileImage ? {uri: profileImage} : require("../assets/images/default-profile.png")}/>
+                            <TouchableOpacity style={styles.editIcon} onPress={pickImage}>
+                                <MaterialIcons name="edit" size={20} color="black"/>
+                            </TouchableOpacity>
+                        </View>
 
 
-                        <TextInput style={[styles.input, { width: "80%" }]} placeholder="Name" value={name || "Enter your name"} onChangeText={setName} />
-                        <TextInput style={[styles.input, { width: "80%" }]} placeholder="Description" value={description || "Enter your description"} onChangeText={setDescription} />
 
-                        <TextInput style={[styles.input, { width: "80%" }]} placeholder="Pronouns" value={pronouns || "Enter your pronouns"} onChangeText={setPronouns} />
+                        <TextInput style={[styles.input, {width: "80%"}]} placeholder="Description"
+                                   value={description || "Enter your description"} onChangeText={setDescription}/>
 
-                        {/* Date of Birth Input */}
-                        <TouchableOpacity onPress={() => setShowPicker(true)} style={[styles.inputContainer, { width: "80%" }]}>
-                            <Text style={formattedDate ? styles.inputText : styles.placeholderText}>
-                                {formattedDate || "Date of Birth"}
-                            </Text>
-                            <MaterialIcons name="calendar-today" size={24} color="black" />
-                        </TouchableOpacity>
+                        <TextInput style={[styles.input, {width: "80%"}]} placeholder="Pronouns"
+                                   value={pronouns || "Enter your pronouns"} onChangeText={setPronouns}/>
 
-                        {/* Date Picker with Confirm Button */}
-                        {showPicker && (
-                            <Modal transparent={true} animationType="slide">
-                                <View style={styles.modalContainer}>
-                                    <View style={styles.modalContent}>
-                                        <DateTimePicker
-                                            value={date}
-                                            mode="date"
-                                            display={Platform.OS === "ios" ? "spinner" : "default"}
-                                            onChange={handleDateChange}
-                                        />
-                                        <TouchableOpacity style={styles.confirmButton} onPress={confirmDateSelection}>
-                                            <Text style={styles.buttonText}>Confirm</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
-                            </Modal>
-                        )}
+                        <TextInput style={[styles.input, {width: "80%"}]} placeholder="Phone Number"
+                                   value={phone || "Enter your phone number"} onChangeText={setPhone}
+                                   keyboardType="phone-pad"/>
 
-                        <TextInput style={[styles.input, { width: "80%" }]} placeholder="Phone Number" value={phone || "Enter your phone number"} onChangeText={setPhone} keyboardType="phone-pad" />
-                        <TextInput style={[styles.input, { width: "80%" }]} placeholder="Email" value={email || "Enter your email"} onChangeText={setEmail} keyboardType="email-address" />
-                        <TextInput style={[styles.input, { width: "80%" }]} placeholder="Confirm Email" value={confirmEmail || "Confirm your email"} onChangeText={setConfirmEmail} keyboardType="email-address" />
+                        <TextInput style={[styles.input, {width: "80%"}]} placeholder="Link your social Media"
+                                   value={pronouns || "Link your social Media"} onChangeText={setSocialLink}/>
 
-                        <Button title="Save" onPress={saveProfile} />
+
+                        <Button title="Save" onPress={saveProfile}/>
                     </View>
                 </ScrollView>
             </TouchableWithoutFeedback>
@@ -187,7 +209,7 @@ export default function ProfileScreen() {
     );
 }
 const styles = StyleSheet.create({
-    buttonText: { color: '#fff', fontWeight: 'bold' },
+    buttonText: {color: '#fff', fontWeight: 'bold'},
 
     scrollContainer: {
 
