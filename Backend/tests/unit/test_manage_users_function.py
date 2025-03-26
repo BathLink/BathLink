@@ -93,13 +93,13 @@ def test_get_user(
             "nonexistent",
             {"nonexistent_attribute": "hello", "nonexistent_attribute2": "hello"},
             400,
-            "Send only ONE value to update, not multiple",
+            "Send only ONE value to update, not multiple",  # Multiple values were sent to update
         ),
         (
             "test-user-id",
             {"email": "google@apple.com"},
             200,
-            "Success! Updated the record for user-id test-user-id, email=google@apple.com",
+            "Success! Updated the record for user-id test-user-id, email=google@apple.com",  # successful image
         ),
     ],
 )
