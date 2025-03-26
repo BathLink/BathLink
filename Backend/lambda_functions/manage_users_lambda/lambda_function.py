@@ -3,7 +3,7 @@ import boto3
 
 dynamodb = boto3.resource("dynamodb", region_name="eu-west-2")
 users_table = dynamodb.Table("users-table")
-
+meetups_table = dynamodb.Table("meetups-table")
 
 endpoint = "/users/userId"
 
@@ -27,6 +27,15 @@ def PostConfirmation(event, context):
     )
 
     return event
+
+
+def get_user_meetups(userId):
+    response = meetups_table.scan(
+        FilterExpression=f"contains(participants, :val)",
+        ExpressionAttributeValues={":val": str(userId)}
+    )
+    return response.get("Items", [])
+
 
 
 def handle_get_request(userId):
@@ -98,13 +107,21 @@ def lambda_handler(event, context):
 
         userId = path.split("/")[2]
 
+        if '/meetups' in path and http_method == "GET":
+            return {
+                "statusCode": 200,
+                "body": json.dumps(
+                    {"meetups": get_user_meetups(userId)}
+                ),
+                "headers": {"Content-Type": "application/json"},
+            }
+
         if http_method == "GET":
             return handle_get_request(userId)
 
         elif http_method == "PUT":
             body = event.get("body")
-            print(body)
-            print(not body)
+
             if not body:
                 return {
                     "statusCode": 400,

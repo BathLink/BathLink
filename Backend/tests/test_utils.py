@@ -38,7 +38,7 @@ def fetch_from_api(url: str, method: str = "GET"):
 def post_from_api(url: str,data: dict):
     token = get_cognito_token(TEST_USER, TEST_PASSWORD)
     headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
-    response = requests.post(url, headers=headers,data=data)
+    response = requests.post(url, headers=headers,json=data)
     return response
 
 def sign_up_user(email, password, phone, given_name, family_name, birthdate):
