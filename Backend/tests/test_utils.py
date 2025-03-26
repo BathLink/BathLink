@@ -41,6 +41,12 @@ def post_from_api(url: str,data: dict):
     response = requests.post(url, headers=headers,json=data)
     return response
 
+def put_from_api(url: str,data: dict):
+    token = get_cognito_token(TEST_USER, TEST_PASSWORD)
+    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+    response = requests.put(url, headers=headers, json=data)
+    return response
+
 def sign_up_user(email, password, phone, given_name, family_name, birthdate):
     """Sign up a user with required attributes"""
     try:

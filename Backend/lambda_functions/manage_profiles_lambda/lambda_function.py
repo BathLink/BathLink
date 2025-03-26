@@ -29,7 +29,6 @@ def handle_post_request(userId, body):
         social = body["social"]
         description = body["description"]
         pronouns = body["pronouns"]
-        phone_number = body["phone_number"]
 
         rsp = users_table.get_item(
             Key={"student-id": userId}  # The partition key used in the DynamoDB table
@@ -45,7 +44,6 @@ def handle_post_request(userId, body):
             item["profile"]["social"] = social
             item["profile"]["description"] = description
             item["profile"]["pronouns"] = pronouns
-            item["profile"]["phone_number"] = phone_number
 
             users_table.put_item(Item=item)
 
