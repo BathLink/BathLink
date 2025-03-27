@@ -24,15 +24,4 @@ def handle_get_request(activityId):
 def lambda_handler(event, context):
     http_method = event["httpMethod"]
     path_parameters = event.get("pathParameters", {})
-    activityId = path_parameters.get("activityId")
-    if not activityId:
-        return {
-            "statusCode": 400,
-            "body": "Missing meetupId in path parameters",
-            "headers": {"Content-Type": "application/json"},
-        }
-
-    if http_method == "GET":
-        return handle_get_request(activityId)
-    else:
-        return {"statusCode": 400, "body": f"{http_method} doesn't exist for meetups"}
+   
