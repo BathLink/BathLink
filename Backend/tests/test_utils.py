@@ -2,6 +2,7 @@ import boto3
 import os
 import requests
 from dotenv import load_dotenv
+import json
 
 load_dotenv()
 
@@ -33,9 +34,34 @@ def fetch_from_api(url: str, method: str = "GET"):
     return response
 
 
+def post_to_api(url: str, method: str = "POST", body: dict = {}):
+    token = get_cognito_token(TEST_USER, TEST_PASSWORD)
+    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+    response = requests.request(method, url, headers=headers, json=body)
+    return response
+
+
 # print(get_cognito_token(TEST_USER, TEST_PASSWORD))
 print(
-    fetch_from_api(
-        "https://mdwq3r92te.execute-api.eu-west-2.amazonaws.com/prod/users/7982789uih"
+    post_to_api(
+        "https://mdwq3r92te.execute-api.eu-west-2.amazonaws.com/prod/users/12345678-abcd-1234-abcd-123456abcdef/profile",
+        body={
+            "social": "putchanged@bath.com",
+            "description": "Neek",
+            "pronouns": "he/her",
+            "phone_number": "7819238213",
+        },
     ).text
 )
+
+# print(
+#     post_to_api(
+#         "https://mdwq3r92te.execute-api.eu-west-2.amazonaws.com/prod/chats/504",
+#         body={
+#             "meetupId": 123,
+#             "messages": ["hello! excited to play?!", "i sure am !!!"],
+#         },
+#     ).text
+# )
+
+# 123, 7182

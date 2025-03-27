@@ -16,10 +16,13 @@ def handle_get_request(chat_id):
                 "body": json.dumps(chat_data),  # Return the chat data in the response
             }
         else:
-            return {"statusCode": 404, "body": f"chatId:{chat_id} not found!"}
+            return {
+                "statusCode": 404,
+                "body": json.dumps(f"chatId:{chat_id} not found!"),
+            }
     except Exception as e:
         print(e)
-        return {"statusCode": 400, "body": f"error: {e}"}
+        return {"statusCode": 400, "body": json.dumps(f"error: {e}")}
 
 
 def handle_post_request(chat_id, body):
@@ -82,8 +85,7 @@ def lambda_handler(event, context):
     if not chat_id:
         return {
             "statusCode": 400,
-            "body": "Missing chatId in path parameters",
-            "headers": {"Content-Type": "application/json"},
+            "body": json.dumps("Missing chatId in path parameters"),
         }
 
     if http_method == "GET":
