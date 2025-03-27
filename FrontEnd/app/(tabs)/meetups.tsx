@@ -69,6 +69,30 @@ export default function HomeScreen() {
       {meetups.length > 1 && (
         <Text style={[styles.subsubheader, { color: primary_color }]}>Other Meetups</Text>
       )}
+
+      {/* Subheader: Meetups */}
+      <Text style={[styles.subheader, { color: primary_color }]}>Meetups</Text>
+
+      {/* Next Meetup */}
+      {meetups.length > 0 && (
+        <View>
+          <Text style={[styles.subsubheader, { color: primary_color }]}>Next Meetup</Text>
+          <View style={[styles.meetupBox, { backgroundColor: meetupBoxColor, borderColor: meetupBorderColor }]}>
+            {/* Text Section */}
+            <View style={styles.meetupTextContainer}>
+              <Text style={[styles.meetupTitle, { color: primary_color }]}>{meetups[0].title}</Text>
+              <Text style={[styles.meetupDescription, { color: primary_color }]}>{meetups[0].description}</Text>
+            </View>
+            {/* Image Placeholder */}
+            <MaterialIcons name="image" size={30} color="gray" style={styles.meetupImage} />
+          </View>
+        </View>
+      )}
+
+      {/* Other Meetups Header */}
+      {meetups.length > 1 && (
+        <Text style={[styles.subsubheader, { color: primary_color }]}>Other Meetups</Text>
+      )}
     </View>
   );
 
@@ -117,6 +141,51 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 16,
     paddingHorizontal: 20,
+  },
+  subheader: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    marginVertical: 10,
+    paddingHorizontal: 20,
+  },
+  subsubheader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginVertical: 10,
+    paddingHorizontal: 20,
+  },
+  meetupBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    marginHorizontal: 20,
+    marginVertical: 8,
+    borderRadius: 10,
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 1, // Shadow for Android
+  },
+  meetupTextContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    paddingRight: 10,
+  },
+  meetupTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  meetupDescription: {
+    fontSize: 14,
+    color: 'gray',
+  },
+  meetupImage: {
+    width: 40,
+    height: 40,
+    resizeMode: 'contain',
+  },
   },
   subheader: {
     fontSize: 25,
