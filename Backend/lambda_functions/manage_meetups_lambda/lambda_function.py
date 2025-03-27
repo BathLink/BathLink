@@ -22,13 +22,13 @@ def handle_get_request(meetupId):
 def handle_put_request(meetupId,userId):
     try:
         rsp = meetups_table.get_item(Key={"meetup-id": meetupId})
-
+        confirmed_users = meetup.get("confirmed_users",[])
         if "Item" in rsp:
             try:
                 response = meetups_table.update_item(
             Key={"meetup_id": meetupId},
             UpdateExpression="ADD confirmed_users :user",
-            ExpressionAttributeValues={":user": set([userId])},
+            ExpressionAttributeValues={":user": set(confirmed_users.append(userId))},
             ReturnValues="UPDATED_NEW"
             )
 
@@ -37,13 +37,12 @@ def handle_put_request(meetupId,userId):
             
             rsp = meetups_table.get_item(Key={"meetup-id": meetupId})
             meetup = rsp.get("Item")
-            confirmed = meetup.get("confirmed_users",[])
             partipants = meetup.get("participants",[])
-            if len(confirmed) == len(partipants):
+            if len(confirmed_users) == len(partipants):
                 try:
                     response = meetups_table.update_item(
                         Key={"meetup_id": meetupId},
-            UpdateExpression="SET meetup_confirmed = :confirmed",
+            UpdateExpression="SET confirmed = :confirmed",
             ExpressionAttributeValues={
                 ":confirmed": True
             },
