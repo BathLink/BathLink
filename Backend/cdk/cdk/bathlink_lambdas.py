@@ -53,3 +53,4 @@ class BathLinkLambdas:
         self.manage_profiles = create_lambda('manage_profiles_lambda',[tables.users_table])
         self.manage_chats = create_lambda('manage_chats_lambda',[tables.groupchats_table])
         self.manage_calendars = create_lambda('manage_calendars_lambda',[tables.users_table])
+        self.manage_calendars = create_lambda('manage_activities_lambda',[tables.users_table])
