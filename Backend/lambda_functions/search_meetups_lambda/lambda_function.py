@@ -6,7 +6,7 @@ Max_number_of_meetups = 5
 dynamodb = boto3.resource("dynamodb", region_name="eu-west-2")
 users_table = dynamodb.Table("users-table")
 meetups_table = dynamodb.Table("meetups-table")
-hobbies_table = dynamodb.Table("hobbies-table")
+
 
 
 
@@ -19,7 +19,6 @@ def build_matching_graph(users,meetup_id):
             G.add_node(user["user_id"], type="user", **user)
 
         # Create potential groups based on shared availability
-        group_counter = 0
         potential_groups = []
         
         for time_slot in set(itertools.chain.from_iterable([u["availabilty"] for u in users])):
@@ -38,7 +37,7 @@ def build_matching_graph(users,meetup_id):
         print(e)
         return {"statusCode": 400, "body": f" build_graph error: {e}"}
 
-def calculate_match_score(user, activity):
+def calculate_match_score(user):
     score = 0 
     
     # Prioritise users with fewer preferred activities
@@ -46,16 +45,6 @@ def calculate_match_score(user, activity):
 
     # Prioritise users with limited availability
     score += (7 - len(user["availability"])) * 8  
-
-    # Weight activity preference (higher-ranked activities get higher score)
-    activity_rank = user["activity_rankings"].get(activity, 5)  # Default to mid-value if not ranked
-    score += (activity_rank) * 5  
-
-    #skill level matching
-    skill_level = user["activity_skills"].get(activity, 2)
-    if skill_level == activity["ability"]:
-        score += 30
-    
 
     return score
 
@@ -79,7 +68,8 @@ def save_suggested_meetups(matches, potential_groups,G):
                         "participants": group_details["users"],
                         "time_slot": group_details["time_slot"],
                         "confirmed": False,
-                        "done": False
+                        "done": False,
+                        "confirmed_users" : []
                     }
                 )
     except Exception as e:
