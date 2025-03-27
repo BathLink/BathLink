@@ -290,7 +290,7 @@ jobs:
           pip install -r Backend/requirements-dev.txt
 
       - name: Create .env file from GitHub secret
-        run: echo "${{ secrets.ENV_FILE }}" > Backend/tests/.env
+        run: echo "${{ secrets.ENV_FILE }}" > .env
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
