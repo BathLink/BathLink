@@ -7,9 +7,6 @@ dynamodb = boto3.resource("dynamodb", region_name="eu-west-2")
 users_table = dynamodb.Table("users-table")
 meetups_table = dynamodb.Table("meetups-table")
 
-
-
-
 def build_matching_graph(users,meetup_id):
     try:
         G = nx.Graph()
