@@ -1,5 +1,6 @@
 import { post } from 'aws-amplify/api';
 
+
 export async function postItem(path: string, data: any) {
     try {
         console.log(`Making POST request to: ${path}`);
@@ -13,16 +14,10 @@ export async function postItem(path: string, data: any) {
 
         console.log("REST Operation:", restOperation);
 
-        // Wait for the request to finish
-        const response = await restOperation.response;
+        const { body } = await restOperation.response;
 
-        if (!response) {
-            throw new Error("No response received from API");
-        }
+        console.log(body)
 
-        console.log("Full response:", response);
-
-        const { body } = response;
         const jsonResponse = await body.json();
 
         console.log('POST call succeeded');

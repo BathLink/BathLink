@@ -1,6 +1,5 @@
 import { get } from 'aws-amplify/api'
 
-
 export async function getInfo(path: string) {
     try {
         const restOperation = get({
@@ -12,6 +11,6 @@ export async function getInfo(path: string) {
         const responseBody = await response.body.json();
         return responseBody;
     } catch (error) {
-        console.log('GET call failed: ', JSON.parse(error.response.body));
+        console.log('GET call failed: ', error);
     }
 }

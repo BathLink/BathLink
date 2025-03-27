@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Modal} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Crypto from 'expo-crypto';
 import {useRouter} from "expo-router";
 import {manualLogin} from '@/authentication/manualLogin';
-import {getCurrentUser, updatePassword} from 'aws-amplify/auth';
+import {getCurrentUser} from 'aws-amplify/auth';
 import {getForgotCode, confirmForgotCode} from '@/authentication/forgotPass';
 
 
