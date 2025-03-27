@@ -5,12 +5,15 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { getInfo } from '@/authentication/getInfo';
 import { getCurrentUser } from 'aws-amplify/auth';
+import { useRouter } from "expo-router";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-export default function HomeScreen() {
+export default function MeetupsScreen() {
   const colorScheme = useColorScheme();
   const [selectedMeetup, setSelectedMeetup] = useState(null);
   const [allMeetups, setAllMeetups] = useState([])
+  const router = useRouter();
 
   let primary_color = colorScheme === 'dark' ? 'white' : 'black';
   let transparent_color = 'rgba(0, 0, 0, 0)';
@@ -98,20 +101,29 @@ export default function HomeScreen() {
     setSelectedMeetup(null);
   };
 
+  const profileBtn = async () => {
+    await AsyncStorage.setItem("page", "/meetups");
+    router.replace('/profile')
+  };
+
   const renderHeader = () => (
     <View>
       {/* Top Menu App Bar */}
       <View style={styles.titleContainer}>
-        <MaterialIcons.Button name="person" size={28} color={primary_color} backgroundColor={transparent_color} />
-        <ThemedText type="title">BathLink</ThemedText>
-        <MaterialIcons.Button name="notifications" size={28} color={primary_color} backgroundColor={transparent_color} />
+        <MaterialIcons.Button
+          name="person" size={28} color={primary_color} backgroundColor="transparent"
+          onPress={profileBtn}
+        />
+          <ThemedText type="title" >BathLink</ThemedText>
+        <MaterialIcons.Button
+          name="notifications" size={28} color="transparent" backgroundColor="transparent"
+        />
       </View>
-
       {/* Subheader */}
       <Text style={[styles.subheader, { color: primary_color }]}>Meetups</Text>
 
       {/* Next Meetup (First item) */}
-      {allMeetups.length > 0 && (
+      {allMeetups.length > 0 ? (
         <View>
           <Text style={[styles.subsubheader, { color: primary_color }]}>Next Meetup</Text>
           <Pressable onPress={() => selectMeetup(allMeetups[0])}>
@@ -124,7 +136,13 @@ export default function HomeScreen() {
             </View>
           </Pressable>
         </View>
-      )}
+      ) : 
+      <View>
+        <Text style={[styles.subsubheader, { color: primary_color }]}>
+          No Meetups Found - See matches page to organise meetups
+        </Text>
+      </View>
+      }
 
       {/* Other Meetups Header */}
       {allMeetups.length > 1 && <Text style={[styles.subsubheader, { color: primary_color }]}>Other Meetups</Text>}

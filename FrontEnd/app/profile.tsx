@@ -165,7 +165,7 @@ export default function ProfileScreen() {
                         <TextInput style={styles.input} placeholder="Pronouns"
                                    value={pronouns} onChangeText={setPronouns}/>
 
-                        <TextInput style={styles.input} placeholder="Link your social Media"
+                        <TextInput style={styles.input} placeholder="Link your social media"
                                    value={socialLink} onChangeText={setSocialLink}/>
 
                          <TouchableOpacity style={styles.button} onPress={saveProfile}>
