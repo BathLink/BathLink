@@ -186,7 +186,6 @@ const styles = StyleSheet.create({
     height: 40,
     resizeMode: 'contain',
   },
-  },
   subheader: {
     fontSize: 25,
     fontWeight: 'bold',

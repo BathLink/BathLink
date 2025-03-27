@@ -2,12 +2,6 @@ import { Stack } from 'expo-router';
 import 'react-native-reanimated';
 
 export default function RootLayout() {
-<<<<<<< HEAD
-=======
-  const router = useRouter();
-
->>>>>>> main
-
   return (
     <Stack initialRouteName="(tabs)">
       <Stack.Screen name="(tabs)" options={{ headerShown: false}} />
