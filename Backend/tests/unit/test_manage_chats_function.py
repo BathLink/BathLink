@@ -10,7 +10,7 @@ def dynamodb_setup():
     with mock_aws():
         dynamodb = boto3.resource("dynamodb", region_name="eu-west-2")
         table = dynamodb.create_table(
-            TableName="users-table",
+            TableName="groupchats-table",
             KeySchema=[{"AttributeName": "chat-id", "KeyType": "HASH"}],
             AttributeDefinitions=[{"AttributeName": "chat-id", "AttributeType": "S"}],
             ProvisionedThroughput={"ReadCapacityUnits": 1, "WriteCapacityUnits": 1},
@@ -56,7 +56,47 @@ def test_get_chat(
 
     response = benchmark(lambda_handler, event, None)
 
-    print("HELOOOOOOOOOOO!")
+    assert response["statusCode"] == expected_status
+    assert json.loads(response["body"]) == expected_response
+
+
+@pytest.mark.parametrize(
+    "chat_id, body, expected_status, expected_response",
+    [
+        ("100", {}, 400, "Content of body missing"),
+        (
+            "200",
+            {
+                "meetupId": "500",
+                "messages": [
+                    {"userId": "test-user-id", "content": "hellooo", "time": "10/25/90"}
+                ],
+            },
+            200,
+            "Success! Created a new record for chat-id 200",
+        ),
+        (
+            "100",
+            {
+                "meetupId": "200",
+                "messages": [
+                    {"userId": "woof-user-id", "content": "meow", "time": "10/25/100"}
+                ],
+            },
+            200,
+            "Success! Updated the record for chat-id 100",
+        ),
+    ],
+)
+@pytest.mark.benchmark(group="Manage Chats")
+def test_post_chat(
+    benchmark, dynamodb_setup, chat_id, body, expected_status, expected_response
+):
+    event = {"httpMethod": "POST", "pathParameters": {"chatId": chat_id}, "body": body}
+
+    response = lambda_handler(event, None)
+    print(event)
+    print("RESPONSE:")
     print(response)
 
     assert response["statusCode"] == expected_status

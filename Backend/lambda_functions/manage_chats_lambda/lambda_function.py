@@ -27,18 +27,22 @@ def handle_get_request(chat_id):
 
 def handle_post_request(chat_id, body):
     try:
-        data = json.loads(body)
+        if type(body) == str:
+            data = json.loads(body)
+        else:
+            data = body
+
         meetup_id = data["meetupId"]
         messages = data["messages"]
 
-        print(f"chatid:{chat_id}, meetupid:{meetup_id}, message:{messages}")
+        # print(f"chatid:{chat_id}, meetupid:{meetup_id}, message:{messages}")
 
         chat_rsp = chats_table.get_item(Key={"chat-id": chat_id})
-        print(type(chat_rsp))
-        print("chat_rsp", chat_rsp)
-        if (
-            "Item" not in chat_rsp
-        ):  # If its the first time that the chat-id is getting input
+        # print(type(chat_rsp))
+        # print("chat_rsp", chat_rsp)
+        if "Item" not in chat_rsp:
+            # If its the first time that the chat-id is getting input
+            print(f"chat-id {chat_id} didnt exist before")
             rsp = chats_table.put_item(
                 Item={
                     "chat-id": chat_id,
@@ -50,11 +54,13 @@ def handle_post_request(chat_id, body):
             return {
                 "statusCode": 200,
                 "body": json.dumps(
-                    {"message": f"Success! Created a new record for chat-id {chat_id})"}
+                    f"Success! Created a new record for chat-id {chat_id}"
                 ),
                 "headers": {"Content-Type": "application/json"},
             }
         else:
+            print(f"chat-id {chat_id} did exist before so just appeneded")
+
             # If chat-id already exists and messages are just getting appended
             item = chat_rsp["Item"]
             item["messages"].extend(messages)
@@ -63,7 +69,7 @@ def handle_post_request(chat_id, body):
             return {
                 "statusCode": 200,
                 "body": json.dumps(
-                    {"message": f"Success! Updated the record for chat-id {chat_id})"}
+                    f"Success! Updated the record for chat-id {chat_id}"
                 ),
                 "headers": {"Content-Type": "application/json"},
             }
@@ -72,7 +78,6 @@ def handle_post_request(chat_id, body):
         print(e)
         return {
             "statusCode": 400,
-            "headers": {"Content-Type": "application/json"},
             "body": f"error: {e}",
         }
 
@@ -96,7 +101,7 @@ def lambda_handler(event, context):
         if not body:
             return {
                 "statusCode": 400,
-                "body": json.dumps({"error": "Content of body missing"}),
+                "body": json.dumps("Content of body missing"),
             }
         else:
             return handle_post_request(chat_id, body)
