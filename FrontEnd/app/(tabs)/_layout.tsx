@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
+
 export default function TabLayout() {
   return (
     <Tabs initialRouteName="meetups" screenOptions={{ headerShown: false }}>
@@ -14,7 +15,10 @@ export default function TabLayout() {
       />
       <Tabs.Screen
         name="settings"
-        options={{ title: "Settings", tabBarIcon: ({ color }) => <Ionicons name="settings" size={24} color={color} /> }}
+        options={{
+          title: 'Settings',
+          tabBarIcon: ({ color }) => <Ionicons name="settings" size={24} color={color} />,
+        }}
       />
     </Tabs>
   );

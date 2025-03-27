@@ -1,0 +1,255 @@
+digraph "Diagram" {
+  splines = "ortho";
+  pad = "1.0";
+  nodesep = "0.60";
+  ranksep = "0.75";
+  fontname = "Sans-Serif";
+  fontsize = "15";
+  dpi = "200";
+  rankdir = "BT";
+  compound = "true";
+  fontcolor = "#222222";
+  edge [
+    color = "#D5871488",
+    penwidth = 2,
+    arrowhead = "dot",
+    arrowtail = "dot",
+  ];
+  node [
+    shape = "box",
+    style = "rounded",
+    fixedsize = true,
+    width = 1.7,
+    height = 1.7,
+    labelloc = "c",
+    imagescale = true,
+    fontname = "Sans-Serif",
+    fontsize = 8,
+    margin = 8,
+  ];
+  subgraph "CdkStack" {
+    subgraph "cluster-SubGraph.CdkStack" {
+      graph [
+        label = "CdkStack",
+        labelloc = "b",
+        labeljust = "l",
+        margin = "10",
+        fontsize = "16",
+        penwidth = "2",
+        pencolor = "#888888",
+        style = "filled,rounded",
+        fillcolor = "#e4e4e4",
+      ];
+      "CdkStack/users-table" [
+        label = " users-table",
+        fontsize = 12,
+        image = "C:\Users\jonah\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Database\64\Arch_Amazon-DynamoDB_64@5x.png",
+        imagescale = "true",
+        imagepos = "tc",
+        penwidth = "0",
+        shape = "node",
+        fixedsize = "true",
+        labelloc = "b",
+        width = 1.2,
+        height = 1.466,
+      ];
+      "CdkStack/meetups-table" [
+        label = " meetups-table",
+        fontsize = 12,
+        image = "C:\Users\jonah\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Database\64\Arch_Amazon-DynamoDB_64@5x.png",
+        imagescale = "true",
+        imagepos = "tc",
+        penwidth = "0",
+        shape = "node",
+        fixedsize = "true",
+        labelloc = "b",
+        width = 1.2,
+        height = 1.466,
+      ];
+      "CdkStack/groupchats-table" [
+        label = " groupchats-table",
+        fontsize = 12,
+        image = "C:\Users\jonah\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Database\64\Arch_Amazon-DynamoDB_64@5x.png",
+        imagescale = "true",
+        imagepos = "tc",
+        penwidth = "0",
+        shape = "node",
+        fixedsize = "true",
+        labelloc = "b",
+        width = 1.2,
+        height = 1.466,
+      ];
+      "CdkStack/BathLinkUserPool" [
+        label = " BathLinkUserPool",
+        fontsize = 12,
+        image = "C:\Users\jonah\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Security-Identity-Compliance\64\Arch_Amazon-Cognito_64.png",
+        imagescale = "true",
+        imagepos = "tc",
+        penwidth = "0",
+        shape = "node",
+        fixedsize = "true",
+        labelloc = "b",
+        width = 1.2,
+        height = 1.466,
+      ];
+      "CdkStack/manage_meetups_lambda" [
+        label = "\nmanage_meetups_lambda",
+        fontsize = 12,
+        image = "C:\Users\jonah\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Compute\64\Arch_AWS-Lambda_64@5x.png",
+        imagescale = "true",
+        imagepos = "tc",
+        penwidth = "0",
+        shape = "node",
+        fixedsize = "true",
+        labelloc = "b",
+        width = 2,
+        height = 2.4819999999999998,
+      ];
+      "CdkStack/search_meetups_lambda" [
+        label = "\nsearch_meetups_lambda",
+        fontsize = 12,
+        image = "C:\Users\jonah\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Compute\64\Arch_AWS-Lambda_64@5x.png",
+        imagescale = "true",
+        imagepos = "tc",
+        penwidth = "0",
+        shape = "node",
+        fixedsize = "true",
+        labelloc = "b",
+        width = 2,
+        height = 2.4819999999999998,
+      ];
+      "CdkStack/manage_users_lambda" [
+        label = " manage_users_lambda",
+        fontsize = 12,
+        image = "C:\Users\jonah\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Compute\64\Arch_AWS-Lambda_64@5x.png",
+        imagescale = "true",
+        imagepos = "tc",
+        penwidth = "0",
+        shape = "node",
+        fixedsize = "true",
+        labelloc = "b",
+        width = 2,
+        height = 2.266,
+      ];
+      "CdkStack/manage_profiles_lambda" [
+        label = " manage profiles\nlambda",
+        fontsize = 12,
+        image = "C:\Users\jonah\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Compute\64\Arch_AWS-Lambda_64@5x.png",
+        imagescale = "true",
+        imagepos = "tc",
+        penwidth = "0",
+        shape = "node",
+        fixedsize = "true",
+        labelloc = "b",
+        width = 2,
+        height = 2.4819999999999998,
+      ];
+      "CdkStack/manage_chats_lambda" [
+        label = " manage_chats_lambda",
+        fontsize = 12,
+        image = "C:\Users\jonah\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Compute\64\Arch_AWS-Lambda_64@5x.png",
+        imagescale = "true",
+        imagepos = "tc",
+        penwidth = "0",
+        shape = "node",
+        fixedsize = "true",
+        labelloc = "b",
+        width = 2,
+        height = 2.266,
+      ];
+      "CdkStack/manage_calendars_lambda" [
+        label = " manage calendars\nlambda",
+        fontsize = 12,
+        image = "C:\Users\jonah\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Compute\64\Arch_AWS-Lambda_64@5x.png",
+        imagescale = "true",
+        imagepos = "tc",
+        penwidth = "0",
+        shape = "node",
+        fixedsize = "true",
+        labelloc = "b",
+        width = 2,
+        height = 2.4819999999999998,
+      ];
+      "CdkStack/BathLinkAuthorizer" [
+        label = " BathLinkAuthorizer",
+        fontsize = 12,
+        image = "C:\Users\jonah\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Networking-Content\64\Arch_Amazon-API-Gateway_64@5x.png",
+        imagescale = "true",
+        imagepos = "tc",
+        penwidth = "0",
+        shape = "node",
+        fixedsize = "true",
+        labelloc = "b",
+        width = 1.2,
+        height = 1.466,
+      ];
+      "CdkStack/BathLinkApi" [
+        label = " BathLinkApi",
+        fontsize = 12,
+        image = "C:\Users\jonah\AppData\Roaming\npm\node_modules\cdk-dia\icons\aws\Service\Arch_Networking-Content\64\Arch_Amazon-API-Gateway_64@5x.png",
+        imagescale = "true",
+        imagepos = "tc",
+        penwidth = "0",
+        shape = "node",
+        fixedsize = "true",
+        labelloc = "b",
+        width = 1.2,
+        height = 1.466,
+      ];
+    }
+  }
+  "CdkStack/BathLinkUserPool" -> "CdkStack/manage_users_lambda" [
+    dir = "both",
+  ];
+  "CdkStack/manage_meetups_lambda" -> "CdkStack/meetups-table" [
+    dir = "both",
+  ];
+  "CdkStack/search_meetups_lambda" -> "CdkStack/users-table" [
+    dir = "both",
+  ];
+  "CdkStack/search_meetups_lambda" -> "CdkStack/meetups-table" [
+    dir = "both",
+  ];
+  "CdkStack/manage_users_lambda" -> "CdkStack/users-table" [
+    dir = "both",
+  ];
+  "CdkStack/manage_users_lambda" -> "CdkStack/BathLinkUserPool" [
+    dir = "both",
+  ];
+  "CdkStack/manage_profiles_lambda" -> "CdkStack/users-table" [
+    dir = "both",
+  ];
+  "CdkStack/manage_chats_lambda" -> "CdkStack/groupchats-table" [
+    dir = "both",
+  ];
+  "CdkStack/manage_calendars_lambda" -> "CdkStack/users-table" [
+    dir = "both",
+  ];
+  "CdkStack/BathLinkAuthorizer" -> "CdkStack/BathLinkUserPool" [
+    dir = "both",
+  ];
+  "CdkStack/BathLinkAuthorizer" -> "CdkStack/BathLinkApi" [
+    dir = "both",
+  ];
+  "CdkStack/BathLinkApi" -> "CdkStack/manage_meetups_lambda" [
+    dir = "both",
+  ];
+  "CdkStack/BathLinkApi" -> "CdkStack/BathLinkAuthorizer" [
+    dir = "both",
+  ];
+  "CdkStack/BathLinkApi" -> "CdkStack/search_meetups_lambda" [
+    dir = "both",
+  ];
+  "CdkStack/BathLinkApi" -> "CdkStack/manage_profiles_lambda" [
+    dir = "both",
+  ];
+  "CdkStack/BathLinkApi" -> "CdkStack/manage_calendars_lambda" [
+    dir = "both",
+  ];
+  "CdkStack/BathLinkApi" -> "CdkStack/manage_users_lambda" [
+    dir = "both",
+  ];
+  "CdkStack/BathLinkApi" -> "CdkStack/manage_chats_lambda" [
+    dir = "both",
+  ];
+}
