@@ -48,8 +48,9 @@ This is the backend for the Bathlink API. It comprises of an API with a database
        }
    ]
 
-#### Hobbies
+#### acitivities
 * name
-* potentialLocations
+* ability
+* number of people
 
 
