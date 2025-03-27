@@ -5,7 +5,7 @@ import * as Crypto from 'expo-crypto';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRouter } from 'expo-router';
-import {SignUp} from '@/authentication/auth';
+import { SignUp } from '@/authentication/auth';
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -18,8 +18,14 @@ export default function RegisterScreen() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
-  const [formattedDate, setFormattedDate] = useState("");
+  const [formattedDate, setFormattedDate] = useState('');
   const [isRegistered, setIsRegistered] = useState(false);
+
+  useEffect(() => {
+    if (isRegistered) {
+      router.replace('/confirmEmail');
+    }
+  }, [isRegistered]);
 
   const handleRegister = async () => {
     if (!firstName || !email || !confirmEmail || !phone || !lastName || !formattedDate || !password || !confirmPassword) {
@@ -34,22 +40,16 @@ export default function RegisterScreen() {
       Alert.alert('Error', 'Passwords do not match');
       return;
     }
-    console.log(phone)
-    const formattedPhone = "+44" + phone.toString()
 
-    console.log("pineapples")
+    const formattedPhone = "+44" + phone.toString();
 
     try {
-       await SignUp(email, password, email, firstName, lastName, formattedPhone, formattedDate.toString())
-       await AsyncStorage.setItem("email", email);
-       console.log("oranges")
-       setIsRegistered(true);
-
+      await SignUp(email, password, email, firstName, lastName, formattedPhone, formattedDate);
+      await AsyncStorage.setItem("email", email);
+      setIsRegistered(true);
     } catch (error: any) {
-      console.error("Caught Signup Error:", error); // Debugging log
-
+      console.error("Caught Signup Error:", error);
       const errorMessage = String(error);
-
       if (errorMessage.includes("UsernameExistsException:")) {
         Alert.alert("Signup Failed", "User already exists. Please try again.");
       } else if (errorMessage.includes("InvalidPasswordException")) {
@@ -58,18 +58,15 @@ export default function RegisterScreen() {
         Alert.alert("Error", errorMessage);
       }
     }
-
   };
-
-  useEffect(() => {
-    if (isRegistered) {
-      router.replace('/confirmEmail');
-    }
-  }, [isRegistered]);
 
   const handleDateChange = (event: any, selectedDate?: Date) => {
     if (selectedDate) {
       setDate(selectedDate);
+    }
+    if (Platform.OS === "android") {
+      setFormattedDate(formatDate(selectedDate || date)); // Set date immediately on Android
+      setShowPicker(false);
     }
   };
 
@@ -86,137 +83,76 @@ export default function RegisterScreen() {
   };
 
   return (
-      <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={{ flex: 1 }}
-      >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <ScrollView contentContainerStyle={styles.scrollContainer}>
-            <View style={styles.container}>
-              <Text style={styles.title}>BathLink</Text>
-              <Text style={styles.subtitle}>Register</Text>
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <View style={styles.container}>
+            <Text style={styles.title}>BathLink</Text>
+            <Text style={styles.subtitle}>Register</Text>
 
-              <TextInput style={styles.inputContainer} placeholder="First Name" value={firstName} onChangeText={setFirstName} />
-              <TextInput style={[styles.input, { width: "80%" }]} placeholder="Last Name" value={lastName} onChangeText={setLastName} />
-              <TextInput style={[styles.input, { width: "80%" }]} placeholder="Email" value={email} onChangeText={setEmail} keyboardType="email-address" />
-              <TextInput style={[styles.input, { width: "80%" }]} placeholder="Confirm Email" value={confirmEmail} onChangeText={setConfirmEmail} keyboardType="email-address" />
-              <TextInput
-                  style={[styles.input, { width: "80%" }]}
-                  placeholder="Phone Number"
-                  value={phone}
-                  onChangeText={setPhone}
-                  keyboardType="phone-pad"
-                  returnKeyType="done" // Allows keyboard to be dismissed easily
-              />
+            <TextInput style={styles.input} placeholder="First Name" value={firstName} onChangeText={setFirstName} />
+            <TextInput style={styles.input} placeholder="Last Name" value={lastName} onChangeText={setLastName} />
+            <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} keyboardType="email-address" />
+            <TextInput style={styles.input} placeholder="Confirm Email" value={confirmEmail} onChangeText={setConfirmEmail} keyboardType="email-address" />
+            <TextInput style={styles.input} placeholder="Phone Number" value={phone} onChangeText={setPhone} keyboardType="phone-pad" returnKeyType="done" />
 
-              {/* Date of Birth Input */}
-              <TouchableOpacity onPress={() => setShowPicker(true)} style={styles.inputContainer}>
-                <Text style={formattedDate ? styles.inputText : styles.placeholderText}>
-                  {formattedDate || "Date of Birth"}
-                </Text>
-                <MaterialIcons name="calendar-today" size={24} color="black" />
-              </TouchableOpacity>
+            {/* Date Picker Trigger */}
+            <TouchableOpacity onPress={() => setShowPicker(true)} style={styles.inputContainer}>
+              <Text style={formattedDate ? styles.inputText : styles.placeholderText}>
+                {formattedDate || "Date of Birth"}
+              </Text>
+              <MaterialIcons name="calendar-today" size={24} color="black" />
+            </TouchableOpacity>
 
-              {showPicker && (
-                  <Modal transparent={true} animationType="slide">
-                    <View style={styles.modalContainer}>
-                      <View style={styles.modalContent}>
-                        <DateTimePicker
-                            value={date}
-                            mode="date"
-                            display={Platform.OS === "ios" ? "spinner" : "default"}
-                            onChange={handleDateChange}
-                        />
-                        <TouchableOpacity style={styles.confirmButton} onPress={confirmDateSelection}>
-                          <Text style={styles.buttonText}>Confirm</Text>
-                        </TouchableOpacity>
-                      </View>
-                    </View>
-                  </Modal>
-              )}
+            {/* Android Date Picker (shows inline) */}
+            {showPicker && Platform.OS === "android" && (
+              <DateTimePicker value={date} mode="date" display="default" onChange={handleDateChange} />
+            )}
 
-              <TextInput style={[styles.input, { width: "80%" }]} placeholder="Password" secureTextEntry value={password} onChangeText={setPassword} />
-              <TextInput style={[styles.input, { width: "80%" }]} placeholder="Confirm Password" secureTextEntry value={confirmPassword} onChangeText={setConfirmPassword} />
+            {/* iOS Date Picker (inside Modal) */}
+            {showPicker && Platform.OS === "ios" && (
+              <Modal transparent={true} animationType="slide">
+                <View style={styles.modalContainer}>
+                  <View style={styles.modalContent}>
+                    <DateTimePicker value={date} mode="date" display="spinner" onChange={handleDateChange} />
+                    <TouchableOpacity style={styles.confirmButton} onPress={confirmDateSelection}>
+                      <Text style={styles.buttonText}>Confirm</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </Modal>
+            )}
 
-              <TouchableOpacity style={styles.backButton} onPress={() => router.replace('/login')}>
-                <MaterialIcons name="arrow-back" size={24} color="black" />
-                <Text style={styles.backButton}></Text>
-              </TouchableOpacity>
+            <TextInput style={styles.input} placeholder="Password" secureTextEntry value={password} onChangeText={setPassword} />
+            <TextInput style={styles.input} placeholder="Confirm Password" secureTextEntry value={confirmPassword} onChangeText={setConfirmPassword} />
 
-              <TouchableOpacity style={styles.button} onPress={handleRegister}>
-                <Text style={styles.buttonText}>Register</Text>
-              </TouchableOpacity>
-            </View>
-          </ScrollView>
-        </TouchableWithoutFeedback>
-      </KeyboardAvoidingView>
+            <TouchableOpacity style={styles.backButton} onPress={() => router.replace('/login')}>
+              <MaterialIcons name="arrow-back" size={24} color="black" />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.button} onPress={handleRegister}>
+              <Text style={styles.buttonText}>Register</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { width: "100%", flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f8f4ff' },
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f8f4ff',  width: "100%"  },
   title: { fontSize: 32, fontWeight: 'bold', color: '#000' },
   subtitle: { fontSize: 18, marginBottom: 20 },
   input: { width: '80%', padding: 10, borderWidth: 1, marginBottom: 10, borderRadius: 5, backgroundColor: '#fff' },
   button: { backgroundColor: '#6c5b7b', padding: 10, borderRadius: 5, marginTop: 10 },
   buttonText: { color: '#fff', fontWeight: 'bold' },
-
-    scrollContainer: {
-
-      backgroundColor: '#f8f4ff',
-      width: "100%",
-      flexGrow: 1,
-      justifyContent: 'center',
-      alignItems: 'center', // Ensures inputs stay centered
-      paddingVertical: 20, // Prevents inputs from getting too close to the screen edges
-    },
-
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "80%",
-    padding: 10,
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 10,
-    backgroundColor: "#fff",
-    justifyContent: "space-between",
-  },
-  inputText: {
-    fontSize: 16,
-  },
-  placeholderText: {
-    fontSize: 14,
-    color: "#aaa",
-  },
-
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalContent: {
-    backgroundColor: "white",
-    padding: 20,
-    borderRadius: 10,
-    alignItems: "center",
-    width: "80%",
-  },
-  confirmButton: {
-    marginTop: 10,
-    backgroundColor: "#6c5b7b",
-    padding: 10,
-    borderRadius: 5,
-    alignItems: "center",
-    width: "80%",
-  },
-
- backButton: {
-   position: "absolute",
-   top: 10, // Adjust for proper placement
-   left: 10, // Moves it to the left side
-   padding: 10,
- },
+  scrollContainer: { flexGrow: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 20, backgroundColor: '#f8f4ff', width: "100%" },
+  inputContainer: { flexDirection: "row", alignItems: "center", width: "80%", padding: 10, borderWidth: 1, borderRadius: 5, marginBottom: 10, backgroundColor: "#fff", justifyContent: "space-between" },
+  inputText: { fontSize: 16 },
+  placeholderText: { fontSize: 14, color: "#aaa" },
+  modalContainer: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0,0,0,0.5)" },
+  modalContent: { backgroundColor: "white", padding: 20, borderRadius: 10, alignItems: "center", width: "80%" },
+  confirmButton: { marginTop: 10, backgroundColor: "#6c5b7b", padding: 10, borderRadius: 5, alignItems: "center", width: "80%" },
+  backButton: { position: "absolute", top: 10, left: 10, padding: 10 },
 });
-
