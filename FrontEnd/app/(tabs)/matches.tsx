@@ -1,5 +1,7 @@
-import { View, Text, Button, StyleSheet, Platform } from 'react-native';
+import { View, Text, Button, StyleSheet, Platform, ScrollView, TouchableHighlight, TouchableOpacity } from 'react-native';
+import {useState} from 'react';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Divider } from 'react-native-paper';
 import { Svg, Path } from 'react-native-svg';
 
@@ -7,232 +9,186 @@ import { ThemedText } from '@/components/ThemedText';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
-export default function MatchesScreen() {
 
+
+
+
+
+
+export default function HomeScreen() {
   const colorScheme = useColorScheme();
-  let primary_color = "black"
-  let background_color = "white"
-  let transparent_color = "rgba(0, 0, 0, 0)"
+  const [selectedTab, setSelectedTab] = useState('Matches');
 
-  if (colorScheme === 'dark') {
-    primary_color = "white"
-    background_color = "rgba(0, 0, 0, 0)"
-  } else {
-    primary_color = "black"
-    background_color = "rgba(0, 0, 0, 0)"
-  }
+  // Track which button is selected for each match
+  const [buttonStates, setButtonStates] = useState(
+    Array(5).fill({ checkSelected: false, cancelSelected: false })
+  );
 
   const testBtn = () => {
     console.log('Button pressed');
   };
 
   const router = useRouter();
+  const primary_color = colorScheme === 'dark' ? 'white' : 'black';
+  const background_color = colorScheme === 'dark' ? 'rgba(0, 0, 0, 0)' : 'rgba(0, 0, 0, 0)';
+
+  const matches = [
+    ["Indoor Tennis", ["Nathaniel", "John",], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
+    ["Indoor Tennis", ["Nathaniel", "John", "James"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
+    ["Outdoor Tennis", ["Nathaniel", "John", "James","Jim"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
+    ["Indoor Tennis", [ "John", "James"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
+    ["Indoor Tennis", ["Nathaniel", "John", "James"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
+  ];
+
+  const toggleButton = (index, type) => {
+    setButtonStates(prevState => {
+      const newState = [...prevState];
+      if (type === 'check') {
+        newState[index] = {
+          checkSelected: !newState[index].checkSelected,
+          cancelSelected: false, // Unselect cancel if check is selected
+        };
+      } else {
+        newState[index] = {
+          checkSelected: false,
+          cancelSelected: !newState[index].cancelSelected,
+        };
+      }
+      return newState;
+    });
+  };
+
+  const profileBtn = async () => {
+      await AsyncStorage.setItem("page", "/matches");
+      router.replace('/profile')
+  };
 
   return (
-
-    <View>
+    <View style={{ flex: 1, backgroundColor: background_color }}>
       {/* Top Menu App Bar */}
       <View style={styles.titleContainer}>
-        <MaterialIcons.Button name="person" size={28} color={primary_color} backgroundColor={transparent_color} onPress={() => router.push('/profile')}/>
-        <ThemedText type="title" >BathLink</ThemedText>
-        <MaterialIcons.Button name="notifications" size={28} color={transparent_color} backgroundColor={transparent_color} onPress={testBtn}/>
+        <MaterialIcons.Button name="person" size={28} color={primary_color} backgroundColor="transparent" onPress={profileBtn} />
+        <ThemedText type="title">BathLink</ThemedText>
+        <MaterialIcons.Button name="notifications" size={28} color={"transparent"} backgroundColor="transparent" onPress={() => {testBtn}} />
       </View>
 
-      <ThemedText style={styles.headLine}>
-          {`Matches`}
-      </ThemedText>
 
-      <Divider bold={true}/>
 
-      <View style={styles.headlineContainer}>
-        <ThemedText style={styles.nameText}>
-          {`Invitations`}
-        </ThemedText>
-        <ThemedText style={styles.nameText}>
-          {`Preferences`}
-        </ThemedText>
+      {/* Tabs */}
+      <View style={styles.tabContainer}>
+        {[ 'Invitations', 'Preferences'].map(tab => (
+          <TouchableOpacity key={tab} onPress={() => setSelectedTab(tab)}>
+            <Text style={[styles.tabText, selectedTab === tab && styles.tabTextSelected]}>{tab}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
 
-      <View style={styles.stackedcardContainer}>
-      {/* Visualwind:: can be replaced with <Iconbutton style={"filled"} state={"enabled"} /> */}
-        <View style={styles.iconbutton}>
-          <View style={styles.container}>
-            <View style={styles.statelayer}>
-            {/* Visualwind:: can be replaced with <Icon /> */}
-              <View style={styles.icon}>
-                <Svg style={styles.icon} width="18" height="13" viewBox="0 0 18 13" fill="none" >
-                  <Path d="M6.54998 13L0.849976 7.30001L2.27498 5.87501L6.54998 10.15L15.725 0.975006L17.15 2.40001L6.54998 13Z" fill="white"/>
-                </Svg>
-              </View>
+      {/* Matches List */}
+      <ScrollView style={styles.matchList}>
+        {matches.map((match, index) => (
+          <View key={index} style={styles.matchCard}>
+            <Text style={styles.matchTitle}>{match[0]}</Text>
+            <Text style={styles.matchDetail}>With {match[1].join(', ')}</Text>
+            <Text style={styles.matchDetail}>{match[2]} {match[3]}</Text>
+            <Text style={styles.matchDetail}>{match[4]}</Text>
+            <View style={styles.buttonRow}>
+              <TouchableHighlight
+                underlayColor="#ddd"
+                style={[
+                  styles.iconContainer,
+                  buttonStates[index].checkSelected && styles.iconSelectedCheck,
+                ]}
+                onPress={() => toggleButton(index, 'check')}
+              >
+                <MaterialIcons
+                  name="check-circle"
+                  size={30}
+                  color={buttonStates[index].checkSelected ? "#fff" : "#5e4bb7"}
+                />
+              </TouchableHighlight>
+
+              <TouchableHighlight
+                underlayColor="#ddd"
+                style={[
+                  styles.iconContainer,
+                  buttonStates[index].cancelSelected && styles.iconSelectedCancel,
+                ]}
+                onPress={() => toggleButton(index, 'cancel')}
+              >
+                <MaterialIcons
+                  name="cancel"
+                  size={30}
+                  color={buttonStates[index].cancelSelected ? "#fff" : "#b79dcf"}
+                />
+              </TouchableHighlight>
             </View>
           </View>
-        </View>
-          {/* Visualwind:: can be replaced with <_iconbutton style={"tonal"} state={"enabled"} /> */}
-        <View style={styles.iconbutton}>
-          <View style={styles.container}>
-            <View style={styles.statelayer}>
-              {/* Visualwind:: can be replaced with <__icon /> */}
-              <View style={styles.icon}>
-                <Svg style={styles.icon} width="14" height="14" viewBox="0 0 14 14" fill="none" >
-                  <Path d="M1.4 14L0 12.6L5.6 7L0 1.4L1.4 0L7 5.6L12.6 0L14 1.4L8.4 7L14 12.6L12.6 14L7 8.4L1.4 14Z" fill="#4A4459"/>
-                </Svg>
-              </View>
-            </View>
-          </View>
-        </View>
-        <ThemedText style={styles.header}>
-          {`Indoor Tennis `}
-        </ThemedText>
-        <ThemedText style={styles.withNathanielJohnJamesSaturday12thFeb202508001000SportsTrainingVillageBathBA27JX}>
-          {`With Nathaniel, John, James\nSaturday 12th Feb 2025 08:00 - 10:00\nSports Training Village, Bath, BA2 7JX`}
-        </ThemedText>
-          {/* Visualwind:: can be replaced with <Background state={"enabled"} /> */}
-        <View style={styles.background}>
-          <View style={styles.statelayer}/>
-        </View>
-          {/* Visualwind:: can be replaced with <_background state={"enabled"} /> */}
-        <View style={styles.background}>
-          <View style={styles.statelayer}/>
-        </View>
-          {/* Visualwind:: can be replaced with <__background state={"enabled"} /> */}
-        <View style={styles.background}>
-          <View style={styles.statelayer}/>
-        </View>
-      </View>
-
-
+        ))}
+      </ScrollView>
     </View>
-
-
-);
+  );
 }
 
-
 const styles = StyleSheet.create({
-  // Top Bar Style Part
   titleContainer: {
     flexDirection: 'row',
-    flexGrow: 2,
     marginTop: 52,
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 16,
     paddingHorizontal: 20,
   },
-  headLine: {
-    position: "relative",
-    flexShrink: 0,
-    textAlign: "left",
-    marginLeft: 16,
-    fontSize: 24,
-    fontWeight: 600,
+  tabContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
   },
-  nameText: {
-    flexShrink: 0,
-    textAlign: "left",
-    marginTop: 8,
-    fontSize: 24,
-    fontWeight: 600,
+  tabText: {
+    fontSize: 16,
+    color: '#777',
   },
-  headlineContainer: {
-    position: "relative",
-    flexDirection: "row",
-    justifyContent: 'space-between',
-    display: "flex",
-    alignItems: "center",
-    columnGap: 0,
+  tabTextSelected: {
+    color: '#000',
+    fontWeight: 'bold',
+    borderBottomWidth: 2,
+    borderBottomColor: '#000',
+    paddingBottom: 4,
+  },
+  matchList: {
     paddingHorizontal: 16,
   },
-
-  stackedcardContainer: {
-    position: "relative",
-    flexShrink: 0,
-    height: 96,
-    width: 393,
-    display: "flex",
-    alignItems: "flex-start",
-    columnGap: 0,
-    borderRadius: 12
+  matchCard: {
+    backgroundColor: '#f5f5fa',
+    padding: 16,
+    borderRadius: 12,
+    marginVertical: 8,
   },
-  iconbutton: {
-    position: "absolute",
-    flexShrink: 0,
-    top: 24,
-    height: 48,
-    left: 262,
-    width: 48,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    rowGap: 10,
-    padding: 4
-  },
-  container: {
-    position: "relative",
-    flexShrink: 0,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    columnGap: 10,
-    borderRadius: 100
-  },
-  icon: {
-    position: "relative",
-    flexShrink: 0,
-    height: 24,
-    width: 24,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "flex-start",
-    rowGap: 0
-  },
-  statelayer: {
-    position: "relative",
-    flexShrink: 0,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    columnGap: 10,
-    padding: 8
-  },
-  header: {
-    position: "absolute",
-    flexShrink: 0,
-    top: 11,
-    left: 12,
-    width: 101,
-    height: 24,
-    textAlign: "left",
+  matchTitle: {
     fontSize: 16,
-    fontWeight: 700,
+    fontWeight: 'bold',
+    marginBottom: 4,
   },
-  withNathanielJohnJamesSaturday12thFeb202508001000SportsTrainingVillageBathBA27JX: {
-    position: "absolute",
-    flexShrink: 0,
-    top: 34,
-    left: 12,
-    width: 321,
-    height: 45,
-    textAlign: "left",
-    fontFamily: "Roboto",
-    fontSize: 12,
-    fontWeight: 500,
+  matchDetail: {
+    fontSize: 14,
+    color: '#333',
   },
-  background: {
-    position: "absolute",
-    flexShrink: 0,
-    height: 92,
-    width: 393,
-    borderStyle: "solid",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "flex-start",
-    rowGap: 0,
-    borderWidth: 1,
-    borderColor: "rgba(202, 196, 208, 1)",
-    borderRadius: 12
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 8,
+    gap: 16,
   },
-
+  iconContainer: {
+    borderRadius: 20,
+    padding: 4,
+  },
+  iconSelectedCheck: {
+    backgroundColor: '#5e4bb7',
+  },
+  iconSelectedCancel: {
+    backgroundColor: '#b79dcf',
+  },
 });
 

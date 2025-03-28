@@ -1,13 +1,23 @@
-import { View, StyleSheet, Switch, TouchableOpacity, Text } from 'react-native';
+import { useState } from 'react';
+import {
+  View, StyleSheet, Switch, TouchableOpacity, Text,
+  Modal, TextInput, Alert
+} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { useState } from 'react';
+import { useRouter } from "expo-router";
+import * as Crypto from 'expo-crypto';
+import {signOut, updatePassword, getCurrentUser} from 'aws-amplify/auth';
 import { ThemedText } from '@/components/ThemedText';
 
 export default function SettingsScreen() {
   const colorScheme = useColorScheme();
+  let primary_color = colorScheme === 'dark' ? "white" : "black";
+  let background_color = "rgba(0, 0, 0, 0)";
+  const router = useRouter();
 
-  // Independent switch states
+  // State for toggle switches
   const [switch1, setSwitch1] = useState(false);
   const [switch2, setSwitch2] = useState(false);
   const [switch3, setSwitch3] = useState(false);
@@ -15,36 +25,58 @@ export default function SettingsScreen() {
   const [switch5, setSwitch5] = useState(false);
   const [switch6, setSwitch6] = useState(false);
 
-  let primary_color = colorScheme === 'dark' ? "white" : "black";
-  let background_color = "rgba(0, 0, 0, 0)";
+  // State for modal and password fields
+  const [modalVisible, setModalVisible] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
-  const handleLogout = () => {
-    console.log("Logging out...");
-    alert("Logged out successfully!");
+  /** LOGOUT: Prevents auto-login but keeps credentials */
+  const handleLogout = async () => {
+    await signOut();
+    router.replace("/login");
   };
+
+  /** PASSWORD CHANGE FUNCTION */
+const handleChangePassword = async () => {
+
+    try {
+        const {username, userId, signInDetails} = await getCurrentUser();
+    await updatePassword({oldPassword : currentPassword, newPassword : newPassword})
+        Alert.alert("Success", "Password changed successfully!");
+        setModalVisible(false);
+
+    }
+    catch(e){
+        console.log(e)
+        }
+  }
+
+  const profileBtn = async () => {
+      await AsyncStorage.setItem("page", "/settings");
+      router.replace('/profile')
+  };
+
+
+
+
 
   return (
     <View style={[styles.container, { backgroundColor: background_color }]}>
-      {/* Top Bar (App Bar) */}
+      {/* Top Header Bar */}
       <View style={styles.titleContainer}>
         <MaterialIcons.Button
-          name="person"
-          size={28}
-          color={primary_color}
-          backgroundColor="transparent"
-          onPress={() => console.log('Profile pressed')}
+          name="person" size={28} color={primary_color} backgroundColor="transparent"
+          onPress={profileBtn}
         />
-        <ThemedText type="title">BathLink</ThemedText>
+          <ThemedText type="title" >BathLink</ThemedText>
         <MaterialIcons.Button
-          name="notifications"
-          size={28}
-          color={primary_color}
-          backgroundColor="transparent"
-          onPress={() => console.log('Notifications pressed')}
+          name="notifications" size={28} color="transparent" backgroundColor="transparent"
         />
       </View>
 
-      {/* Subheader: Settings */}
+
+     {/* Subheader: Settings */}
       <Text style={[styles.subheader, { color: primary_color }]}>Settings</Text>
 
       {/* Settings Options with Independent Switches */}
@@ -73,35 +105,79 @@ export default function SettingsScreen() {
         <Switch value={switch6} onValueChange={setSwitch6} />
       </View>
 
-      <TouchableOpacity style={styles.settingOption} onPress={() => alert("Change Password")}>
+
+      {/* Change Password */}
+      <TouchableOpacity style={styles.settingOption} onPress={() => setModalVisible(true)}>
         <Text style={[styles.optionText, { color: primary_color }]}>Change Password</Text>
         <MaterialIcons name="lock" size={24} color="gray" />
       </TouchableOpacity>
 
+      {/* Logout */}
       <TouchableOpacity style={styles.settingOption} onPress={handleLogout}>
         <Text style={[styles.optionText, { color: "red" }]}>Log Out</Text>
         <MaterialIcons name="logout" size={24} color="red" />
       </TouchableOpacity>
+
+      {/* PASSWORD CHANGE MODAL */}
+      <Modal visible={modalVisible} transparent animationType="fade">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Change Password</Text>
+
+            <TextInput
+              style={styles.input}
+              placeholder="Current Password"
+              secureTextEntry
+              value={currentPassword}
+              onChangeText={setCurrentPassword}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="New Password"
+              secureTextEntry
+              value={newPassword}
+              onChangeText={setNewPassword}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Confirm New Password"
+              secureTextEntry
+              value={confirmNewPassword}
+              onChangeText={setConfirmNewPassword}
+            />
+
+            <View style={styles.modalButtons}>
+              <TouchableOpacity style={styles.modalButton} onPress={handleChangePassword}>
+                <Text style={styles.buttonText}>Save</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelButton]}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
     </View>
   );
 }
 
+/** STYLES */
 const styles = StyleSheet.create({
+  container: { flex: 1 },
   titleContainer: {
     flexDirection: 'row',
-    flexGrow: 2,
     marginTop: 52,
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 16,
     paddingHorizontal: 20,
   },
-  subheader: {
-    fontSize: 25,
-    fontWeight: 'bold',
-    marginVertical: 10,
-    paddingHorizontal: 20,
-  },
+  titleText: { fontSize: 28, fontWeight: 'bold' },
+  subheader: { fontSize: 25, fontWeight: 'bold', marginVertical: 10, paddingHorizontal: 20 },
   settingOption: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -111,7 +187,42 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ddd',
     paddingHorizontal: 20,
   },
-  optionText: {
-    fontSize: 18,
+  optionText: { fontSize: 18 },
+
+  /** MODAL STYLES */
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Dark overlay
   },
+  modalContent: {
+    width: '80%',
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
+  input: {
+    width: '100%',
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    marginBottom: 10,
+    backgroundColor: '#f9f9f9',
+  },
+  modalButtons: { flexDirection: 'row', justifyContent: 'space-between', width: '100%' },
+  modalButton: {
+    flex: 1,
+    padding: 10,
+    backgroundColor: '#6c5b7b',
+    borderRadius: 5,
+    alignItems: 'center',
+    marginHorizontal: 5,
+  },
+  cancelButton: { backgroundColor: 'gray' },
+  buttonText: { color: '#fff', fontWeight: 'bold' },
 });
+
