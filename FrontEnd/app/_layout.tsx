@@ -3,7 +3,7 @@ import 'react-native-reanimated';
 
 export default function RootLayout() {
   return (
-    <Stack initialRouteName="(tabs)">
+    <Stack initialRouteName="+not-found">
       <Stack.Screen name="(tabs)" options={{ headerShown: false}} />
       <Stack.Screen name="profile" options = {{title: "", headerShown: false}}  />
       <Stack.Screen name="login" options={{ title: "" , headerShown: false}}/>

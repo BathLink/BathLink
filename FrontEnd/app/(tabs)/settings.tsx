@@ -1,13 +1,9 @@
 import { useState } from 'react';
-import {
-  View, StyleSheet, Switch, TouchableOpacity, Text,
-  Modal, TextInput, Alert
-} from 'react-native';
+import { View, StyleSheet, Switch, TouchableOpacity, Text, Modal, TextInput, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useRouter } from "expo-router";
-import * as Crypto from 'expo-crypto';
 import {signOut, updatePassword, getCurrentUser} from 'aws-amplify/auth';
 import { ThemedText } from '@/components/ThemedText';
 
@@ -17,7 +13,6 @@ export default function SettingsScreen() {
   let background_color = "rgba(0, 0, 0, 0)";
   const router = useRouter();
 
-  // State for toggle switches
   const [switch1, setSwitch1] = useState(false);
   const [switch2, setSwitch2] = useState(false);
   const [switch3, setSwitch3] = useState(false);
@@ -25,27 +20,22 @@ export default function SettingsScreen() {
   const [switch5, setSwitch5] = useState(false);
   const [switch6, setSwitch6] = useState(false);
 
-  // State for modal and password fields
   const [modalVisible, setModalVisible] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
-  /** LOGOUT: Prevents auto-login but keeps credentials */
   const handleLogout = async () => {
     await signOut();
     router.replace("/login");
   };
 
-  /** PASSWORD CHANGE FUNCTION */
 const handleChangePassword = async () => {
-
     try {
         const {username, userId, signInDetails} = await getCurrentUser();
     await updatePassword({oldPassword : currentPassword, newPassword : newPassword})
         Alert.alert("Success", "Password changed successfully!");
         setModalVisible(false);
-
     }
     catch(e){
         console.log(e)
@@ -56,10 +46,6 @@ const handleChangePassword = async () => {
       await AsyncStorage.setItem("page", "/settings");
       router.replace('/profile')
   };
-
-
-
-
 
   return (
     <View style={[styles.container, { backgroundColor: background_color }]}>
@@ -75,11 +61,7 @@ const handleChangePassword = async () => {
         />
       </View>
 
-
-     {/* Subheader: Settings */}
       <Text style={[styles.subheader, { color: primary_color }]}>Settings</Text>
-
-      {/* Settings Options with Independent Switches */}
       <View style={styles.settingOption}>
         <Text style={[styles.optionText, { color: primary_color }]}>Setting 1</Text>
         <Switch value={switch1} onValueChange={setSwitch1} />
@@ -105,20 +87,16 @@ const handleChangePassword = async () => {
         <Switch value={switch6} onValueChange={setSwitch6} />
       </View>
 
-
-      {/* Change Password */}
       <TouchableOpacity style={styles.settingOption} onPress={() => setModalVisible(true)}>
         <Text style={[styles.optionText, { color: primary_color }]}>Change Password</Text>
         <MaterialIcons name="lock" size={24} color="gray" />
       </TouchableOpacity>
 
-      {/* Logout */}
       <TouchableOpacity style={styles.settingOption} onPress={handleLogout}>
         <Text style={[styles.optionText, { color: "red" }]}>Log Out</Text>
         <MaterialIcons name="logout" size={24} color="red" />
       </TouchableOpacity>
 
-      {/* PASSWORD CHANGE MODAL */}
       <Modal visible={modalVisible} transparent animationType="fade">
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
@@ -160,12 +138,10 @@ const handleChangePassword = async () => {
           </View>
         </View>
       </Modal>
-
     </View>
   );
 }
 
-/** STYLES */
 const styles = StyleSheet.create({
   container: { flex: 1 },
   titleContainer: {
@@ -189,7 +165,6 @@ const styles = StyleSheet.create({
   },
   optionText: { fontSize: 18 },
 
-  /** MODAL STYLES */
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
