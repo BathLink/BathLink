@@ -1,114 +1,139 @@
 import json
 import boto3
-import networkx as nx
-import itertools
-Max_number_of_meetups = 5
+import uuid
+
 dynamodb = boto3.resource("dynamodb", region_name="eu-west-2")
 users_table = dynamodb.Table("users-table")
 meetups_table = dynamodb.Table("meetups-table")
+activities_table = dynamodb.Table("meetups-table")
 
-def build_matching_graph(users,meetup_id):
+def get_activity_ids(users):
+   
     try:
-        G = nx.Graph()
-        
-        # Add users as nodes
+        activity_ids = set()
         for user in users:
-            G.add_node(user["user_id"], type="user", **user)
-
-        # Create potential groups based on shared availability
-        potential_groups = []
-        
-        for time_slot in set(itertools.chain.from_iterable([u["availabilty"] for u in users])):
-            for activity in set(itertools.chain.from_iterable([u["activities"] for u in users])):
-                potential_groups[meetup_id] = {"activity": activity, "time_slot": time_slot, "users": []}
-                G.add_node(meetup_id, type="meetup", activity=activity, time_slot=time_slot)
-
-                # Add edges from users to meetups with a weight
-                for user in users:
-                    if time_slot in user["calendar"] and activity in user["activities"]:
-                        weight = calculate_match_score(user, activity)
-                        G.add_edge(user["user_id"], meetup_id, weight=weight)
-
-        return G, potential_groups
+            for act_id in user["matchPreferences"]["activity_id"]:
+                activity_ids.add(act_id)
+        return list(activity_ids)
     except Exception as e:
         print(e)
-        return {"statusCode": 400, "body": f" build_graph error: {e}"}
-
-def calculate_match_score(user):
-    score = 0 
+        raise Exception(f"Error extracting activity IDs: {e}")
     
-    # Prioritise users with fewer preferred activities
-    score += (5 - len(user["activities"])) * 5  
-
-    # Prioritise users with limited availability
-    score += (7 - len(user["availability"])) * 8  
-
-    return score
-
-def match_users_to_groups(G):
-    matches = nx.max_weight_matching(G, maxcardinality=True)
-    return matches
-
-
-
-def save_suggested_meetups(matches, potential_groups,G):
+def get_activities(activity_ids):
     try:
-        for user, group in matches:
-            if "user" in G.nodes[user]["type"]:
-                group_details = next(g for g in potential_groups if g["group_id"] == group)
-                meetup_id = f"{group_details['activity']}_{group_details['time_slot']}"
+        if not activity_ids:
+            return {}
+        keys = [{"activity_id": activity_id} for activity_id in activity_ids]
+        # Use the low-level DynamoDB client to fetch items.
+        dynamodb_client = boto3.client("dynamodb", region_name="eu-west-2")
+        response = dynamodb_client.batch_get_item(
+            RequestItems={
+                activities_table.name: {
+                    "Keys": keys
+                }
+            }
+        )
+        activities = {}
+        for item in response["Responses"].get(activities_table.name, []):
+            activities[item["activity_id"]] = item
+        return activities
+    except Exception as e:
+        print(e)
+        raise Exception(f"Error fetching activities: {e}")
+def group_users_by_time_slot(users, activities):
+    try:
+        # Create a dictionary: { time_slot: { activity_id: [user_id, ...] } }
+        matches = {}
+        for user in users:
+            user_id = user["student-id"]
+            free_times = user["calendar"]
+            preferred_activities = user["matchPreferences"]["activity_id"]
+            for time_slot in free_times:
+                for activity_id in preferred_activities:
+                    if activity_id in activities:
+                        if time_slot not in matches:
+                            matches[time_slot] = {}
+                        if activity_id not in matches[time_slot]:
+                            matches[time_slot][activity_id] = []
+                        matches[time_slot][activity_id].append(user_id)
+        return matches
+    except Exception as e:
+        print(e)
+        raise Exception(f"Error grouping users by time slot: {e}")
 
-                meetups_table.put_item(
-                    Item={
-                        "meetup_id": meetup_id,
-                        "activity": group_details["activity"],
-                        "participants": group_details["users"],
-                        "time_slot": group_details["time_slot"],
+def create_meetups_from_groups(matches, activities):
+    try:
+        created_meetups = []
+        for time_slot, activity_groups in matches.items():
+            # Ensure a user is matched only once per time slot.
+            matched_users_in_slot = set()
+            for activity_id in sorted(activity_groups.keys()):
+                available_users = [uid for uid in activity_groups[activity_id] if uid not in matched_users_in_slot]
+                # Get the required group size from the activity record.
+                required_num = int(activities[activity_id]["number_of_people"])
+                # Only create a meetup if enough users are available for a complete group.
+                while len(available_users) >= required_num:
+                    group = available_users[:required_num]
+                    matched_users_in_slot.update(group)
+                    meetup_item = {
+                        "meetup_id": str(uuid.uuid4()),
+                        "activity_id": activity_id,
+                        "participants": group,
+                        "time_slot": time_slot,
                         "confirmed": False,
                         "done": False,
-                        "confirmed_users" : []
+                        "confirmed_users": []
                     }
-                )
+                    created_meetups.append(meetup_item)
+                    available_users = available_users[required_num:]
+        return created_meetups
     except Exception as e:
         print(e)
-        return {"statusCode": 400, " body": f" save_suggested_meetups error: {e}"}
+        raise Exception(f"Error creating meetups from groups: {e}")
+
+def store_meetups(meetups):
+    try:
+        for meetup in meetups:
+            meetups_table.put_item(Item=meetup)
+    except Exception as e:
+        print(e)
+        raise Exception(f"Error storing meetups: {e}")
 
 def get_users_needing_match():
     try:
         response = users_table.scan()
         users = response["Items"]
-        return [user for user in users if (user["ongoing_meetups"] < Max_number_of_meetups)]
+        return [user for user in users if user["Enabled"] == True ]
     except Exception as e:
         print(e)
         return {"statusCode": 400, "body": f" get_users_needing_match error: {e}"}
 
-def handle_post_request(meetup_id):
-    users = get_users_needing_match()
-    g = build_matching_graph(users,meetup_id)
-    matches = match_users_to_groups(g[0])
-    save_suggested_meetups(matches, g[1],g[0] )
-    return {
-                "statusCode": 200,
-                "body": json.dumps(
-                    {"message": f"Meetups added to database"}
-                ),
-                "headers": {"Content-Type": "application/json"},
-            }
+def handle_post_request():
+    try:
+        users = get_users_needing_match()
+        activity_ids = get_activity_ids(users)
+        activities = get_activities(activity_ids)
+        matches = group_users_by_time_slot(users, activities)
+        created_meetups = create_meetups_from_groups(matches, activities)
+        store_meetups(created_meetups)
+        return {
+            "statusCode": 200,
+            "body": json.dumps(f"Created {len(created_meetups)} complete meetups.")
+        }
+    except Exception as e:
+        print(e)
+        return {
+            "statusCode": 400,
+            "body": json.dumps(f"Error: {e}")
+        }
+
 
 
 
 def lambda_handler(event, context):
     http_method = event["httpMethod"]
-    path_parameters = event.get("pathParameters", {})
-    meetup_id = path_parameters.get("meetupId")
-    if not meetup_id:
-        return {
-            "statusCode": 400,
-            "body": "Missing meetupId in path parameters",
-            "headers": {"Content-Type": "application/json"},
-        }
     if http_method == "POST":
-        return handle_post_request(meetup_id)
+        return handle_post_request()
 
     else:
         return {"statusCode": 400, "body": f"{http_method} doesn't exist for meetups"}
