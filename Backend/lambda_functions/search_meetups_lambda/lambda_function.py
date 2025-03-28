@@ -41,7 +41,7 @@ def group_users_by_time_slot(users, activities):
         matches = {}
         for user in users:
             user_id = user["student-id"]
-            free_times = user["calendar"]
+            free_times = user["calendar"]["available"]
             preferred_activities = user["matchPreferences"]["activity-id"]
             for time_slot in free_times:
                 for activity_id in preferred_activities:
