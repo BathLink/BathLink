@@ -12,7 +12,7 @@ def get_activity_ids(users):
     try:
         activity_ids = set()
         for user in users:
-            for act_id in user["matchPreferences"]["activity-id"]:
+            for act_id in user["matchPreferences"]["activities"]:
                 activity_ids.add(act_id)
         return list(activity_ids)
     except Exception as e:
@@ -42,7 +42,7 @@ def group_users_by_time_slot(users, activities):
         for user in users:
             user_id = user["student-id"]
             free_times = user["calendar"]["available"]
-            preferred_activities = user["matchPreferences"]["activity-id"]
+            preferred_activities = user["matchPreferences"]["activities"]
             for time_slot in free_times:
                 for activity_id in preferred_activities:
                     if activity_id in activities:
@@ -72,7 +72,7 @@ def create_meetups_from_groups(matches, activities):
                     matched_users_in_slot.update(group)
                     meetup_item = {
                         "meetup-id": str(uuid.uuid4()),
-                        "activity-id": activity_id,
+                        "activity": activity_id,
                         "participants": group,
                         "time_slot": time_slot,
                         "confirmed": False,
