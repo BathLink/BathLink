@@ -5,14 +5,14 @@ import uuid
 dynamodb = boto3.resource("dynamodb", region_name="eu-west-2")
 users_table = dynamodb.Table("users-table")
 meetups_table = dynamodb.Table("meetups-table")
-activities_table = dynamodb.Table("meetups-table")
+activities_table = dynamodb.Table("activities-table")
 
 def get_activity_ids(users):
    
     try:
         activity_ids = set()
         for user in users:
-            for act_id in user["matchPreferences"]["activity_id"]:
+            for act_id in user["matchPreferences"]["activity-id"]:
                 activity_ids.add(act_id)
         return list(activity_ids)
     except Exception as e:
@@ -23,23 +23,18 @@ def get_activities(activity_ids):
     try:
         if not activity_ids:
             return {}
-        keys = [{"activity_id": activity_id} for activity_id in activity_ids]
-        # Use the low-level DynamoDB client to fetch items.
-        dynamodb_client = boto3.client("dynamodb", region_name="eu-west-2")
-        response = dynamodb_client.batch_get_item(
-            RequestItems={
-                activities_table.name: {
-                    "Keys": keys
-                }
-            }
-        )
+        
         activities = {}
-        for item in response["Responses"].get(activities_table.name, []):
-            activities[item["activity_id"]] = item
+        for activity_id in activity_ids:
+            response = activities_table.get_item(Key={"activity-id": activity_id})
+            item = response.get("Item")
+            if item:
+                activities[activity_id] = item
+        
         return activities
     except Exception as e:
-        print(e)
         raise Exception(f"Error fetching activities: {e}")
+    
 def group_users_by_time_slot(users, activities):
     try:
         # Create a dictionary: { time_slot: { activity_id: [user_id, ...] } }
@@ -47,7 +42,7 @@ def group_users_by_time_slot(users, activities):
         for user in users:
             user_id = user["student-id"]
             free_times = user["calendar"]
-            preferred_activities = user["matchPreferences"]["activity_id"]
+            preferred_activities = user["matchPreferences"]["activity-id"]
             for time_slot in free_times:
                 for activity_id in preferred_activities:
                     if activity_id in activities:
@@ -76,8 +71,8 @@ def create_meetups_from_groups(matches, activities):
                     group = available_users[:required_num]
                     matched_users_in_slot.update(group)
                     meetup_item = {
-                        "meetup_id": str(uuid.uuid4()),
-                        "activity_id": activity_id,
+                        "meetup-id": str(uuid.uuid4()),
+                        "activity-id": activity_id,
                         "participants": group,
                         "time_slot": time_slot,
                         "confirmed": False,
