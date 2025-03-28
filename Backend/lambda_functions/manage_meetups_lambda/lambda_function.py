@@ -1,3 +1,4 @@
+
 import json
 import boto3
 
@@ -19,42 +20,68 @@ def handle_get_request(meetupId):
         print(e)
         return {"statusCode": 400, "body": f"error: {e}"}
 
-def handle_put_request(meetupId,userId):
+def handle_put_request(event):
     try:
-        rsp = meetups_table.get_item(Key={"meetup-id": meetupId})
-        confirmed_users = meetup.get("confirmed_users",[])
-        if "Item" in rsp:
-            try:
-                response = meetups_table.update_item(
-            Key={"meetup_id": meetupId},
-            UpdateExpression="ADD confirmed_users :user",
-            ExpressionAttributeValues={":user": set(confirmed_users.append(userId))},
-            ReturnValues="UPDATED_NEW"
-            )
+        path_parameters = event.get("pathParameters", {})
+        meetup_id = path_parameters.get("meetup_id")
+        if not meetup_id:
+            return {
+                "statusCode": 400,
+                "body": json.dumps("Missing meetup_id in path parameters")
+            }
 
-            except Exception as e:
-                return {"statusCode": 400, "body": f"error: {e}"}
-            
-            rsp = meetups_table.get_item(Key={"meetup-id": meetupId})
-            meetup = rsp.get("Item")
-            partipants = meetup.get("participants",[])
-            if len(confirmed_users) == len(partipants):
-                try:
-                    response = meetups_table.update_item(
-                        Key={"meetup_id": meetupId},
-            UpdateExpression="SET confirmed = :confirmed",
+        body = json.loads(event.get("body", "{}"))
+        user_id = body.get("user_id")
+        if not user_id:
+            return {
+                "statusCode": 400,
+                "body": json.dumps("Missing user_id in request body")
+            }
+
+        # Get current meetup
+        response = meetups_table.get_item(Key={"meetup_id": meetup_id})
+        item = response.get("Item")
+
+        if not item:
+            return {
+                "statusCode": 404,
+                "body": json.dumps("Meetup not found")
+            }
+
+        confirmed_users = item.get("confirmed_users", [])
+        participants = item.get("participants", [])
+
+        if user_id not in confirmed_users:
+            confirmed_users.append(user_id)
+
+        # Check if all participants have confirmed
+        all_confirmed = len(confirmed_users) == len(participants)
+
+        # Update the meetup item in DynamoDB
+        meetups_table.update_item(
+            Key={"meetup_id": meetup_id},
+            UpdateExpression="SET confirmed_users = :cu, confirmed = :c",
             ExpressionAttributeValues={
-                ":confirmed": True
-            },
-            ReturnValues="UPDATED_NEW"
-            )
-                except Exception as e:
-                    return {"statusCode": 400, "body": f"error: {e}"}
-        else:
-            return {"statusCode": 404, "body": f"meetupId:{meetupId} not found!"}
+                ":cu": confirmed_users,
+                ":c": all_confirmed
+            }
+        )
+
+        message = f"User {user_id} confirmed for meetup {meetup_id}."
+        if all_confirmed:
+            message += " Meetup is now confirmed."
+
+        return {
+            "statusCode": 200,
+            "body": json.dumps(message)
+        }
+
     except Exception as e:
         print(e)
-        return {"statusCode": 400, "body": f"error: {e}"}
+        return {
+            "statusCode": 500,
+            "body": json.dumps(f"Error confirming meetup: {str(e)}")
+        }
 
 
 def handle_delete_request(meetupId):
