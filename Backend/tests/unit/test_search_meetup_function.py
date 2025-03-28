@@ -44,8 +44,8 @@ def dynamodb_setup():
 
 def test_get_activity_ids():
     users = [
-        {"matchPreferences": {"activity-id": ["a1", "a2"]}},
-        {"matchPreferences": {"activity-id": ["a2", "a3"]}},
+        {"matchPreferences": {"activities": ["a1", "a2"]}},
+        {"matchPreferences": {"activities": ["a2", "a3"]}},
     ]
     assert sorted(m.get_activity_ids(users)) == ["a1", "a2", "a3"]
 
@@ -60,8 +60,8 @@ def test_get_activities_correct_table(dynamodb_setup):
 
 def test_group_users_by_time_slot():
     users = [
-        {"student-id": "u1", "calendar": { "available" : ["slot1"]}, "matchPreferences": {"activity-id": ["a1"]}},
-        {"student-id": "u2", "calendar": { "available" : ["slot1"] }, "matchPreferences": {"activity-id": ["a1", "a2"]}},
+        {"student-id": "u1", "calendar": { "available" : ["slot1"]}, "matchPreferences": {"activities": ["a1"]}},
+        {"student-id": "u2", "calendar": { "available" : ["slot1"] }, "matchPreferences": {"activities": ["a1", "a2"]}},
     ]
     activities = {"a1": {"number_of_people": "2"}, "a2": {"number_of_people": "2"}}
     result = m.group_users_by_time_slot(users, activities)
@@ -99,13 +99,13 @@ def test_lambda_handler_post_success(dynamodb_setup):
     users_table.put_item(Item={
         "student-id": "u1",
         "calendar": { "available" : ["slot1"] },
-        "matchPreferences": {"activity-id": ["a1"]},
+        "matchPreferences": {"activities": ["a1"]},
         "Enabled": True
     })
     users_table.put_item(Item={
         "student-id": "u2",
         "calendar": { "available" :["slot1"]},
-        "matchPreferences": {"activity-id": ["a1"]},
+        "matchPreferences": {"activities": ["a1"]},
         "Enabled": True
     })
 
