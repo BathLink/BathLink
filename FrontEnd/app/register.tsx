@@ -6,6 +6,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRouter } from 'expo-router';
 import { SignUp } from '@/authentication/auth';
+import {ThemedText} from "@/components/ThemedText";
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -32,6 +33,11 @@ export default function RegisterScreen() {
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
+
+    if (!email.toLowerCase().endsWith("@bath.co.uk") || !confirmEmail.toLowerCase().endsWith("@bath.co.uk")) {
+      Alert.alert('Error', 'Email must be a Uni of Bath email');
+      return;
+    }
     if (email !== confirmEmail) {
       Alert.alert('Error', 'Emails do not match');
       return;
@@ -52,8 +58,12 @@ export default function RegisterScreen() {
       const errorMessage = String(error);
       if (errorMessage.includes("UsernameExistsException:")) {
         Alert.alert("Signup Failed", "User already exists. Please try again.");
-      } else if (errorMessage.includes("InvalidPasswordException")) {
-        Alert.alert("Signup Failed", "Password did not conform with policy.");
+      } else if (errorMessage.includes("InvalidPasswordException: Password did not conform with policy: Password not long enough")) {
+        Alert.alert("Signup Failed", "Password did not conform with policy: Password not long enough");
+      } else if (errorMessage.includes("InvalidPasswordException: Password did not conform with policy: Password must have uppercase characters")) {
+        Alert.alert("Signup Failed", "Password did not conform with policy: Password must have uppercase characters");
+      } else if (errorMessage.includes("InvalidPasswordException: Password did not conform with policy: Password must have numeric characters")) {
+        Alert.alert("Signup Failed", "Password did not conform with policy: Password must have numeric characters");
       } else {
         Alert.alert("Error", errorMessage);
       }
@@ -82,13 +92,25 @@ export default function RegisterScreen() {
     return `${day}/${month}/${year}`;
   };
 
+  const testBtn = () => {
+    console.log('Button pressed');
+  };
+
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <View style={styles.titleContainer}>
+            <MaterialIcons.Button name="arrow-back" size={28} color={"black"} backgroundColor="transparent" onPress={() => router.replace('/login')}/>
+            <ThemedText type="title">BathLink</ThemedText>
+            <MaterialIcons.Button name="notifications" size={28} color={"transparent"}
+                                  backgroundColor="transparent" onPress={testBtn}/>
+
+          </View>
+          <Text style={styles.subtitle}>Register</Text>
+
+
           <View style={styles.container}>
-            <Text style={styles.title}>BathLink</Text>
-            <Text style={styles.subtitle}>Register</Text>
 
             <TextInput style={styles.input} placeholder="First Name" value={firstName} onChangeText={setFirstName} />
             <TextInput style={styles.input} placeholder="Last Name" value={lastName} onChangeText={setLastName} />
@@ -126,10 +148,6 @@ export default function RegisterScreen() {
             <TextInput style={styles.input} placeholder="Password" secureTextEntry value={password} onChangeText={setPassword} />
             <TextInput style={styles.input} placeholder="Confirm Password" secureTextEntry value={confirmPassword} onChangeText={setConfirmPassword} />
 
-            <TouchableOpacity style={styles.backButton} onPress={() => router.replace('/login')}>
-              <MaterialIcons name="arrow-back" size={24} color="black" />
-            </TouchableOpacity>
-
             <TouchableOpacity style={styles.button} onPress={handleRegister}>
               <Text style={styles.buttonText}>Register</Text>
             </TouchableOpacity>
@@ -141,9 +159,8 @@ export default function RegisterScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f8f4ff',  width: "100%"  },
-  title: { fontSize: 32, fontWeight: 'bold', color: '#000' },
-  subtitle: { fontSize: 18, marginBottom: 20 },
+  container: { flex: 1, justifyContent: "flex-start", alignItems: 'center', backgroundColor: '#f8f4ff',  width: "100%", paddingVertical: 16, },
+  subtitle: { fontSize: 18, marginBottom: 10 },
   input: { width: '80%', padding: 10, borderWidth: 1, marginBottom: 10, borderRadius: 5, backgroundColor: '#fff' },
   button: { backgroundColor: '#6c5b7b', padding: 10, borderRadius: 5, marginTop: 10 },
   buttonText: { color: '#fff', fontWeight: 'bold' },
@@ -155,4 +172,14 @@ const styles = StyleSheet.create({
   modalContent: { backgroundColor: "white", padding: 20, borderRadius: 10, alignItems: "center", width: "80%" },
   confirmButton: { marginTop: 10, backgroundColor: "#6c5b7b", padding: 10, borderRadius: 5, alignItems: "center", width: "80%" },
   backButton: { position: "absolute", top: 10, left: 10, padding: 10 },
+  titleContainer: {
+    flexDirection: 'row',
+    flexGrow: 0,
+    width: "100%",
+    marginTop: 52,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+  },
 });
