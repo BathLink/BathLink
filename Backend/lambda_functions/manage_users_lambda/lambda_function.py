@@ -37,7 +37,6 @@ def get_user_meetups(userId):
     return response.get("Items", [])
 
 
-
 def handle_get_request(userId):
     rsp = users_table.get_item(
         Key={"student-id": userId}  # The partition key used in the DynamoDB table
@@ -50,18 +49,15 @@ def handle_get_request(userId):
             "body": json.dumps(user_data),  # Return the user data in the response
         }
     else:
-        return {"statusCode": 404, "body": f"userId:{userId} not found!"}
+        return {"statusCode": 404, "body": json.dumps(f"userId:{userId} not found!")}
 
 
 def handle_put_request(userId, body):
-    body = json.loads(body)
     print("In put, body:", body)
     if len(body) > 1:
         return {
             "statusCode": 400,
-            "body": json.dumps(
-                {"error": "Send only ONE value to update, not multiple"}
-            ),
+            "body": json.dumps("Send only ONE value to update, not multiple"),
         }
     try:
         rsp = users_table.get_item(Key={"student-id": userId})
@@ -78,18 +74,18 @@ def handle_put_request(userId, body):
             return {
                 "statusCode": 200,
                 "body": json.dumps(
-                    {
-                        "message": f"Success! Updated the record for user-id {userId}, {attributeToChange}={newValue}"
-                    }
+                    f"Success! Updated the record for user-id {userId}, {attributeToChange}={newValue}"
                 ),
-                "headers": {"Content-Type": "application/json"},
             }
 
         else:
-            return {"statusCode": 404, "body": f"userId:{userId} not found!"}
+            return {
+                "statusCode": 404,
+                "body": json.dumps(f"userId:{userId} not found!"),
+            }
     except Exception as e:
         print(e)
-        return {"statusCode": 404, "body": f"Error: {e}"}
+        return {"statusCode": 404, "body": json.dumps(f"Error: {e}")}
 
 
 def lambda_handler(event, context):
@@ -103,18 +99,16 @@ def lambda_handler(event, context):
 
     try:
         http_method = event.get("httpMethod")
-        path = event.get("path")
+        path = event.get("pathParameters")
+        userId = path.get("userId")
 
-        userId = path.split("/")[2]
-
-        if '/meetups' in path and http_method == "GET":
+        if "/meetups" in path and http_method == "GET":
             return {
                 "statusCode": 200,
-                "body": json.dumps(
-                    {"meetups": get_user_meetups(userId)}
-                ),
+                "body": json.dumps({"meetups": get_user_meetups(userId)}),
                 "headers": {"Content-Type": "application/json"},
             }
+
 
         if http_method == "GET":
             return handle_get_request(userId)
@@ -122,10 +116,11 @@ def lambda_handler(event, context):
         elif http_method == "PUT":
             body = event.get("body")
 
+
             if not body:
                 return {
                     "statusCode": 400,
-                    "body": json.dumps({"error": "Content of body"}),
+                    "body": json.dumps("Content of body is empty"),
                 }
             else:
                 return handle_put_request(userId, body)
@@ -141,5 +136,5 @@ def lambda_handler(event, context):
 
         return {
             "statusCode": 500,
-            "body": json.dumps({"message": "The server screwed up", "error": str(e)}),
+            "body": json.dumps(f"The server screwed up, error: {str(e)}"),
         }
