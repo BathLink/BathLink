@@ -111,7 +111,7 @@ def lambda_handler(event, context):
     http_method = event["httpMethod"]
     path_parameters = event.get("pathParameters", {})
     meetup_id = path_parameters.get("meetupId")
-    user_id = event.get("pathParameters", {}).get("user_id")
+    user_id = event.get("pathParameters", {}).get("userId")
 
     if not meetup_id:
         return {
