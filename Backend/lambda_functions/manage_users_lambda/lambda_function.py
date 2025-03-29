@@ -57,7 +57,6 @@ def handle_put_request(userId, body):
     if type(body) == str:
         body = json.loads(body)
 
-    print("In put, body:", body)
     if len(body) > 1:
         return {
             "statusCode": 400,
@@ -99,7 +98,6 @@ def lambda_handler(event, context):
     ):
         return PostConfirmation(event, context)
 
-    print("Event:", event)
 
     try:
         http_method = event.get("httpMethod")

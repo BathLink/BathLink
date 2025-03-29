@@ -115,8 +115,6 @@ def test_update_user(
     }
 
     response = benchmark(lambda_handler, event, None)
-    print(json.loads(response["body"]))
-    print(expected_response)
     assert response["statusCode"] == expected_status
     assert json.loads(response["body"]) == expected_response
 
@@ -161,6 +159,5 @@ def test_post_confirmation(dynamodb_setup, attributes):
     PostConfirmation(event, None)
     table = boto3.resource("dynamodb", region_name="eu-west-2").Table("users-table")
     item = table.get_item(Key={"student-id": attributes["sub"]})
-    print(item)
     assert "Item" in item
     assert item["Item"] == expected_response

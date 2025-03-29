@@ -108,6 +108,8 @@ class BathLinkAPI:
         
 
         activities = api.root.add_resource("activities")
-        add_method(activities, "GET", "manage_activities_lambda")
+        add_method(activities, "GET", "manage_activities_lambda")  # Get activities
+        activity = activities.add_resource("{activityId}")
+        add_method(activity, "GET", "manage_activities_lambda")
 
         return api

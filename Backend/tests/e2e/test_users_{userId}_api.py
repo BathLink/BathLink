@@ -11,13 +11,15 @@ from Backend.tests.test_utils import (
 
 def test_create_profile(create_test_user):
 
+    user_id, username, password = create_test_user
+
     response = fetch_from_api(
-        f"https://mdwq3r92te.execute-api.eu-west-2.amazonaws.com/prod/users/{create_test_user}"
+        f"https://mdwq3r92te.execute-api.eu-west-2.amazonaws.com/prod/users/{user_id}"
     )
 
     assert response.status_code == 200
     assert json.loads(response.text) == {
-        "student-id": create_test_user,
+        "student-id": user_id,
         "dob": "1990-01-01",
         "profile": {},
         "matchPreferences": {"enabled": False, "activities": []},
@@ -28,17 +30,17 @@ def test_create_profile(create_test_user):
     }
 
     response = put_from_api(
-        f"https://mdwq3r92te.execute-api.eu-west-2.amazonaws.com/prod/users/{create_test_user}",
+        f"https://mdwq3r92te.execute-api.eu-west-2.amazonaws.com/prod/users/{user_id}",
         data={"dob": "2000-05-05"},
     )
     assert response.status_code == 200
     assert (
         json.loads(response.text)
-        == f"Success! Updated the record for user-id {create_test_user}, dob=2000-05-05"
+        == f"Success! Updated the record for user-id {user_id}, dob=2000-05-05"
     )
 
     response = put_from_api(
-        f"https://mdwq3r92te.execute-api.eu-west-2.amazonaws.com/prod/users/{create_test_user}",
+        f"https://mdwq3r92te.execute-api.eu-west-2.amazonaws.com/prod/users/{user_id}",
         data={"dob": "2000-05-05", "email": "email@com"},
     )
 
