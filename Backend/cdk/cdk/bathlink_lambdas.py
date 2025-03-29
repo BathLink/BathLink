@@ -51,7 +51,7 @@ class BathLinkLambdas:
 
         self.manage_meetups = create_lambda('manage_meetups_lambda',[tables.meetups_table])
 
-        self.search_meetups = create_lambda('search_meetups_lambda',[tables.meetups_table,tables.users_table])
+        self.search_meetups = create_lambda('search_meetups_lambda',[tables.meetups_table,tables.users_table,tables.activities_table])
         rule = events.Rule(
             stack, 'DailyTrigger',
             schedule=events.Schedule.cron(hour="0", minute="0")  # Runs at midnight UTC
@@ -69,4 +69,4 @@ class BathLinkLambdas:
         self.manage_profiles = create_lambda('manage_profiles_lambda',[tables.users_table])
         self.manage_chats = create_lambda('manage_chats_lambda',[tables.groupchats_table])
         self.manage_calendars = create_lambda('manage_calendars_lambda',[tables.users_table])
-        self.manage_activities = create_lambda('manage_activities_lambda',[tables.users_table])
+        self.manage_activities = create_lambda('manage_activities_lambda',[tables.users_table,tables.activities_table])
