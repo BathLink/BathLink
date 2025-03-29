@@ -4,6 +4,7 @@ import os
 import pytest
 import requests
 from dotenv import load_dotenv
+import json
 
 load_dotenv()
 
@@ -16,6 +17,7 @@ TEST_PASSWORD = os.getenv("TEST_PASSWORD")
 
 client = boto3.client("cognito-idp", region_name=COGNITO_REGION)
 table = boto3.resource("dynamodb", region_name="eu-west-2").Table("users-table")
+
 
 def get_cognito_token(username, password):
     """Authenticate with Cognito and return the access token."""
@@ -35,17 +37,20 @@ def fetch_from_api(url: str, method: str = "GET"):
     response = requests.request(method, url, headers=headers)
     return response
 
-def post_from_api(url: str,data: dict):
+
+def post_from_api(url: str, data: dict):
     token = get_cognito_token(TEST_USER, TEST_PASSWORD)
     headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
-    response = requests.post(url, headers=headers,json=data)
+    response = requests.post(url, headers=headers, json=data)
     return response
 
-def put_from_api(url: str,data: dict):
+
+def put_from_api(url: str, data: dict):
     token = get_cognito_token(TEST_USER, TEST_PASSWORD)
     headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
     response = requests.put(url, headers=headers, json=data)
     return response
+
 
 def sign_up_user(email, password, phone, given_name, family_name, birthdate):
     """Sign up a user with required attributes"""
@@ -60,7 +65,7 @@ def sign_up_user(email, password, phone, given_name, family_name, birthdate):
                 {"Name": "given_name", "Value": given_name},
                 {"Name": "family_name", "Value": family_name},
                 {"Name": "birthdate", "Value": birthdate},
-            ]
+            ],
         )
         print(f"✅ User {email} signed up successfully:", response)
         return response
@@ -76,8 +81,7 @@ def confirm_user(username):
     """Confirms a user's registration in Cognito."""
     try:
         response = client.admin_confirm_sign_up(
-            UserPoolId=COGNITO_USER_POOL_ID,
-            Username=username
+            UserPoolId=COGNITO_USER_POOL_ID, Username=username
         )
         print(f"✅ User {username} confirmed successfully.")
         return response
@@ -86,12 +90,12 @@ def confirm_user(username):
     except Exception as e:
         print(f"⚠️ Unexpected error: {e}")
 
-def delete_user(username,id):
+
+def delete_user(username, id):
     """Deletes a user from Cognito"""
     try:
         response = client.admin_delete_user(
-            UserPoolId=COGNITO_USER_POOL_ID,
-            Username=username
+            UserPoolId=COGNITO_USER_POOL_ID, Username=username
         )
         table.delete_item(Key={"student-id": id})
         print(f"✅ User {username} deleted successfully.")
@@ -101,17 +105,21 @@ def delete_user(username,id):
     except Exception as e:
         print(f"⚠️ Unexpected error: {e}")
 
+
 def create_user(email, password, phone, given_name, family_name, birthdate):
     response = sign_up_user(email, password, phone, given_name, family_name, birthdate)
-    id = response['UserSub']
+    id = response["UserSub"]
 
     confirm_user(email)
     return id
 
+
 @pytest.fixture(scope="module")
 def create_test_user():
-    id = create_user('testuser@email.com', 'Password123', '+1234567890', 'Test', 'User', '1990-01-01')
+    id = create_user(
+        "testuser@email.com", "Password123", "+1234567890", "Test", "User", "1990-01-01"
+    )
 
     yield id
 
-    delete_user('testuser@email.com',id)
+    delete_user("testuser@email.com", id)
