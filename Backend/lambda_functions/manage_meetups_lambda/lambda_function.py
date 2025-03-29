@@ -111,7 +111,6 @@ def lambda_handler(event, context):
     http_method = event["httpMethod"]
     path_parameters = event.get("pathParameters", {})
     meetup_id = path_parameters.get("meetupId")
-    user_id = event.get("pathParameters", {}).get("userId")
 
     if not meetup_id:
         return {
@@ -126,6 +125,14 @@ def lambda_handler(event, context):
     elif http_method == "DELETE":
         return handle_delete_request(meetup_id)
     elif http_method == "PUT":
-        return handle_put_request(meetup_id,user_id)
+        body = event.get("body")
+        if not body:
+            return {
+                    "statusCode": 400,
+                    "body": json.dumps("Content of body is empty"),
+                }
+        else:
+            user_id = body.get("userId")
+            return handle_put_request(meetup_id,user_id)
     else:
         return {"statusCode": 400, "body": f"{http_method} doesn't exist for meetups"}
