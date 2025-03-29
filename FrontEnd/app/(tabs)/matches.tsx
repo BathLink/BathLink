@@ -2,21 +2,15 @@ import { View, Text, Button, StyleSheet, Platform, ScrollView, TouchableHighligh
 import {useState} from 'react';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Divider } from 'react-native-paper';
-import { Svg, Path } from 'react-native-svg';
 
-import { ThemedText } from '@/components/ThemedText';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useColorScheme } from '@/hooks/useColorScheme';
-
-
-
-
+import colours from '../colours';
 
 
 
 export default function HomeScreen() {
-  const colorScheme = useColorScheme();
+  const theme = useColorScheme();
   const [selectedTab, setSelectedTab] = useState('Matches');
 
   // Track which button is selected for each match
@@ -29,8 +23,6 @@ export default function HomeScreen() {
   };
 
   const router = useRouter();
-  const primary_color = colorScheme === 'dark' ? 'white' : 'black';
-  const background_color = colorScheme === 'dark' ? 'rgba(0, 0, 0, 0)' : 'rgba(0, 0, 0, 0)';
 
   const matches = [
     ["Indoor Tennis", ["Nathaniel", "John",], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
@@ -64,14 +56,34 @@ export default function HomeScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: background_color }}>
-      {/* Top Menu App Bar */}
-      <View style={styles.titleContainer}>
-        <MaterialIcons.Button name="person" size={28} color={primary_color} backgroundColor="transparent" onPress={profileBtn} />
-        <ThemedText type="title">BathLink</ThemedText>
-        <MaterialIcons.Button name="notifications" size={28} color={"transparent"} backgroundColor="transparent" onPress={() => {testBtn}} />
-      </View>
+    <View style={{ flex: 1, backgroundColor: colours[theme].background }}>
+{/* Top Menu App Bar */}
+<View style={styles.titleContainer}>
+        <MaterialIcons.Button
+          name="person" 
+          size={28} 
+          color= {colours[theme].text}
+          backgroundColor="rgba(0,0,0,0)"
+          onPress={profileBtn}
+        />
 
+        <Text 
+        style={[styles.header,{
+          color: colours[theme].text, 
+          backgroundColor: "rgba(0,0,0,0)",
+        }]} 
+        >
+          BathLink
+        </Text>
+
+        <MaterialIcons.Button
+          name="notifications"
+          size={28}           
+          color= "rgba(0,0,0,0)"
+          backgroundColor="rgba(0,0,0,0)"
+        />
+      </View>
+      {/* End of top Menu App Bar */}
 
 
       {/* Tabs */}
@@ -136,6 +148,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 16,
+    paddingHorizontal: 20,
+  },
+  header: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    marginVertical: 10,
     paddingHorizontal: 20,
   },
   tabContainer: {

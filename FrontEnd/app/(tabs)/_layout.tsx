@@ -1,10 +1,21 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-
+import colours from '../colours'
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function TabLayout() {
+  const theme = useColorScheme();
+  
   return (
-    <Tabs initialRouteName="meetups" screenOptions={{ headerShown: false }}>
+    <Tabs initialRouteName="meetups" screenOptions={{ headerShown: false}}       
+    screenOptions={{
+      headerShown: false,
+      tabBarStyle: {
+        backgroundColor: theme === 'dark' ? colours.dark.surface : colours.light.surface, // Tab bar background color
+      },
+      tabBarActiveTintColor: theme === 'dark' ? colours.dark.primary : colours.light.primary, // Active tab color
+      tabBarInactiveTintColor: theme === 'dark' ? colours.dark.deselected : colours.dark.deselected, // Inactive tab color
+    }}>
       <Tabs.Screen
         name="meetups"
         options={{ title: "Meetups", tabBarIcon: ({ color }) => <Ionicons name="calendar" size={24} color={color} /> }}

@@ -2,12 +2,13 @@ import { useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import { View, Text, StyleSheet } from 'react-native';
 import '@/authentication/aws-exports' //Change to whatever the path of the file is
-
-
+import colours from './colours';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 
 export default function NotFoundScreen() {
   const router = useRouter();
+  const theme = useColorScheme();
 
   useEffect(() => {
     // Redirect to Meetups after 1 second
@@ -17,8 +18,14 @@ export default function NotFoundScreen() {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>BathLink</Text>
+    <View 
+    style={[styles.container, {backgroundColor: colours[theme].background}] }
+    >
+      <Text 
+      style={[styles.title, {color: colours[theme].text}]}
+      >
+        BathLink
+      </Text>
     </View>
   );
 }
@@ -28,11 +35,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f8edf8", // Change to your app theme color
   },
   title: {
     fontSize: 32,
     fontWeight: "bold",
-    color: "white",
   },
 });

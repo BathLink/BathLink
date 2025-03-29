@@ -7,9 +7,12 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRouter } from 'expo-router';
 import { SignUp } from '@/authentication/auth';
 import {ThemedText} from "@/components/ThemedText";
+import colours from './colours';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function RegisterScreen() {
   const router = useRouter();
+  const theme = useColorScheme();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -34,7 +37,7 @@ export default function RegisterScreen() {
       return;
     }
 
-    if (!email.toLowerCase().endsWith("@bath.co.uk") || !confirmEmail.toLowerCase().endsWith("@bath.co.uk")) {
+    if (!email.toLowerCase().endsWith("@bath.ac.uk") || !confirmEmail.toLowerCase().endsWith("@bath.ac.uk")) {
       Alert.alert('Error', 'Email must be a Uni of Bath email');
       return;
     }
@@ -97,33 +100,40 @@ export default function RegisterScreen() {
   };
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1, backgroundColor: colours[theme].background }}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <View style={styles.titleContainer}>
-            <MaterialIcons.Button name="arrow-back" size={28} color={"black"} backgroundColor="transparent" onPress={() => router.replace('/login')}/>
-            <ThemedText type="title">BathLink</ThemedText>
+            <MaterialIcons.Button name="arrow-back" size={28} color= {colours[theme].text} backgroundColor="transparent" onPress={() => router.replace('/login')}/>
+            <Text 
+        style={[styles.header,{
+          color: colours[theme].text, 
+          backgroundColor: "rgba(0,0,0,0)",
+        }]} 
+        >
+          BathLink
+        </Text>
             <MaterialIcons.Button name="notifications" size={28} color={"transparent"}
                                   backgroundColor="transparent" onPress={testBtn}/>
 
           </View>
-          <Text style={styles.subtitle}>Register</Text>
+          <Text style={[styles.subtitle, { color: colours[theme].text }]}>Register</Text>
 
 
           <View style={styles.container}>
 
-            <TextInput style={styles.input} placeholder="First Name" value={firstName} onChangeText={setFirstName} />
-            <TextInput style={styles.input} placeholder="Last Name" value={lastName} onChangeText={setLastName} />
-            <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} keyboardType="email-address" />
-            <TextInput style={styles.input} placeholder="Confirm Email" value={confirmEmail} onChangeText={setConfirmEmail} keyboardType="email-address" />
-            <TextInput style={styles.input} placeholder="Phone Number" value={phone} onChangeText={setPhone} keyboardType="phone-pad" returnKeyType="done" />
+            <TextInput style={[styles.input, { color: colours[theme].text, borderColor: colours[theme].text }]} placeholder="First Name" value={firstName} onChangeText={setFirstName} />
+            <TextInput style={[styles.input, { color: colours[theme].text, borderColor: colours[theme].text }]} placeholder="Last Name" value={lastName} onChangeText={setLastName} />
+            <TextInput style={[styles.input, { color: colours[theme].text, borderColor: colours[theme].text }]} placeholder="Email" value={email} onChangeText={setEmail} keyboardType="email-address" />
+            <TextInput style={[styles.input, { color: colours[theme].text, borderColor: colours[theme].text }]} placeholder="Confirm Email" value={confirmEmail} onChangeText={setConfirmEmail} keyboardType="email-address" />
+            <TextInput style={[styles.input, { color: colours[theme].text, borderColor: colours[theme].text }]} placeholder="Phone Number" value={phone} onChangeText={setPhone} keyboardType="phone-pad" returnKeyType="done" />
 
             {/* Date Picker Trigger */}
-            <TouchableOpacity onPress={() => setShowPicker(true)} style={styles.inputContainer}>
-              <Text style={formattedDate ? styles.inputText : styles.placeholderText}>
+            <TouchableOpacity onPress={() => setShowPicker(true)} style={[styles.inputContainer, { borderColor: colours[theme].text }]}>
+              <Text style={[formattedDate ? { color: colours[theme].text } : { color: "grey" }]}>
                 {formattedDate || "Date of Birth"}
               </Text>
-              <MaterialIcons name="calendar-today" size={24} color="black" />
+              <MaterialIcons name="calendar-today" size={24} color={colours[theme].text} />
             </TouchableOpacity>
 
             {/* Android Date Picker (shows inline) */}
@@ -135,21 +145,21 @@ export default function RegisterScreen() {
             {showPicker && Platform.OS === "ios" && (
               <Modal transparent={true} animationType="slide">
                 <View style={styles.modalContainer}>
-                  <View style={styles.modalContent}>
+                  <View style={[styles.modalContent, {backgroundColor: colours[theme].background, borderColor:colours[theme].text, borderWidth: 0.5}]}>
                     <DateTimePicker value={date} mode="date" display="spinner" onChange={handleDateChange} />
-                    <TouchableOpacity style={styles.confirmButton} onPress={confirmDateSelection}>
-                      <Text style={styles.buttonText}>Confirm</Text>
+                    <TouchableOpacity style={[styles.confirmButton, {backgroundColor: colours[theme].secondary}]} onPress={confirmDateSelection}>
+                      <Text style={[styles.buttonText, {color: colours[theme].text}]}>Confirm</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
               </Modal>
             )}
 
-            <TextInput style={styles.input} placeholder="Password" secureTextEntry value={password} onChangeText={setPassword} />
-            <TextInput style={styles.input} placeholder="Confirm Password" secureTextEntry value={confirmPassword} onChangeText={setConfirmPassword} />
+            <TextInput style={[styles.input, { color: colours[theme].text, borderColor: colours[theme].text }]} placeholder="Password" secureTextEntry value={password} onChangeText={setPassword} />
+            <TextInput style={[styles.input, { color: colours[theme].text, borderColor: colours[theme].text }]} placeholder="Confirm Password" secureTextEntry value={confirmPassword} onChangeText={setConfirmPassword} />
 
-            <TouchableOpacity style={styles.button} onPress={handleRegister}>
-              <Text style={styles.buttonText}>Register</Text>
+            <TouchableOpacity style={[styles.button, {backgroundColor: colours[theme].secondary}]} onPress={handleRegister}>
+              <Text style={[styles.buttonText, {color: colours[theme].text}]}>Register</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -159,18 +169,24 @@ export default function RegisterScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "flex-start", alignItems: 'center', backgroundColor: '#f8f4ff',  width: "100%", paddingVertical: 16, },
+  header: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    marginVertical: 10,
+    paddingHorizontal: 20,
+  },
+  container: { flex: 1, justifyContent: "flex-start", alignItems: 'center',  width: "100%", paddingVertical: 16, },
   subtitle: { fontSize: 18, marginBottom: 10 },
-  input: { width: '80%', padding: 10, borderWidth: 1, marginBottom: 10, borderRadius: 5, backgroundColor: '#fff' },
-  button: { backgroundColor: '#6c5b7b', padding: 10, borderRadius: 5, marginTop: 10 },
-  buttonText: { color: '#fff', fontWeight: 'bold' },
-  scrollContainer: { flexGrow: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 20, backgroundColor: '#f8f4ff', width: "100%" },
-  inputContainer: { flexDirection: "row", alignItems: "center", width: "80%", padding: 10, borderWidth: 1, borderRadius: 5, marginBottom: 10, backgroundColor: "#fff", justifyContent: "space-between" },
+  input: { width: '80%', padding: 10, borderWidth: 1, marginBottom: 10, borderRadius: 5},
+  button: {padding: 10, borderRadius: 5, marginTop: 10 },
+  buttonText: { fontWeight: 'bold' },
+  scrollContainer: { flexGrow: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 20, width: "100%" },
+  inputContainer: { flexDirection: "row", alignItems: "center", width: "80%", padding: 10, borderWidth: 1, borderRadius: 5, marginBottom: 10, justifyContent: "space-between" },
   inputText: { fontSize: 16 },
-  placeholderText: { fontSize: 14, color: "#aaa" },
-  modalContainer: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0,0,0,0.5)" },
-  modalContent: { backgroundColor: "white", padding: 20, borderRadius: 10, alignItems: "center", width: "80%" },
-  confirmButton: { marginTop: 10, backgroundColor: "#6c5b7b", padding: 10, borderRadius: 5, alignItems: "center", width: "80%" },
+  placeholderText: { fontSize: 14 },
+  modalContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
+  modalContent: {  padding: 20, borderRadius: 10, alignItems: "center", width: "80%" },
+  confirmButton: { marginTop: 10, padding: 10, borderRadius: 5, alignItems: "center", width: "80%" },
   backButton: { position: "absolute", top: 10, left: 10, padding: 10 },
   titleContainer: {
     flexDirection: 'row',
