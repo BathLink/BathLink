@@ -53,7 +53,7 @@ def test_dynamodb_tables_created():
 
     dynamo_tables = template.find_resources("AWS::DynamoDB::Table")
 
-    assert len(dynamo_tables) == 3
+    assert len(dynamo_tables) == 4
 
     template.has_resource_properties("AWS::DynamoDB::Table", {
         "TableName": "groupchats-table",
@@ -84,3 +84,14 @@ def test_dynamodb_tables_created():
             {"AttributeName": "student-id", "AttributeType": "S"}
         ]
     })
+
+    template.has_resource_properties("AWS::DynamoDB::Table", {
+        "TableName": "activities-table",
+        "KeySchema": [
+            {"AttributeName": "activity-id", "KeyType": "HASH"}  # Partition Key
+        ],
+        "AttributeDefinitions": [
+            {"AttributeName": "activity-id", "AttributeType": "S"}
+        ]
+    })
+
