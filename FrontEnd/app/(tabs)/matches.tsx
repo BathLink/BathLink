@@ -1,4 +1,4 @@
-import { View, Text, Modal, StyleSheet, Pressable, ScrollView, TouchableHighlight, TouchableOpacity } from 'react-native';
+import { View, Text, Modal, StyleSheet, Pressable, ScrollView, TouchableHighlight } from 'react-native';
 import {useState, useEffect} from 'react';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -20,13 +20,9 @@ export default function HomeScreen() {
 
 
   // Track which button is selected for each match
-  const [buttonStates, setButtonStates] = useState(
+  const [buttonStates] = useState(
     Array(5).fill({ checkSelected: false, cancelSelected: false })
   );
-
-  const testBtn = () => {
-    console.log('Button pressed');
-  };
 
   const router = useRouter();
 
@@ -78,7 +74,7 @@ export default function HomeScreen() {
 async function acceptMeetup(meetupId) {
     try {
       const { userId } = await getCurrentUser();
-      const putRequest = await putItem(`meetups/${meetupId}`, `{userId: ${userId}}`);
+      await putItem(`meetups/${meetupId}`, `{userId: ${userId}}`);
   } catch (error) {
       console.error("Error fetching matches:", error);
       return { matches: [] }; // Ensure it returns a default structure to prevent errors
@@ -88,11 +84,11 @@ async function acceptMeetup(meetupId) {
 async function declineMeetup(meetupId) {
   try {
     const { userId } = await getCurrentUser();
-    const deleteRequest = await deleteItem(`meetups/${meetupId}`, `{userId: ${userId}}`);
-} catch (error) {
-    console.error("Error fetching matches:", error);
-    return { matches: [] }; // Ensure it returns a default structure to prevent errors
-}
+    await deleteItem(`meetups/${meetupId}`, `{userId: ${userId}}`);
+  } catch (error) {
+      console.error("Error fetching matches:", error);
+      return { matches: [] }; // Ensure it returns a default structure to prevent errors
+  }
 }
 
   async function processMatches(dbMeetups) {
@@ -113,6 +109,7 @@ async function declineMeetup(meetupId) {
 
         }
         catch (e) {
+          console.log(e)
           return []
         }
     
@@ -124,7 +121,6 @@ async function declineMeetup(meetupId) {
                 const meetupsData = await getMatches();
                 const processedMatches = await processMatches(meetupsData);
                 setAllMatches(processedMatches);
-                console.log(allMatches)
             } catch (error) {
                 console.error("Error processing meetups:", error);
             }
@@ -133,33 +129,6 @@ async function declineMeetup(meetupId) {
         fetchMeetups();
 
     }, []); 
-  
-
-  const matches = [
-    ["Indoor Tennis", ["Nathaniel", "John",], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
-    ["Indoor Tennis", ["Nathaniel", "John", "James"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
-    ["Outdoor Tennis", ["Nathaniel", "John", "James","Jim"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
-    ["Indoor Tennis", [ "John", "James"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
-    ["Indoor Tennis", ["Nathaniel", "John", "James"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
-  ]; 
-
-  const toggleButton = (index, type) => {
-    setButtonStates(prevState => {
-      const newState = [...prevState];
-      if (type === 'check') {
-        newState[index] = {
-          checkSelected: !newState[index].checkSelected,
-          cancelSelected: false, // Unselect cancel if check is selected
-        };
-      } else {
-        newState[index] = {
-          checkSelected: false,
-          cancelSelected: !newState[index].cancelSelected,
-        };
-      }
-      return newState;
-    });
-  };
 
   const profileBtn = async () => {
       await AsyncStorage.setItem("page", "/matches");

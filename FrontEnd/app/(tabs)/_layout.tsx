@@ -7,14 +7,14 @@ export default function TabLayout() {
   const theme = useColorScheme();
   
   return (
-    <Tabs initialRouteName="meetups" screenOptions={{ headerShown: false}}       
+    <Tabs initialRouteName="meetups"    
     screenOptions={{
       headerShown: false,
       tabBarStyle: {
         backgroundColor: theme === 'dark' ? colours.dark.surface : colours.light.surface, // Tab bar background color
       },
-      tabBarActiveTintColor: theme === 'dark' ? colours.dark.primary : colours.light.primary, // Active tab color
-      tabBarInactiveTintColor: theme === 'dark' ? colours.dark.deselected : colours.dark.deselected, // Inactive tab color
+      tabBarActiveTintColor: theme === 'dark' ? colours.dark.primary : colours.light.primary, 
+      tabBarInactiveTintColor: theme === 'dark' ? colours.dark.deselected : colours.dark.deselected, 
     }}>
       <Tabs.Screen
         name="meetups"
