@@ -1,26 +1,141 @@
-import { View, StyleSheet, Switch, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet, Switch, TouchableOpacity, Text, ScrollView } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { useColorScheme } from '@/hooks/useColorScheme';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Appearance } from 'react-native';  // Import Appearance
 import { ThemedText } from '@/components/ThemedText';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Alert } from 'react-native';
 
 export default function SettingsScreen() {
-  const colorScheme = useColorScheme();
+  const [isDarkMode, setIsDarkMode] = useState(false); // Dark mode state
+  const [highContrast, setHighContrast] = useState(false); // High contrast state
+  const [fontSize, setFontSize] = useState(18); // Default to small font size
+  const [headerSize, setHeaderSize] = useState(22);
 
-  // Independent switch states
-  const [switch1, setSwitch1] = useState(false);
-  const [switch2, setSwitch2] = useState(false);
-  const [switch3, setSwitch3] = useState(false);
-  const [switch4, setSwitch4] = useState(false);
-  const [switch5, setSwitch5] = useState(false);
-  const [switch6, setSwitch6] = useState(false);
+  // Detect the initial theme based on system setting
+  useEffect(() => {
+    const colorScheme = Appearance.getColorScheme(); // Get the system's current color scheme
+    setIsDarkMode(colorScheme === 'dark'); // Set the initial state based on system preference
+  }, []);
 
-  let primary_color = colorScheme === 'dark' ? "white" : "black";
-  let background_color = "rgba(0, 0, 0, 0)";
+  // Listen for theme changes
+  useEffect(() => {
+    const subscription = Appearance.addChangeListener(({ colorScheme }) => {
+      setIsDarkMode(colorScheme === 'dark'); // Update dark mode when system theme changes
+    });
+
+    return () => {
+      subscription.remove(); // Cleanup listener on unmount
+    };
+  }, []);
+
+  const fontSizeOptions = {
+    small: 18,
+    medium: 22,
+    large: 26,
+  };
+
+  const headerSizeOptions = {
+    small: 22,
+    medium: 26,
+    large: 30,
+  };
+
+  const handleFontSizeChange = (size) => {
+    setFontSize(fontSizeOptions[size]);
+    setHeaderSize(headerSizeOptions[size]);
+  };
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(prev => !prev); // Toggle dark mode
+  };
+
+  // Dynamically set primary color and background color based on dark mode
+  const primary_color = highContrast ? 'yellow' : isDarkMode ? "white" : "black";
+  const background_color = highContrast ? 'black' : isDarkMode ? "rgba(20,20,20,20)" : "rgba(240, 240, 240, 240)"; // Add this dynamic update
 
   const handleLogout = () => {
-    console.log("Logging out...");
-    alert("Logged out successfully!");
+
+    Alert.alert(
+            "You have logged out successfully.",
+            '',
+            [
+              {
+                text: 'OK',
+                onPress: () => {},
+              },
+            ],
+            { cancelable: false }
+          );
+  };
+
+  const [isEnabled, setIsEnabled] = useState(false);
+  const [isEnabled1, setIsEnabled1] = useState(false);
+  const [isEnabled2, setIsEnabled2] = useState(false);
+  const [isEnabled3, setIsEnabled3] = useState(false);
+
+  const toggleSwitch2 = (value) => { setIsEnabled2(value); };
+  const toggleSwitch3 = (value) => { setIsEnabled3(value); };
+  const toggleSwitch4 = (value) => { setHighContrast(value); };
+
+  const toggleSwitch = (value) => {
+    setIsEnabled(value);
+
+    if (value) {
+      Alert.alert(
+        'Push Notifications \n',
+        'You have enabled Push Notifications.',
+        [
+          {
+            text: 'OK',
+            onPress: () => {},
+          },
+        ],
+        { cancelable: false }
+      );
+    } else {
+      Alert.alert(
+        'Push Notifications \n',
+        'You have disabled Push Notifications.',
+        [
+          {
+            text: 'OK',
+            onPress: () => {},
+          },
+        ],
+        { cancelable: false }
+      );
+    }
+  };
+
+  const toggleSwitch1 = (value) => {
+    setIsEnabled1(value);
+
+    if (value) {
+      Alert.alert(
+        'Email Notifications \n',
+        'You have enabled Notify Me via Email.',
+        [
+          {
+            text: 'OK',
+            onPress: () => {},
+          },
+        ],
+        { cancelable: false }
+      );
+    } else {
+      Alert.alert(
+        'Email Notifications \n',
+        'You have disabled Notify Me via Email.',
+        [
+          {
+            text: 'OK',
+            onPress: () => {},
+          },
+        ],
+        { cancelable: false }
+      );
+    }
   };
 
   return (
@@ -34,7 +149,7 @@ export default function SettingsScreen() {
           backgroundColor="transparent"
           onPress={() => console.log('Profile pressed')}
         />
-        <ThemedText type="title">BathLink</ThemedText>
+        <ThemedText type="title" style={{ color: primary_color }}>BathLink</ThemedText>
         <MaterialIcons.Button
           name="notifications"
           size={28}
@@ -44,49 +159,123 @@ export default function SettingsScreen() {
         />
       </View>
 
-      {/* Subheader: Settings */}
-      <Text style={[styles.subheader, { color: primary_color }]}>Settings</Text>
+      {/* Scrollable Content */}
+      <ScrollView contentContainerStyle={{ paddingBottom: 82 }}>
 
-      {/* Settings Options with Independent Switches */}
-      <View style={styles.settingOption}>
-        <Text style={[styles.optionText, { color: primary_color }]}>Setting 1</Text>
-        <Switch value={switch1} onValueChange={setSwitch1} />
+        {/* Appearance Settings */}
+      <Text style={[styles.emptySpace, { color: primary_color }]}></Text>
+      <View style={styles.settingHeader}>
+        <Text style={[styles.categoryHeader, { color: primary_color, fontSize: headerSize }]}>Appearance</Text>
       </View>
-      <View style={styles.settingOption}>
-        <Text style={[styles.optionText, { color: primary_color }]}>Setting 2</Text>
-        <Switch value={switch2} onValueChange={setSwitch2} />
-      </View>
-      <View style={styles.settingOption}>
-        <Text style={[styles.optionText, { color: primary_color }]}>Setting 3</Text>
-        <Switch value={switch3} onValueChange={setSwitch3} />
-      </View>
-      <View style={styles.settingOption}>
-        <Text style={[styles.optionText, { color: primary_color }]}>Setting 4</Text>
-        <Switch value={switch4} onValueChange={setSwitch4} />
-      </View>
-      <View style={styles.settingOption}>
-        <Text style={[styles.optionText, { color: primary_color }]}>Setting 5</Text>
-        <Switch value={switch5} onValueChange={setSwitch5} />
-      </View>
-      <View style={styles.settingOption}>
-        <Text style={[styles.optionText, { color: primary_color }]}>Setting 6</Text>
-        <Switch value={switch6} onValueChange={setSwitch6} />
-      </View>
+        <View style={styles.settingOption}>
+          <View style={styles.settingText}>
+            <MaterialIcons name="brightness-4" size={28} color={'gray'} style={styles.icon} />
+            <Text style={[styles.optionText, { color: primary_color, fontSize: fontSize }]}>     Toggle Dark Mode</Text>
+          </View>
+            <Switch value={isDarkMode} onValueChange={toggleDarkMode} />
+        </View>
+        <View style={styles.settingOption}>
+          <View style={styles.settingText}>
+            <MaterialIcons name="format-size" size={28} color={'gray'} style={styles.icon} />
+            <Text style={[styles.optionText, { color: primary_color, fontSize: fontSize }]}>     Font Size</Text>
+          </View>
+          {/* Font size switch with options */}
+          <View style={styles.fontSizeOptions}>
+            <TouchableOpacity onPress={() => handleFontSizeChange('small')}>
+              <Text style={[styles.optionText, {
+                  color: primary_color,
+                  fontWeight: 'bold',
+                  fontSize: 18,
+                  lineHeight: 30,
+                   }]}>A</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleFontSizeChange('medium')}>
+              <Text style={[styles.optionText, {
+                  color: primary_color,
+                  fontWeight: 'bold',
+                  fontSize: 24,
+                  lineHeight: 30,
+                   }]}>A</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleFontSizeChange('large')}>
+              <Text style={[styles.optionText, {
+                  color: primary_color,
+                  fontWeight: 'bold',
+                  fontSize: 30,
+                  lineHeight: 32,
+                  }]}>A</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
 
-      <TouchableOpacity style={styles.settingOption} onPress={() => alert("Change Password")}>
-        <Text style={[styles.optionText, { color: primary_color }]}>Change Password</Text>
-        <MaterialIcons name="lock" size={24} color="gray" />
-      </TouchableOpacity>
+        {/* Notifications Settings */}
+        <Text style={[styles.emptySpace, { color: primary_color }]}></Text>
+        <View style={styles.settingHeader}>
+            <Text style={[styles.categoryHeader, { color: primary_color, fontSize: headerSize }]}>Notifications</Text>
+        </View>
+        <View style={styles.settingOption}>
+          <View style={styles.settingText}>
+            <MaterialIcons name="notifications" size={28} color={'gray'} style={styles.icon} />
+            <Text style={[styles.optionText, { color: primary_color, fontSize: fontSize }]}>     Push Notifications</Text>
+          </View>
+          <Switch value={isEnabled} onValueChange={toggleSwitch} />
+        </View>
+        <View style={styles.settingOption}>
+          <View style={styles.settingText}>
+            <MaterialIcons name="mail-outline" size={27} color={'gray'} style={styles.icon} />
+            <Text style={[styles.optionText, { color: primary_color, fontSize: fontSize }]}>     Notify Me via Email</Text>
+          </View>
+          <Switch value={isEnabled1} onValueChange={toggleSwitch1} />
+        </View>
 
-      <TouchableOpacity style={styles.settingOption} onPress={handleLogout}>
-        <Text style={[styles.optionText, { color: "red" }]}>Log Out</Text>
-        <MaterialIcons name="logout" size={24} color="red" />
-      </TouchableOpacity>
+        {/* Accessibility Settings */}
+        <Text style={[styles.emptySpace, { color: primary_color }]}></Text>
+        <View style={styles.settingHeader}>
+            <Text style={[styles.categoryHeader, { color: primary_color, fontSize: headerSize }]}>Accessibility</Text>
+        </View>
+        <View style={styles.settingOption}>
+          <View style={styles.settingText}>
+            <MaterialIcons name="search" size={27} color={'gray'} style={styles.icon} />
+            <Text style={[styles.optionText, { color: primary_color, fontSize: fontSize }]}>     Magnifier</Text>
+          </View>
+          <Switch value={isEnabled2} onValueChange={toggleSwitch2} />
+        </View>
+        <View style={styles.settingOption}>
+          <View style={styles.settingText}>
+            <MaterialIcons name="campaign" size={27} color={'gray'} style={styles.icon} />
+            <Text style={[styles.optionText, { color: primary_color, fontSize: fontSize }]}>     Read Aloud</Text>
+          </View>
+            <Switch value={isEnabled3} onValueChange={toggleSwitch3} />
+        </View>
+        <View style={styles.settingOption}>
+          <View style={styles.settingText}>
+              <MaterialIcons name="invert-colors" size={24} color={'gray'} />
+              <Text style={[styles.optionText, { color: primary_color, fontSize: fontSize }]}>     High Contrast</Text>
+          </View>
+              <Switch value={highContrast} onValueChange={toggleSwitch4} />
+        </View>
+        {/* Account Settings */}
+        <Text style={[styles.emptySpace, { color: primary_color }]}></Text>
+        <View style={styles.settingHeader}>
+            <Text style={[styles.categoryHeader, { color: primary_color, fontSize: headerSize }]}>Account</Text>
+        </View>
+        <TouchableOpacity style={styles.settingOption} onPress={() => alert("Your Password has been changed.")}>
+          <Text style={[styles.optionText, { color: primary_color, fontSize: fontSize }]}>Change Password</Text>
+          <MaterialIcons name="lock" size={24} color="gray" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.settingOption} onPress={handleLogout}>
+          <Text style={[styles.optionText, { color: "red", fontSize: fontSize }]}>Log Out</Text>
+          <MaterialIcons name="logout" size={24} color="red" />
+        </TouchableOpacity>
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   titleContainer: {
     flexDirection: 'row',
     flexGrow: 2,
@@ -94,6 +283,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 16,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  categoryHeader: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginVertical: 10,
     paddingHorizontal: 20,
   },
   subheader: {
@@ -106,12 +303,40 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 15,
+    paddingVertical: 20,
+    paddingHorizontal: 20,
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
-    paddingHorizontal: 20,
+  },
+  settingText: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 0,
   },
   optionText: {
     fontSize: 18,
   },
+  settingHeader: {
+    flexDirection: 'row',
+    justifyContent: 'left',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 2,
+  },
+    emptySpace: {
+      flexDirection: 'row',
+      justifyContent: 'left',
+      alignItems: 'center',
+      paddingVertical: 3,
+      paddingHorizontal: 20,
+    },
+    fontSizeOptions: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      width: '27%',
+      marginVertical: 10,
+      alignSelf: 'bottom',
+      paddingHorizontal: 3,
+    },
 });
