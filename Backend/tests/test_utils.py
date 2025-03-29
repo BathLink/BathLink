@@ -123,3 +123,28 @@ def create_test_user():
     yield id
 
     delete_user("testuser@email.com", id)
+
+@pytest.fixture(scope="module")
+def create_integration_test_user():
+    #create entry in users table
+    dynamodb = boto3.resource("dynamodb", region_name="eu-west-2")
+    users_table = dynamodb.Table("users-table")
+
+    userId = "b67e16cc-c108-4c14-a5b6-e36f40bc1030"
+
+    users_table.put_item(
+        Item={
+            "student-id": userId,
+            "email": "testuser@email.com",
+            "phone": "+1234567890",
+            "name": "Test User",
+            "calendar": {"available": []},
+            "dob": "1990-01-01",
+            "profile": {},
+            "matchPreferences": {"enabled": False, "activities": []},
+        }
+    )
+
+    yield userId
+
+    users_table.delete_item(Key={"student-id": userId})

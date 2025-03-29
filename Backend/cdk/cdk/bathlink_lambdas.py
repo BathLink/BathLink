@@ -4,10 +4,14 @@ from aws_cdk import (
     aws_iam as iam,
     aws_events as events,
     aws_events_targets as targets,
+
 )
+import aws_cdk
 
 from .bathlink_cognito import BathLinkCognito
 from .bathlink_databases import BathLinkDB
+
+
 
 
 class BathLinkLambdas:
@@ -35,6 +39,7 @@ class BathLinkLambdas:
                 handler="lambda_function.lambda_handler",
                 code=_lambda.Code.from_asset(lambda_path),
                 function_name=name,
+                timeout=aws_cdk.Duration.seconds(10),
             )
 
             if tables_to_access:

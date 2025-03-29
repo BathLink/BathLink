@@ -21,7 +21,7 @@ def test_create_profile(create_test_user):
         "dob": "1990-01-01",
         "profile": {},
         "matchPreferences": {"enabled": False, "activities": []},
-        "calendar": {"busy": []},
+        "calendar": {"available": []},
         "email": "testuser@email.com",
         "phone": "+1234567890",
         "name": "Test User",
