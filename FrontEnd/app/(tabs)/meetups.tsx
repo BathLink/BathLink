@@ -198,7 +198,7 @@ export default function MeetupsScreen() {
               <Text style={[styles.expandedDetail, { color: colours[theme].text }]}>👤 {selectedMeetup.noPplAccepted}</Text>
               <MaterialIcons name="image" size={60} color="gray" style={styles.expandedImage} />
               <Pressable onPress={closeMeetup} style={styles.closeButton}>
-                <Text style={styles.closeButtonText}>Close</Text>
+                <Text style={[styles.closeButtonText, {color: colours[theme].text}]}>Close</Text>
               </Pressable>
             </View>
           </Pressable>
