@@ -21,7 +21,7 @@ def dynamodb_setup():
         table.put_item(
             Item={
                 "student-id": "test-user-id",
-                "calendar": {"busy": []},
+                "calendar": {"available": []},
                 "email": "test@test.com",
                 "phone": "+123456789",
                 "name": "Martin Power",
@@ -52,7 +52,7 @@ from Backend.lambda_functions.manage_users_lambda.lambda_function import lambda_
             200,
             {
                 "student-id": "test-user-id",
-                "calendar": {"busy": []},
+                "calendar": {"available": []},
                 "email": "test@test.com",
                 "phone": "+123456789",
                 "name": "Martin Power",
@@ -72,7 +72,7 @@ from Backend.lambda_functions.manage_users_lambda.lambda_function import lambda_
 def test_get_user(
     benchmark, dynamodb_setup, student_id, expected_status, expected_response
 ):
-    event = {"httpMethod": "GET", "pathParameters": {"userId": student_id}}
+    event = {"path":f"/users/{student_id}","httpMethod": "GET", "pathParameters": {"userId": student_id}}
 
     response = benchmark(lambda_handler, event, None)
     assert response["statusCode"] == expected_status
@@ -111,6 +111,7 @@ def test_update_user(
         "httpMethod": "PUT",
         "pathParameters": {"userId": student_id},
         "body": body,
+        "path": f"/users/{student_id}",
     }
 
     response = benchmark(lambda_handler, event, None)
@@ -152,7 +153,7 @@ def test_post_confirmation(dynamodb_setup, attributes):
         "email": attributes["email"],
         "phone": attributes["phone_number"],
         "name": attributes["given_name"] + " " + attributes["family_name"],
-        "calendar": {"busy": []},
+        "calendar": {"available": []},
         "dob": attributes["birthdate"],
         "profile": {},
         "matchPreferences": {"enabled": False, "activities": []},

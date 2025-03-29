@@ -1,6 +1,7 @@
 import aws_cdk as core
 import aws_cdk.assertions as assertions
 import os
+from pathlib import Path
 
 from Backend.cdk.cdk.cdk_stack import CdkStack
 
@@ -14,7 +15,9 @@ def test_lambdas_created():
 
     lambdas = template.find_resources("AWS::Lambda::Function")
 
-    assert len(lambdas) == len(os.listdir('Backend/lambda_functions'))
+    file_path = Path(__file__).resolve()
+    lambdas_path = file_path.parent.parent.parent.parent / "lambda_functions"
+    assert len(lambdas) == len(os.listdir(lambdas_path))
 
     template.has_resource_properties("AWS::Lambda::Function", {
         "Runtime": "python3.9",

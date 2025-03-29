@@ -19,7 +19,7 @@ def PostConfirmation(event, context):
             "name": user_attributes.get("given_name")
             + " "
             + user_attributes.get("family_name"),
-            "calendar": {"busy": []},
+            "calendar": {"available": []},
             "dob": user_attributes.get("birthdate"),
             "profile": {},
             "matchPreferences": {"enabled": False, "activities": []},
@@ -38,6 +38,7 @@ def get_user_meetups(userId):
 
 
 def handle_get_request(userId):
+
     rsp = users_table.get_item(
         Key={"student-id": userId}  # The partition key used in the DynamoDB table
     )
@@ -104,10 +105,7 @@ def lambda_handler(event, context):
         http_method = event.get("httpMethod")
         path = event.get("pathParameters")
         userId = path.get("userId")
-        print(path)
-        print(http_method)
         if "/meetups" in event.get("path") and http_method == "GET":
-            print("hye!!")
             return {
                 "statusCode": 200,
                 "body": json.dumps({"meetups": get_user_meetups(userId)}),

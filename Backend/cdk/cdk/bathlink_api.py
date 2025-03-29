@@ -5,6 +5,7 @@ from aws_cdk import (
 from .bathlink_lambdas import BathLinkLambdas
 
 
+
 class BathLinkAPI:
 
     def create_api(self, stack, user_pool, lambdas):
@@ -48,10 +49,10 @@ class BathLinkAPI:
         meetups = api.root.add_resource("meetups")
         meetup = meetups.add_resource("{meetupId}")
 
-        search_meetups = meetups.add_resource("search")
+        search_meetups = api.root.add_resource("search-meetups")
         add_method(
             search_meetups, "POST", "search_meetups_lambda"
-        )  # Search for new potential meetup
+        )
 
         users = api.root.add_resource(
             "users",
@@ -68,44 +69,19 @@ class BathLinkAPI:
             "GET",
             "manage_calendars_lambda",
             "GetUserCalendar",
-            [
-                {
-                    "statusCode": "200",
-                    "description": "User calendar returned",
-                },
-                {
-                    "statusCode": "404",
-                    "description": "User not Found",
-                },
-            ],
         )
         add_method(
             calendar,
             "POST",
             "manage_calendars_lambda",
             "PostCalendarData",
-            [
-                {"statusCode": "200", "description": "Calendar Updated"},
-                {"statusCode": "404", "description": "User not Found"},
-                {"statusCode": "400", "description": "No Post Data Provided"},
-            ],
-            {"method.request.querystring.calendarData": True},
         )  # Post calendar data
         add_method(
             calendar,
             "DELETE",
             "manage_calendars_lambda",
             "Delete Calendar",
-            [
-                {
-                    "statusCode": "200",
-                    "description": "User calendar returned",
-                },
-                {
-                    "statusCode": "404",
-                    "description": "Calendar not Found",
-                },
-            ],
+
         )
 
         chats = api.root.add_resource("chats")
@@ -131,6 +107,7 @@ class BathLinkAPI:
         add_method(profile, "PUT", "manage_profiles_lambda")  # Update Profile
         
 
-
+        activities = api.root.add_resource("activities")
+        add_method(activities, "GET", "manage_activities_lambda")
 
         return api

@@ -2,10 +2,16 @@ from pathlib import Path
 from aws_cdk import (
     aws_lambda as _lambda,
     aws_iam as iam,
+    aws_events as events,
+    aws_events_targets as targets,
+
 )
+import aws_cdk
 
 from .bathlink_cognito import BathLinkCognito
 from .bathlink_databases import BathLinkDB
+
+
 
 
 class BathLinkLambdas:
@@ -33,6 +39,7 @@ class BathLinkLambdas:
                 handler="lambda_function.lambda_handler",
                 code=_lambda.Code.from_asset(lambda_path),
                 function_name=name,
+                timeout=aws_cdk.Duration.seconds(10),
             )
 
             if tables_to_access:
@@ -43,7 +50,15 @@ class BathLinkLambdas:
             return lambda_function
 
         self.manage_meetups = create_lambda('manage_meetups_lambda',[tables.meetups_table])
+
         self.search_meetups = create_lambda('search_meetups_lambda',[tables.meetups_table,tables.users_table])
+        rule = events.Rule(
+            stack, 'DailyTrigger',
+            schedule=events.Schedule.cron(hour="0", minute="0")  # Runs at midnight UTC
+        )
+
+        rule.add_target(targets.LambdaFunction(self.search_meetups))
+
         self.manage_users = create_lambda('manage_users_lambda',[tables.users_table,tables.meetups_table])
         self.manage_users.add_permission(
             "CognitoTriggerPermission",
