@@ -129,5 +129,8 @@ class BathLinkAPI:
         add_method(profile, "GET", "manage_profiles_lambda")  # Get Profile
         add_method(profile, "POST", "manage_profiles_lambda")  # Add Profile
         add_method(profile, "PUT", "manage_profiles_lambda")  # Update Profile
+        
+
+
 
         return api
