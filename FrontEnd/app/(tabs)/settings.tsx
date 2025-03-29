@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useRouter } from "expo-router";
-import * as Crypto from 'expo-crypto';
 import {signOut, updatePassword, getCurrentUser} from 'aws-amplify/auth';
 import { ThemedText } from '@/components/ThemedText';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -146,13 +145,11 @@ export default function SettingsScreen() {
 
   /** PASSWORD CHANGE FUNCTION */
 const handleChangePassword = async () => {
-
     try {
         const {username, userId, signInDetails} = await getCurrentUser();
     await updatePassword({oldPassword : currentPassword, newPassword : newPassword})
         Alert.alert("Success", "Password changed successfully!");
         setModalVisible(false);
-
     }
     catch(e){
         console.log(e)
@@ -163,10 +160,6 @@ const handleChangePassword = async () => {
       await AsyncStorage.setItem("page", "/settings");
       router.replace('/profile')
   };
-
-
-
-
 
   return (
     <View style={[styles.container, { backgroundColor: background_color }]}>
@@ -295,7 +288,6 @@ const handleChangePassword = async () => {
   );
 }
 
-/** STYLES */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -335,7 +327,6 @@ const styles = StyleSheet.create({
   },
   optionText: { fontSize: 18 },
 
-  /** MODAL STYLES */
   modalContainer: {
     flex: 1,
     justifyContent: 'center',

@@ -61,13 +61,14 @@ export default function LoginScreen() {
 
 
     const handleLogin = async () => {
-        if (!id || !password) {
+        const idLower = id.toLowerCase();
+        if (!idLower || !password) {
             Alert.alert('Error', 'Please fill in all fields');
             return;
         }
 
         try {
-            await manualLogin(id, password); // Call login function
+            await manualLogin(idLower, password); // Call login function
 
             router.replace('/(tabs)/meetups'); // Navigate only if successful
 
