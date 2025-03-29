@@ -1,6 +1,6 @@
 import json
 import boto3
-import uuid
+import hashlib
 
 dynamodb = boto3.resource("dynamodb", region_name="eu-west-2")
 users_table = dynamodb.Table("users-table")
@@ -17,7 +17,7 @@ def get_activity_ids(users):
         return list(activity_ids)
     except Exception as e:
         print(e)
-        raise Exception(f"Error extracting activity IDs: {e}")
+        raise Exception(f"Error extracting activity IDs {users}: {e}")
     
 def get_activities(activity_ids):
     try:
@@ -37,7 +37,6 @@ def get_activities(activity_ids):
     
 def group_users_by_time_slot(users, activities):
     try:
-        # Create a dictionary: { time_slot: { activity_id: [user_id, ...] } }
         matches = {}
         for user in users:
             user_id = user["student-id"]
@@ -55,6 +54,18 @@ def group_users_by_time_slot(users, activities):
     except Exception as e:
         print(e)
         raise Exception(f"Error grouping users by time slot: {e}")
+    
+
+def generate_meetup_id(activity_id, participants, time_slot):
+    # Ensure deterministic ordering
+    key_data = {
+        "activity_id": activity_id.strip(),
+        "participants": sorted(participants),
+        "time_slot": time_slot.strip()
+    }
+    # Create a string representation, then hash it
+    key_string = json.dumps(key_data, sort_keys=True)
+    return hashlib.sha256(key_string.encode("utf-8")).hexdigest()
 
 def create_meetups_from_groups(matches, activities):
     try:
@@ -70,8 +81,13 @@ def create_meetups_from_groups(matches, activities):
                 while len(available_users) >= required_num:
                     group = available_users[:required_num]
                     matched_users_in_slot.update(group)
+                    meetup_id = generate_meetup_id(activity_id, group, time_slot)
+                    existing = meetups_table.get_item(Key={"meetup-id": meetup_id})
+                    if "Item" in existing:
+                        available_users = available_users[required_num:]
+                        continue
                     meetup_item = {
-                        "meetup-id": str(uuid.uuid4()),
+                        "meetup-id": meetup_id,
                         "activity": activity_id,
                         "participants": group,
                         "time_slot": time_slot,
@@ -98,7 +114,8 @@ def get_users_needing_match():
     try:
         response = users_table.scan()
         users = response["Items"]
-        return [user for user in users if user["Enabled"] == True ]
+        
+        return [user for user in users if user["matchPreferences"]["enabled"] == True ]
     except Exception as e:
         print(e)
         return {"statusCode": 400, "body": f" get_users_needing_match error: {e}"}
