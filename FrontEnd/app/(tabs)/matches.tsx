@@ -35,23 +35,26 @@ export default function HomeScreen() {
   const matches = [
     ["Indoor Tennis", ["Nathaniel", "John",], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
     ["Indoor Tennis", ["Nathaniel", "John", "James"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
-    ["Outdoor Tennis", ["Nathaniel", "John", "James", "Jim"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
-    ["Indoor Tennis", ["John", "James"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
+    ["Outdoor Tennis", ["Nathaniel", "John", "James","Jim"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
+    ["Indoor Tennis", [ "John", "James"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
     ["Indoor Tennis", ["Nathaniel", "John", "James"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
   ];
 
   const toggleButton = (index, type) => {
-    setMatches(prevMatches => {
-      const updatedMatches = [...prevMatches];
-      const [match] = updatedMatches.splice(index, 1); // remove match
-
+    setButtonStates(prevState => {
+      const newState = [...prevState];
       if (type === 'check') {
-        //alert("Confirmed", `You confirmed: ${match[0]} with ${match[1].join(', ')}`);
+        newState[index] = {
+          checkSelected: !newState[index].checkSelected,
+          cancelSelected: false, // Unselect cancel if check is selected
+        };
       } else {
-        //alert("Cancelled", `You cancelled: ${match[0]} with ${match[1].join(', ')}`);
+        newState[index] = {
+          checkSelected: false,
+          cancelSelected: !newState[index].cancelSelected,
+        };
       }
-
-      return updatedMatches;
+      return newState;
     });
   };
 
@@ -61,7 +64,7 @@ export default function HomeScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor }}>
+    <View style={{ flex: 1, backgroundColor: background_color }}>
       {/* Top Menu App Bar */}
       <View style={styles.titleContainer}>
         <MaterialIcons.Button name="person" size={28} color={primary_color} backgroundColor="transparent" onPress={profileBtn} />
@@ -72,22 +75,10 @@ export default function HomeScreen() {
 
 
       {/* Tabs */}
-      <View style={[styles.tabContainer, { borderBottomColor: isDark ? '#555' : '#ccc' }]}>
-        {['Matches', 'Invitations', 'Preferences'].map(tab => (
+      <View style={styles.tabContainer}>
+        {[ 'Invitations', 'Preferences'].map(tab => (
           <TouchableOpacity key={tab} onPress={() => setSelectedTab(tab)}>
-            <Text style={[
-              styles.tabText,
-              { color: isDark ? '#aaa' : '#777' },
-              selectedTab === tab && {
-                color: primaryColor,
-                fontWeight: 'bold',
-                borderBottomWidth: 2,
-                borderBottomColor: primaryColor,
-                paddingBottom: 4
-              }
-            ]}>
-              {tab}
-            </Text>
+            <Text style={[styles.tabText, selectedTab === tab && styles.tabTextSelected]}>{tab}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -95,26 +86,40 @@ export default function HomeScreen() {
       {/* Matches List */}
       <ScrollView style={styles.matchList}>
         {matches.map((match, index) => (
-          <View key={index} style={[styles.matchCard, { backgroundColor: cardBackground }]}>
-            <Text style={[styles.matchTitle, { color: textColor }]}>{match[0]}</Text>
-            <Text style={[styles.matchDetail, { color: textColor }]}>With {match[1].join(', ')}</Text>
-            <Text style={[styles.matchDetail, { color: textColor }]}>{match[2]} {match[3]}</Text>
-            <Text style={[styles.matchDetail, { color: textColor }]}>{match[4]}</Text>
+          <View key={index} style={styles.matchCard}>
+            <Text style={styles.matchTitle}>{match[0]}</Text>
+            <Text style={styles.matchDetail}>With {match[1].join(', ')}</Text>
+            <Text style={styles.matchDetail}>{match[2]} {match[3]}</Text>
+            <Text style={styles.matchDetail}>{match[4]}</Text>
             <View style={styles.buttonRow}>
               <TouchableHighlight
-                underlayColor="#346beb"
-                style={styles.iconContainer}
+                underlayColor="#ddd"
+                style={[
+                  styles.iconContainer,
+                  buttonStates[index].checkSelected && styles.iconSelectedCheck,
+                ]}
                 onPress={() => toggleButton(index, 'check')}
               >
-                <MaterialIcons name="check-circle" size={30} color="#5e4bb7" />
+                <MaterialIcons
+                  name="check-circle"
+                  size={30}
+                  color={buttonStates[index].checkSelected ? "#fff" : "#5e4bb7"}
+                />
               </TouchableHighlight>
 
               <TouchableHighlight
-                underlayColor="#9c0b0b"
-                style={styles.iconContainer}
+                underlayColor="#ddd"
+                style={[
+                  styles.iconContainer,
+                  buttonStates[index].cancelSelected && styles.iconSelectedCancel,
+                ]}
                 onPress={() => toggleButton(index, 'cancel')}
               >
-                <MaterialIcons name="cancel" size={30} color="#b79dcf" />
+                <MaterialIcons
+                  name="cancel"
+                  size={30}
+                  color={buttonStates[index].cancelSelected ? "#fff" : "#b79dcf"}
+                />
               </TouchableHighlight>
             </View>
           </View>
@@ -138,25 +143,36 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     paddingVertical: 10,
     borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
   },
   tabText: {
     fontSize: 16,
+    color: '#777',
+  },
+  tabTextSelected: {
+    color: '#000',
+    fontWeight: 'bold',
+    borderBottomWidth: 2,
+    borderBottomColor: '#000',
+    paddingBottom: 4,
   },
   matchList: {
     paddingHorizontal: 16,
   },
   matchCard: {
+    backgroundColor: '#f5f5fa',
     padding: 16,
     borderRadius: 12,
     marginVertical: 8,
   },
   matchTitle: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 4,
   },
   matchDetail: {
-    fontSize: 16,
+    fontSize: 14,
+    color: '#333',
   },
   buttonRow: {
     flexDirection: 'row',
@@ -175,4 +191,3 @@ const styles = StyleSheet.create({
     backgroundColor: '#b79dcf',
   },
 });
-

@@ -1,4 +1,4 @@
-import { View, StyleSheet, Switch, TouchableOpacity, Text, ScrollView, Alert, Appearance } from 'react-native';
+import { View, StyleSheet, Switch, TouchableOpacity, Text, Modal, ScrollView, TextInput, Alert, Appearance } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -14,6 +14,11 @@ export default function SettingsScreen() {
   const [highContrast, setHighContrast] = useState(false); // High contrast state
   const [fontSize, setFontSize] = useState(18); // Default to small font size
   const [headerSize, setHeaderSize] = useState(22);
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
   // Detect the initial theme based on system setting
   useEffect(() => {
@@ -144,7 +149,7 @@ export default function SettingsScreen() {
   };
 
   /** PASSWORD CHANGE FUNCTION */
-const handleChangePassword = async () => {
+  const handleChangePassword = async () => {
     try {
         const {username, userId, signInDetails} = await getCurrentUser();
     await updatePassword({oldPassword : currentPassword, newPassword : newPassword})
@@ -275,10 +280,53 @@ const handleChangePassword = async () => {
         <View style={styles.settingHeader}>
             <Text style={[styles.categoryHeader, { color: primary_color, fontSize: headerSize }]}>Account</Text>
         </View>
-        <TouchableOpacity style={styles.settingOption} onPress={() => alert("Your Password has been changed.")}>
-          <Text style={[styles.optionText, { color: primary_color, fontSize: fontSize }]}>Change Password</Text>
-          <MaterialIcons name="lock" size={24} color="gray" />
-        </TouchableOpacity>
+        <Modal visible={modalVisible} transparent animationType="fade">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Change Password</Text>
+
+            <TextInput
+              style={styles.input}
+              placeholder="Current Password"
+              secureTextEntry
+              value={currentPassword}
+              onChangeText={setCurrentPassword}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="New Password"
+              secureTextEntry
+              value={newPassword}
+              onChangeText={setNewPassword}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Confirm New Password"
+              secureTextEntry
+              value={confirmNewPassword}
+              onChangeText={setConfirmNewPassword}
+            />
+
+            <View style={styles.modalButtons}>
+              <TouchableOpacity style={styles.modalButton} onPress={handleChangePassword}>
+                <Text style={styles.buttonText}>Save</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelButton]}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      <TouchableOpacity style={styles.settingOption} onPress={() => setModalVisible(true)}>
+        <Text style={[styles.optionText, { color: primary_color }]}>Change Password</Text>
+        <MaterialIcons name="lock" size={24} color="gray" />
+      </TouchableOpacity>
+      
         <TouchableOpacity style={styles.settingOption} onPress={handleLogout}>
           <Text style={[styles.optionText, { color: "red", fontSize: fontSize }]}>Log Out</Text>
           <MaterialIcons name="logout" size={24} color="red" />
@@ -326,13 +374,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
   },
   optionText: { fontSize: 18 },
-
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Dark overlay
-  },
   settingHeader: {
     flexDirection: 'row',
     justifyContent: 'left',
@@ -355,5 +396,39 @@ const styles = StyleSheet.create({
       alignSelf: 'bottom',
       paddingHorizontal: 3,
     },
+    modalContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)', // Dark overlay
+    },
+    modalContent: {
+      width: '80%',
+      backgroundColor: '#fff',
+      padding: 20,
+      borderRadius: 10,
+      alignItems: 'center',
+    },
+    modalTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
+    input: {
+      width: '100%',
+      padding: 10,
+      borderWidth: 1,
+      borderColor: '#ccc',
+      borderRadius: 5,
+      marginBottom: 10,
+      backgroundColor: '#f9f9f9',
+    },
+    modalButtons: { flexDirection: 'row', justifyContent: 'space-between', width: '100%' },
+    modalButton: {
+      flex: 1,
+      padding: 10,
+      backgroundColor: '#6c5b7b',
+      borderRadius: 5,
+      alignItems: 'center',
+      marginHorizontal: 5,
+    },
+    cancelButton: { backgroundColor: 'gray' },
+  
 });
 
