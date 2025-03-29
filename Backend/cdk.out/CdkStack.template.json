@@ -1,0 +1,3284 @@
+{
+ "Resources": {
+  "userstable4FB8B1A2": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "student-id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "student-id",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": "users-table"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/users-table/Resource"
+   }
+  },
+  "meetupstableFBA2C001": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "meetup-id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "meetup-id",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": "meetups-table"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/meetups-table/Resource"
+   }
+  },
+  "groupchatstable5E55616F": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "chat-id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "chat-id",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": "groupchats-table"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/groupchats-table/Resource"
+   }
+  },
+  "BathLinkUserPoolE14B5490": {
+   "Type": "AWS::Cognito::UserPool",
+   "Properties": {
+    "AccountRecoverySetting": {
+     "RecoveryMechanisms": [
+      {
+       "Name": "verified_phone_number",
+       "Priority": 1
+      },
+      {
+       "Name": "verified_email",
+       "Priority": 2
+      }
+     ]
+    },
+    "AdminCreateUserConfig": {
+     "AllowAdminCreateUserOnly": false
+    },
+    "AutoVerifiedAttributes": [
+     "email"
+    ],
+    "EmailVerificationMessage": "The verification code to your new account is {####}",
+    "EmailVerificationSubject": "Verify your new account",
+    "LambdaConfig": {
+     "PostConfirmation": {
+      "Fn::GetAtt": [
+       "manageuserslambda5A9F10DC",
+       "Arn"
+      ]
+     }
+    },
+    "Policies": {
+     "PasswordPolicy": {
+      "MinimumLength": 8,
+      "RequireLowercase": true,
+      "RequireNumbers": true,
+      "RequireUppercase": true
+     }
+    },
+    "Schema": [
+     {
+      "Mutable": true,
+      "Name": "birthdate",
+      "Required": true
+     },
+     {
+      "Mutable": true,
+      "Name": "email",
+      "Required": true
+     },
+     {
+      "Mutable": true,
+      "Name": "family_name",
+      "Required": true
+     },
+     {
+      "Mutable": true,
+      "Name": "given_name",
+      "Required": true
+     },
+     {
+      "Mutable": true,
+      "Name": "phone_number",
+      "Required": true
+     }
+    ],
+    "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "UsernameAttributes": [
+     "email"
+    ],
+    "VerificationMessageTemplate": {
+     "DefaultEmailOption": "CONFIRM_WITH_CODE",
+     "EmailMessage": "The verification code to your new account is {####}",
+     "EmailSubject": "Verify your new account",
+     "SmsMessage": "The verification code to your new account is {####}"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkUserPool/Resource"
+   }
+  },
+  "BathLinkUserPoolBathLinkAppClient92E58658": {
+   "Type": "AWS::Cognito::UserPoolClient",
+   "Properties": {
+    "AllowedOAuthFlows": [
+     "implicit",
+     "code"
+    ],
+    "AllowedOAuthFlowsUserPoolClient": true,
+    "AllowedOAuthScopes": [
+     "profile",
+     "phone",
+     "email",
+     "openid",
+     "aws.cognito.signin.user.admin"
+    ],
+    "CallbackURLs": [
+     "https://example.com"
+    ],
+    "ExplicitAuthFlows": [
+     "ALLOW_USER_PASSWORD_AUTH",
+     "ALLOW_USER_SRP_AUTH",
+     "ALLOW_REFRESH_TOKEN_AUTH"
+    ],
+    "GenerateSecret": false,
+    "SupportedIdentityProviders": [
+     "COGNITO"
+    ],
+    "UserPoolId": {
+     "Ref": "BathLinkUserPoolE14B5490"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkUserPool/BathLinkAppClient/Resource"
+   }
+  },
+  "BathLinkUserPoolPostConfirmationCognitoF7F9BEED": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "manageuserslambda5A9F10DC",
+      "Arn"
+     ]
+    },
+    "Principal": "cognito-idp.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "BathLinkUserPoolE14B5490",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkUserPool/PostConfirmationCognito"
+   }
+  },
+  "managemeetupslambdaServiceRoleD2C31C51": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/manage_meetups_lambda/ServiceRole/Resource"
+   }
+  },
+  "managemeetupslambdaE4344886": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-376129876633-eu-west-2",
+     "S3Key": "863ca37c4925df2139f03bc63d7f0d78eb7c73caa465a4d874e0402506c0f286.zip"
+    },
+    "FunctionName": "manage_meetups_lambda",
+    "Handler": "lambda_function.lambda_handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "managemeetupslambdaServiceRoleD2C31C51",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.9"
+   },
+   "DependsOn": [
+    "managemeetupslambdaServiceRoleD2C31C51"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/manage_meetups_lambda/Resource",
+    "aws:asset:path": "asset.863ca37c4925df2139f03bc63d7f0d78eb7c73caa465a4d874e0402506c0f286",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "searchmeetupslambdaServiceRoleA4FC9B02": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/search_meetups_lambda/ServiceRole/Resource"
+   }
+  },
+  "searchmeetupslambda9E293529": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-376129876633-eu-west-2",
+     "S3Key": "863ca37c4925df2139f03bc63d7f0d78eb7c73caa465a4d874e0402506c0f286.zip"
+    },
+    "FunctionName": "search_meetups_lambda",
+    "Handler": "lambda_function.lambda_handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "searchmeetupslambdaServiceRoleA4FC9B02",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.9"
+   },
+   "DependsOn": [
+    "searchmeetupslambdaServiceRoleA4FC9B02"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/search_meetups_lambda/Resource",
+    "aws:asset:path": "asset.863ca37c4925df2139f03bc63d7f0d78eb7c73caa465a4d874e0402506c0f286",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "manageuserslambdaServiceRoleAE574AA7": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/manage_users_lambda/ServiceRole/Resource"
+   }
+  },
+  "manageuserslambda5A9F10DC": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-376129876633-eu-west-2",
+     "S3Key": "cce9af37359d6ba20628202edc5686ceae4aedd9a5d074f16dd3201e1b54450e.zip"
+    },
+    "FunctionName": "manage_users_lambda",
+    "Handler": "lambda_function.lambda_handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "manageuserslambdaServiceRoleAE574AA7",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.9"
+   },
+   "DependsOn": [
+    "manageuserslambdaServiceRoleAE574AA7"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/manage_users_lambda/Resource",
+    "aws:asset:path": "asset.cce9af37359d6ba20628202edc5686ceae4aedd9a5d074f16dd3201e1b54450e",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "manageuserslambdaCognitoTriggerPermission90161762": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "manageuserslambda5A9F10DC",
+      "Arn"
+     ]
+    },
+    "Principal": "cognito-idp.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "BathLinkUserPoolE14B5490",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/manage_users_lambda/CognitoTriggerPermission"
+   }
+  },
+  "manageprofileslambdaServiceRole0A61BC3F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/manage_profiles_lambda/ServiceRole/Resource"
+   }
+  },
+  "manageprofileslambda3D8D6DB1": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-376129876633-eu-west-2",
+     "S3Key": "863ca37c4925df2139f03bc63d7f0d78eb7c73caa465a4d874e0402506c0f286.zip"
+    },
+    "FunctionName": "manage_profiles_lambda",
+    "Handler": "lambda_function.lambda_handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "manageprofileslambdaServiceRole0A61BC3F",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.9"
+   },
+   "DependsOn": [
+    "manageprofileslambdaServiceRole0A61BC3F"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/manage_profiles_lambda/Resource",
+    "aws:asset:path": "asset.863ca37c4925df2139f03bc63d7f0d78eb7c73caa465a4d874e0402506c0f286",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "signuplambdaServiceRole4D953B4B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/sign_up_lambda/ServiceRole/Resource"
+   }
+  },
+  "signuplambdaAB5914C4": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-376129876633-eu-west-2",
+     "S3Key": "863ca37c4925df2139f03bc63d7f0d78eb7c73caa465a4d874e0402506c0f286.zip"
+    },
+    "FunctionName": "sign_up_lambda",
+    "Handler": "lambda_function.lambda_handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "signuplambdaServiceRole4D953B4B",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.9"
+   },
+   "DependsOn": [
+    "signuplambdaServiceRole4D953B4B"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/sign_up_lambda/Resource",
+    "aws:asset:path": "asset.863ca37c4925df2139f03bc63d7f0d78eb7c73caa465a4d874e0402506c0f286",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "managechatslambdaServiceRole58C1630C": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/manage_chats_lambda/ServiceRole/Resource"
+   }
+  },
+  "managechatslambda70C5CD4C": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-376129876633-eu-west-2",
+     "S3Key": "9c58563dcb60e0663932d4ed707303b35b19f8b77cf47f4b0f25572d6f53d21b.zip"
+    },
+    "FunctionName": "manage_chats_lambda",
+    "Handler": "lambda_function.lambda_handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "managechatslambdaServiceRole58C1630C",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.9"
+   },
+   "DependsOn": [
+    "managechatslambdaServiceRole58C1630C"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/manage_chats_lambda/Resource",
+    "aws:asset:path": "asset.9c58563dcb60e0663932d4ed707303b35b19f8b77cf47f4b0f25572d6f53d21b",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "managecalendarslambdaServiceRole65FE60CC": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/manage_calendars_lambda/ServiceRole/Resource"
+   }
+  },
+  "managecalendarslambdaServiceRoleDefaultPolicyFD023B7C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "userstable4FB8B1A2",
+          "Arn"
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "managecalendarslambdaServiceRoleDefaultPolicyFD023B7C",
+    "Roles": [
+     {
+      "Ref": "managecalendarslambdaServiceRole65FE60CC"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/manage_calendars_lambda/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "managecalendarslambda9C091573": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-376129876633-eu-west-2",
+     "S3Key": "d5d2295ed4964e5722736cdc275d28fc53ceb4cba32be5cfd0452b1826844b25.zip"
+    },
+    "FunctionName": "manage_calendars_lambda",
+    "Handler": "lambda_function.lambda_handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "managecalendarslambdaServiceRole65FE60CC",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.9"
+   },
+   "DependsOn": [
+    "managecalendarslambdaServiceRoleDefaultPolicyFD023B7C",
+    "managecalendarslambdaServiceRole65FE60CC"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/manage_calendars_lambda/Resource",
+    "aws:asset:path": "asset.d5d2295ed4964e5722736cdc275d28fc53ceb4cba32be5cfd0452b1826844b25",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "BathLinkAuthorizer1856A54C": {
+   "Type": "AWS::ApiGateway::Authorizer",
+   "Properties": {
+    "IdentitySource": "method.request.header.Authorization",
+    "Name": "CdkStackBathLinkAuthorizer4C1B9A67",
+    "ProviderARNs": [
+     {
+      "Fn::GetAtt": [
+       "BathLinkUserPoolE14B5490",
+       "Arn"
+      ]
+     }
+    ],
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    },
+    "Type": "COGNITO_USER_POOLS"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkAuthorizer/Resource"
+   }
+  },
+  "BathLinkApi44287010": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Name": "BathLinkApi"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Resource"
+   }
+  },
+  "BathLinkApiCloudWatchRole794AA1D5": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+       ]
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/CloudWatchRole/Resource"
+   }
+  },
+  "BathLinkApiAccount6C4AC977": {
+   "Type": "AWS::ApiGateway::Account",
+   "Properties": {
+    "CloudWatchRoleArn": {
+     "Fn::GetAtt": [
+      "BathLinkApiCloudWatchRole794AA1D5",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "BathLinkApi44287010"
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Account"
+   }
+  },
+  "BathLinkApiDeployment607DFFFE2c4a647ee5add5ac53bbeb108ad89d67": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Automatically created by the RestApi construct",
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "DependsOn": [
+    "BathLinkApichatschatIdDELETE332EDD8E",
+    "BathLinkApichatschatIdGETE27D8862",
+    "BathLinkApichatschatIdOPTIONS56F3A7EA",
+    "BathLinkApichatschatIdPOSTB4A616E4",
+    "BathLinkApichatschatIdC69472FE",
+    "BathLinkApichatsOPTIONSED85C12B",
+    "BathLinkApichats6E747575",
+    "BathLinkApimeetupsmeetupIdDELETEC74B0D07",
+    "BathLinkApimeetupsmeetupIdGETAFFE3A0F",
+    "BathLinkApimeetupsmeetupIdOPTIONSB7C9534C",
+    "BathLinkApimeetupsmeetupIdPOSTAC7D0F3F",
+    "BathLinkApimeetupsmeetupIdPUTBC157235",
+    "BathLinkApimeetupsmeetupId0995A30A",
+    "BathLinkApimeetupsOPTIONS9A0612A2",
+    "BathLinkApimeetups3405319B",
+    "BathLinkApimeetupssearchOPTIONS3CCF0EEC",
+    "BathLinkApimeetupssearchPOSTAA190423",
+    "BathLinkApimeetupssearch9ADEADE3",
+    "BathLinkApiOPTIONSC2371BB1",
+    "BathLinkApisignupOPTIONS5B23185E",
+    "BathLinkApisignupPOSTB0FB5F4B",
+    "BathLinkApisignup4AA11308",
+    "BathLinkApiusersuserIdcalendarDELETE93174C94",
+    "BathLinkApiusersuserIdcalendarGETC3AD08EC",
+    "BathLinkApiusersuserIdcalendarOPTIONSA23D2FD5",
+    "BathLinkApiusersuserIdcalendarPOST93A2CF47",
+    "BathLinkApiusersuserIdcalendar6EF4C40C",
+    "BathLinkApiusersuserIdDELETE95061F10",
+    "BathLinkApiusersuserIdGETF73D00AF",
+    "BathLinkApiusersuserIdOPTIONSB0394DA4",
+    "BathLinkApiusersuserIdprofileOPTIONS4D9775FB",
+    "BathLinkApiusersuserIdprofile12BFC4A1",
+    "BathLinkApiusersuserIdPUTCD34BF41",
+    "BathLinkApiusersuserId5A870CBF",
+    "BathLinkApiusersOPTIONS769C5CBF",
+    "BathLinkApiusersDCC8A455"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Deployment/Resource"
+   }
+  },
+  "BathLinkApiDeploymentStageprod1E328831": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "BathLinkApiDeployment607DFFFE2c4a647ee5add5ac53bbeb108ad89d67"
+    },
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    },
+    "StageName": "prod"
+   },
+   "DependsOn": [
+    "BathLinkApiAccount6C4AC977"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/DeploymentStage.prod/Resource"
+   }
+  },
+  "BathLinkApiOPTIONSC2371BB1": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "BathLinkApi44287010",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/OPTIONS/Resource"
+   }
+  },
+  "BathLinkApimeetups3405319B": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "BathLinkApi44287010",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "meetups",
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/meetups/Resource"
+   }
+  },
+  "BathLinkApimeetupsOPTIONS9A0612A2": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "BathLinkApimeetups3405319B"
+    },
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/meetups/OPTIONS/Resource"
+   }
+  },
+  "BathLinkApimeetupsmeetupId0995A30A": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "BathLinkApimeetups3405319B"
+    },
+    "PathPart": "{meetupId}",
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/meetups/{meetupId}/Resource"
+   }
+  },
+  "BathLinkApimeetupsmeetupIdOPTIONSB7C9534C": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "BathLinkApimeetupsmeetupId0995A30A"
+    },
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/meetups/{meetupId}/OPTIONS/Resource"
+   }
+  },
+  "BathLinkApimeetupsmeetupIdGETApiPermissionCdkStackBathLinkApi7E118E75GETmeetupsmeetupId97CCFC2A": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "managemeetupslambdaE4344886",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/",
+       {
+        "Ref": "BathLinkApiDeploymentStageprod1E328831"
+       },
+       "/GET/meetups/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/meetups/{meetupId}/GET/ApiPermission.CdkStackBathLinkApi7E118E75.GET..meetups.{meetupId}"
+   }
+  },
+  "BathLinkApimeetupsmeetupIdGETApiPermissionTestCdkStackBathLinkApi7E118E75GETmeetupsmeetupId6421FC9F": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "managemeetupslambdaE4344886",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/test-invoke-stage/GET/meetups/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/meetups/{meetupId}/GET/ApiPermission.Test.CdkStackBathLinkApi7E118E75.GET..meetups.{meetupId}"
+   }
+  },
+  "BathLinkApimeetupsmeetupIdGETAFFE3A0F": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "COGNITO_USER_POOLS",
+    "AuthorizerId": {
+     "Ref": "BathLinkAuthorizer1856A54C"
+    },
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:eu-west-2:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "managemeetupslambdaE4344886",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "BathLinkApimeetupsmeetupId0995A30A"
+    },
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/meetups/{meetupId}/GET/Resource"
+   }
+  },
+  "BathLinkApimeetupsmeetupIdPOSTApiPermissionCdkStackBathLinkApi7E118E75POSTmeetupsmeetupIdAB30A0E8": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "managemeetupslambdaE4344886",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/",
+       {
+        "Ref": "BathLinkApiDeploymentStageprod1E328831"
+       },
+       "/POST/meetups/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/meetups/{meetupId}/POST/ApiPermission.CdkStackBathLinkApi7E118E75.POST..meetups.{meetupId}"
+   }
+  },
+  "BathLinkApimeetupsmeetupIdPOSTApiPermissionTestCdkStackBathLinkApi7E118E75POSTmeetupsmeetupIdCFFDAA4D": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "managemeetupslambdaE4344886",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/test-invoke-stage/POST/meetups/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/meetups/{meetupId}/POST/ApiPermission.Test.CdkStackBathLinkApi7E118E75.POST..meetups.{meetupId}"
+   }
+  },
+  "BathLinkApimeetupsmeetupIdPOSTAC7D0F3F": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "COGNITO_USER_POOLS",
+    "AuthorizerId": {
+     "Ref": "BathLinkAuthorizer1856A54C"
+    },
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:eu-west-2:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "managemeetupslambdaE4344886",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "BathLinkApimeetupsmeetupId0995A30A"
+    },
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/meetups/{meetupId}/POST/Resource"
+   }
+  },
+  "BathLinkApimeetupsmeetupIdDELETEApiPermissionCdkStackBathLinkApi7E118E75DELETEmeetupsmeetupIdC483C42F": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "managemeetupslambdaE4344886",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/",
+       {
+        "Ref": "BathLinkApiDeploymentStageprod1E328831"
+       },
+       "/DELETE/meetups/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/meetups/{meetupId}/DELETE/ApiPermission.CdkStackBathLinkApi7E118E75.DELETE..meetups.{meetupId}"
+   }
+  },
+  "BathLinkApimeetupsmeetupIdDELETEApiPermissionTestCdkStackBathLinkApi7E118E75DELETEmeetupsmeetupIdE1F42D1A": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "managemeetupslambdaE4344886",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/test-invoke-stage/DELETE/meetups/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/meetups/{meetupId}/DELETE/ApiPermission.Test.CdkStackBathLinkApi7E118E75.DELETE..meetups.{meetupId}"
+   }
+  },
+  "BathLinkApimeetupsmeetupIdDELETEC74B0D07": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "COGNITO_USER_POOLS",
+    "AuthorizerId": {
+     "Ref": "BathLinkAuthorizer1856A54C"
+    },
+    "HttpMethod": "DELETE",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:eu-west-2:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "managemeetupslambdaE4344886",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "BathLinkApimeetupsmeetupId0995A30A"
+    },
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/meetups/{meetupId}/DELETE/Resource"
+   }
+  },
+  "BathLinkApimeetupsmeetupIdPUTApiPermissionCdkStackBathLinkApi7E118E75PUTmeetupsmeetupId425101CF": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "managemeetupslambdaE4344886",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/",
+       {
+        "Ref": "BathLinkApiDeploymentStageprod1E328831"
+       },
+       "/PUT/meetups/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/meetups/{meetupId}/PUT/ApiPermission.CdkStackBathLinkApi7E118E75.PUT..meetups.{meetupId}"
+   }
+  },
+  "BathLinkApimeetupsmeetupIdPUTApiPermissionTestCdkStackBathLinkApi7E118E75PUTmeetupsmeetupId27002A73": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "managemeetupslambdaE4344886",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/test-invoke-stage/PUT/meetups/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/meetups/{meetupId}/PUT/ApiPermission.Test.CdkStackBathLinkApi7E118E75.PUT..meetups.{meetupId}"
+   }
+  },
+  "BathLinkApimeetupsmeetupIdPUTBC157235": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "COGNITO_USER_POOLS",
+    "AuthorizerId": {
+     "Ref": "BathLinkAuthorizer1856A54C"
+    },
+    "HttpMethod": "PUT",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:eu-west-2:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "managemeetupslambdaE4344886",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "BathLinkApimeetupsmeetupId0995A30A"
+    },
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/meetups/{meetupId}/PUT/Resource"
+   }
+  },
+  "BathLinkApimeetupssearch9ADEADE3": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "BathLinkApimeetups3405319B"
+    },
+    "PathPart": "search",
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/meetups/search/Resource"
+   }
+  },
+  "BathLinkApimeetupssearchOPTIONS3CCF0EEC": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "BathLinkApimeetupssearch9ADEADE3"
+    },
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/meetups/search/OPTIONS/Resource"
+   }
+  },
+  "BathLinkApimeetupssearchPOSTApiPermissionCdkStackBathLinkApi7E118E75POSTmeetupssearch0F2BCC62": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "searchmeetupslambda9E293529",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/",
+       {
+        "Ref": "BathLinkApiDeploymentStageprod1E328831"
+       },
+       "/POST/meetups/search"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/meetups/search/POST/ApiPermission.CdkStackBathLinkApi7E118E75.POST..meetups.search"
+   }
+  },
+  "BathLinkApimeetupssearchPOSTApiPermissionTestCdkStackBathLinkApi7E118E75POSTmeetupssearch53479D44": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "searchmeetupslambda9E293529",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/test-invoke-stage/POST/meetups/search"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/meetups/search/POST/ApiPermission.Test.CdkStackBathLinkApi7E118E75.POST..meetups.search"
+   }
+  },
+  "BathLinkApimeetupssearchPOSTAA190423": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "COGNITO_USER_POOLS",
+    "AuthorizerId": {
+     "Ref": "BathLinkAuthorizer1856A54C"
+    },
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:eu-west-2:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "searchmeetupslambda9E293529",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "BathLinkApimeetupssearch9ADEADE3"
+    },
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/meetups/search/POST/Resource"
+   }
+  },
+  "BathLinkApiusersDCC8A455": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "BathLinkApi44287010",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "users",
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/users/Resource"
+   }
+  },
+  "BathLinkApiusersOPTIONS769C5CBF": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "BathLinkApiusersDCC8A455"
+    },
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/users/OPTIONS/Resource"
+   }
+  },
+  "BathLinkApiusersuserId5A870CBF": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "BathLinkApiusersDCC8A455"
+    },
+    "PathPart": "{userId}",
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/users/{userId}/Resource"
+   }
+  },
+  "BathLinkApiusersuserIdOPTIONSB0394DA4": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "BathLinkApiusersuserId5A870CBF"
+    },
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/users/{userId}/OPTIONS/Resource"
+   }
+  },
+  "BathLinkApiusersuserIdprofile12BFC4A1": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "BathLinkApiusersuserId5A870CBF"
+    },
+    "PathPart": "profile",
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/users/{userId}/profile/Resource"
+   }
+  },
+  "BathLinkApiusersuserIdprofileOPTIONS4D9775FB": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "BathLinkApiusersuserIdprofile12BFC4A1"
+    },
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/users/{userId}/profile/OPTIONS/Resource"
+   }
+  },
+  "BathLinkApiusersuserIdcalendar6EF4C40C": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "BathLinkApiusersuserId5A870CBF"
+    },
+    "PathPart": "calendar",
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/users/{userId}/calendar/Resource"
+   }
+  },
+  "BathLinkApiusersuserIdcalendarOPTIONSA23D2FD5": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "BathLinkApiusersuserIdcalendar6EF4C40C"
+    },
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/users/{userId}/calendar/OPTIONS/Resource"
+   }
+  },
+  "BathLinkApiusersuserIdcalendarGETApiPermissionCdkStackBathLinkApi7E118E75GETusersuserIdcalendar1FDA59FD": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "managecalendarslambda9C091573",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/",
+       {
+        "Ref": "BathLinkApiDeploymentStageprod1E328831"
+       },
+       "/GET/users/*/calendar"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/users/{userId}/calendar/GET/ApiPermission.CdkStackBathLinkApi7E118E75.GET..users.{userId}.calendar"
+   }
+  },
+  "BathLinkApiusersuserIdcalendarGETApiPermissionTestCdkStackBathLinkApi7E118E75GETusersuserIdcalendarA4151163": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "managecalendarslambda9C091573",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/test-invoke-stage/GET/users/*/calendar"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/users/{userId}/calendar/GET/ApiPermission.Test.CdkStackBathLinkApi7E118E75.GET..users.{userId}.calendar"
+   }
+  },
+  "BathLinkApiusersuserIdcalendarGETC3AD08EC": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "COGNITO_USER_POOLS",
+    "AuthorizerId": {
+     "Ref": "BathLinkAuthorizer1856A54C"
+    },
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:eu-west-2:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "managecalendarslambda9C091573",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "MethodResponses": [
+     {
+      "StatusCode": "200"
+     },
+     {
+      "StatusCode": "404"
+     }
+    ],
+    "OperationName": "GetUserCalendar",
+    "ResourceId": {
+     "Ref": "BathLinkApiusersuserIdcalendar6EF4C40C"
+    },
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/users/{userId}/calendar/GET/Resource"
+   }
+  },
+  "BathLinkApiusersuserIdcalendarPOSTApiPermissionCdkStackBathLinkApi7E118E75POSTusersuserIdcalendarD06273AF": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "managecalendarslambda9C091573",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/",
+       {
+        "Ref": "BathLinkApiDeploymentStageprod1E328831"
+       },
+       "/POST/users/*/calendar"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/users/{userId}/calendar/POST/ApiPermission.CdkStackBathLinkApi7E118E75.POST..users.{userId}.calendar"
+   }
+  },
+  "BathLinkApiusersuserIdcalendarPOSTApiPermissionTestCdkStackBathLinkApi7E118E75POSTusersuserIdcalendarD9161EF2": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "managecalendarslambda9C091573",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/test-invoke-stage/POST/users/*/calendar"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/users/{userId}/calendar/POST/ApiPermission.Test.CdkStackBathLinkApi7E118E75.POST..users.{userId}.calendar"
+   }
+  },
+  "BathLinkApiusersuserIdcalendarPOST93A2CF47": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "COGNITO_USER_POOLS",
+    "AuthorizerId": {
+     "Ref": "BathLinkAuthorizer1856A54C"
+    },
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:eu-west-2:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "managecalendarslambda9C091573",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "MethodResponses": [
+     {
+      "StatusCode": "200"
+     },
+     {
+      "StatusCode": "404"
+     },
+     {
+      "StatusCode": "400"
+     }
+    ],
+    "OperationName": "PostCalendarData",
+    "RequestParameters": {
+     "method.request.querystring.calendarData": true
+    },
+    "ResourceId": {
+     "Ref": "BathLinkApiusersuserIdcalendar6EF4C40C"
+    },
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/users/{userId}/calendar/POST/Resource"
+   }
+  },
+  "BathLinkApiusersuserIdcalendarDELETEApiPermissionCdkStackBathLinkApi7E118E75DELETEusersuserIdcalendar4FA2868D": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "managecalendarslambda9C091573",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/",
+       {
+        "Ref": "BathLinkApiDeploymentStageprod1E328831"
+       },
+       "/DELETE/users/*/calendar"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/users/{userId}/calendar/DELETE/ApiPermission.CdkStackBathLinkApi7E118E75.DELETE..users.{userId}.calendar"
+   }
+  },
+  "BathLinkApiusersuserIdcalendarDELETEApiPermissionTestCdkStackBathLinkApi7E118E75DELETEusersuserIdcalendar3A3FCC41": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "managecalendarslambda9C091573",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/test-invoke-stage/DELETE/users/*/calendar"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/users/{userId}/calendar/DELETE/ApiPermission.Test.CdkStackBathLinkApi7E118E75.DELETE..users.{userId}.calendar"
+   }
+  },
+  "BathLinkApiusersuserIdcalendarDELETE93174C94": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "COGNITO_USER_POOLS",
+    "AuthorizerId": {
+     "Ref": "BathLinkAuthorizer1856A54C"
+    },
+    "HttpMethod": "DELETE",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:eu-west-2:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "managecalendarslambda9C091573",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "MethodResponses": [
+     {
+      "StatusCode": "200"
+     },
+     {
+      "StatusCode": "404"
+     }
+    ],
+    "OperationName": "Delete Calendar",
+    "ResourceId": {
+     "Ref": "BathLinkApiusersuserIdcalendar6EF4C40C"
+    },
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/users/{userId}/calendar/DELETE/Resource"
+   }
+  },
+  "BathLinkApiusersuserIdGETApiPermissionCdkStackBathLinkApi7E118E75GETusersuserId14A81CFE": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "manageuserslambda5A9F10DC",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/",
+       {
+        "Ref": "BathLinkApiDeploymentStageprod1E328831"
+       },
+       "/GET/users/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/users/{userId}/GET/ApiPermission.CdkStackBathLinkApi7E118E75.GET..users.{userId}"
+   }
+  },
+  "BathLinkApiusersuserIdGETApiPermissionTestCdkStackBathLinkApi7E118E75GETusersuserId1B0A5715": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "manageuserslambda5A9F10DC",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/test-invoke-stage/GET/users/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/users/{userId}/GET/ApiPermission.Test.CdkStackBathLinkApi7E118E75.GET..users.{userId}"
+   }
+  },
+  "BathLinkApiusersuserIdGETF73D00AF": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "COGNITO_USER_POOLS",
+    "AuthorizerId": {
+     "Ref": "BathLinkAuthorizer1856A54C"
+    },
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:eu-west-2:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "manageuserslambda5A9F10DC",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "BathLinkApiusersuserId5A870CBF"
+    },
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/users/{userId}/GET/Resource"
+   }
+  },
+  "BathLinkApiusersuserIdDELETEApiPermissionCdkStackBathLinkApi7E118E75DELETEusersuserId5FC9502C": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "manageuserslambda5A9F10DC",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/",
+       {
+        "Ref": "BathLinkApiDeploymentStageprod1E328831"
+       },
+       "/DELETE/users/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/users/{userId}/DELETE/ApiPermission.CdkStackBathLinkApi7E118E75.DELETE..users.{userId}"
+   }
+  },
+  "BathLinkApiusersuserIdDELETEApiPermissionTestCdkStackBathLinkApi7E118E75DELETEusersuserId0D4E4745": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "manageuserslambda5A9F10DC",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/test-invoke-stage/DELETE/users/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/users/{userId}/DELETE/ApiPermission.Test.CdkStackBathLinkApi7E118E75.DELETE..users.{userId}"
+   }
+  },
+  "BathLinkApiusersuserIdDELETE95061F10": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "COGNITO_USER_POOLS",
+    "AuthorizerId": {
+     "Ref": "BathLinkAuthorizer1856A54C"
+    },
+    "HttpMethod": "DELETE",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:eu-west-2:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "manageuserslambda5A9F10DC",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "BathLinkApiusersuserId5A870CBF"
+    },
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/users/{userId}/DELETE/Resource"
+   }
+  },
+  "BathLinkApiusersuserIdPUTApiPermissionCdkStackBathLinkApi7E118E75PUTusersuserIdCA2448D9": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "manageuserslambda5A9F10DC",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/",
+       {
+        "Ref": "BathLinkApiDeploymentStageprod1E328831"
+       },
+       "/PUT/users/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/users/{userId}/PUT/ApiPermission.CdkStackBathLinkApi7E118E75.PUT..users.{userId}"
+   }
+  },
+  "BathLinkApiusersuserIdPUTApiPermissionTestCdkStackBathLinkApi7E118E75PUTusersuserId18F836F9": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "manageuserslambda5A9F10DC",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/test-invoke-stage/PUT/users/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/users/{userId}/PUT/ApiPermission.Test.CdkStackBathLinkApi7E118E75.PUT..users.{userId}"
+   }
+  },
+  "BathLinkApiusersuserIdPUTCD34BF41": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "COGNITO_USER_POOLS",
+    "AuthorizerId": {
+     "Ref": "BathLinkAuthorizer1856A54C"
+    },
+    "HttpMethod": "PUT",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:eu-west-2:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "manageuserslambda5A9F10DC",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "BathLinkApiusersuserId5A870CBF"
+    },
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/users/{userId}/PUT/Resource"
+   }
+  },
+  "BathLinkApichats6E747575": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "BathLinkApi44287010",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "chats",
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/chats/Resource"
+   }
+  },
+  "BathLinkApichatsOPTIONSED85C12B": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "BathLinkApichats6E747575"
+    },
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/chats/OPTIONS/Resource"
+   }
+  },
+  "BathLinkApichatschatIdC69472FE": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "BathLinkApichats6E747575"
+    },
+    "PathPart": "{chatId}",
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/chats/{chatId}/Resource"
+   }
+  },
+  "BathLinkApichatschatIdOPTIONS56F3A7EA": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "BathLinkApichatschatIdC69472FE"
+    },
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/chats/{chatId}/OPTIONS/Resource"
+   }
+  },
+  "BathLinkApichatschatIdGETApiPermissionCdkStackBathLinkApi7E118E75GETchatschatIdE42908B5": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "managechatslambda70C5CD4C",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/",
+       {
+        "Ref": "BathLinkApiDeploymentStageprod1E328831"
+       },
+       "/GET/chats/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/chats/{chatId}/GET/ApiPermission.CdkStackBathLinkApi7E118E75.GET..chats.{chatId}"
+   }
+  },
+  "BathLinkApichatschatIdGETApiPermissionTestCdkStackBathLinkApi7E118E75GETchatschatId34BEA9AB": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "managechatslambda70C5CD4C",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/test-invoke-stage/GET/chats/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/chats/{chatId}/GET/ApiPermission.Test.CdkStackBathLinkApi7E118E75.GET..chats.{chatId}"
+   }
+  },
+  "BathLinkApichatschatIdGETE27D8862": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "COGNITO_USER_POOLS",
+    "AuthorizerId": {
+     "Ref": "BathLinkAuthorizer1856A54C"
+    },
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:eu-west-2:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "managechatslambda70C5CD4C",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "BathLinkApichatschatIdC69472FE"
+    },
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/chats/{chatId}/GET/Resource"
+   }
+  },
+  "BathLinkApichatschatIdPOSTApiPermissionCdkStackBathLinkApi7E118E75POSTchatschatId267AF788": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "managechatslambda70C5CD4C",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/",
+       {
+        "Ref": "BathLinkApiDeploymentStageprod1E328831"
+       },
+       "/POST/chats/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/chats/{chatId}/POST/ApiPermission.CdkStackBathLinkApi7E118E75.POST..chats.{chatId}"
+   }
+  },
+  "BathLinkApichatschatIdPOSTApiPermissionTestCdkStackBathLinkApi7E118E75POSTchatschatIdEE8541F6": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "managechatslambda70C5CD4C",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/test-invoke-stage/POST/chats/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/chats/{chatId}/POST/ApiPermission.Test.CdkStackBathLinkApi7E118E75.POST..chats.{chatId}"
+   }
+  },
+  "BathLinkApichatschatIdPOSTB4A616E4": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "COGNITO_USER_POOLS",
+    "AuthorizerId": {
+     "Ref": "BathLinkAuthorizer1856A54C"
+    },
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:eu-west-2:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "managechatslambda70C5CD4C",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "BathLinkApichatschatIdC69472FE"
+    },
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/chats/{chatId}/POST/Resource"
+   }
+  },
+  "BathLinkApichatschatIdDELETEApiPermissionCdkStackBathLinkApi7E118E75DELETEchatschatIdA72BE0A6": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "managechatslambda70C5CD4C",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/",
+       {
+        "Ref": "BathLinkApiDeploymentStageprod1E328831"
+       },
+       "/DELETE/chats/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/chats/{chatId}/DELETE/ApiPermission.CdkStackBathLinkApi7E118E75.DELETE..chats.{chatId}"
+   }
+  },
+  "BathLinkApichatschatIdDELETEApiPermissionTestCdkStackBathLinkApi7E118E75DELETEchatschatId87650D14": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "managechatslambda70C5CD4C",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/test-invoke-stage/DELETE/chats/*"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/chats/{chatId}/DELETE/ApiPermission.Test.CdkStackBathLinkApi7E118E75.DELETE..chats.{chatId}"
+   }
+  },
+  "BathLinkApichatschatIdDELETE332EDD8E": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "COGNITO_USER_POOLS",
+    "AuthorizerId": {
+     "Ref": "BathLinkAuthorizer1856A54C"
+    },
+    "HttpMethod": "DELETE",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:eu-west-2:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "managechatslambda70C5CD4C",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "BathLinkApichatschatIdC69472FE"
+    },
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/chats/{chatId}/DELETE/Resource"
+   }
+  },
+  "BathLinkApisignup4AA11308": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "BathLinkApi44287010",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "sign_up",
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/sign_up/Resource"
+   }
+  },
+  "BathLinkApisignupOPTIONS5B23185E": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "BathLinkApisignup4AA11308"
+    },
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/sign_up/OPTIONS/Resource"
+   }
+  },
+  "BathLinkApisignupPOSTApiPermissionCdkStackBathLinkApi7E118E75POSTsignup77812328": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "signuplambdaAB5914C4",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/",
+       {
+        "Ref": "BathLinkApiDeploymentStageprod1E328831"
+       },
+       "/POST/sign_up"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/sign_up/POST/ApiPermission.CdkStackBathLinkApi7E118E75.POST..sign_up"
+   }
+  },
+  "BathLinkApisignupPOSTApiPermissionTestCdkStackBathLinkApi7E118E75POSTsignup4B7D0861": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "signuplambdaAB5914C4",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:eu-west-2:376129876633:",
+       {
+        "Ref": "BathLinkApi44287010"
+       },
+       "/test-invoke-stage/POST/sign_up"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/sign_up/POST/ApiPermission.Test.CdkStackBathLinkApi7E118E75.POST..sign_up"
+   }
+  },
+  "BathLinkApisignupPOSTB0FB5F4B": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:eu-west-2:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "signuplambdaAB5914C4",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "BathLinkApisignup4AA11308"
+    },
+    "RestApiId": {
+     "Ref": "BathLinkApi44287010"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/BathLinkApi/Default/sign_up/POST/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/02PQW/CMAyFfwv3kAmYtF1Lp92mVWU7ozQ1JSONq9oR6qL89ykpHZz82c/ye97Kzcur3K7Ulda6vaytaWQ4sNIXoa50DO3kVI9tI8OXaiyI8uQyRKGxc4ZRhm+CsUK0SfvnBUprwPGjNE+isKpvWiVDeXIVjL0hMujEu3eaE5Qnt3AURvUy1Dj751qhNXpK7UxR0O6oiIBJFqkI2sm91xfgvSIQajCdYriqSYZyTr4EosLzGUfzC2O699DVQFwMJpvesdAavWPxBoPFqb+999AdWHU56Qw1EPpRQ87xAXzGNok3WtSbSeYY7+P8TDpkXJd2Pj0PnqOoJj6je9rJzUY+r37ImPXoHZseZD3XP+XjAv/bAQAA"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "BathLinkApiEndpointF8932390": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "BathLinkApi44287010"
+      },
+      ".execute-api.eu-west-2.",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "BathLinkApiDeploymentStageprod1E328831"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "APIEndpoint": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "BathLinkApi44287010"
+      },
+      ".execute-api.eu-west-2.",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "BathLinkApiDeploymentStageprod1E328831"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "UserPoolId": {
+   "Value": {
+    "Ref": "BathLinkUserPoolE14B5490"
+   }
+  },
+  "AppClientId": {
+   "Value": {
+    "Ref": "BathLinkUserPoolBathLinkAppClient92E58658"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

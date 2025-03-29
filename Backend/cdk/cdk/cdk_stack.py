@@ -4,6 +4,7 @@ from aws_cdk import (
 )
 from constructs import Construct
 
+from .bathlink_buckets import BathLinkBuckets
 from .bathlink_cognito import BathLinkCognito
 from .bathlink_databases import BathLinkDB
 from .bathlink_lambdas import BathLinkLambdas
@@ -32,6 +33,8 @@ class CdkStack(Stack):
         )
 
         api = BathLinkAPI().create_api(self, cognito.user_pool, lambdas)
+
+        buckets = BathLinkBuckets().create_buckets(self)
 
         CfnOutput(self, "APIEndpoint", value=api.url)
         CfnOutput(self, "UserPoolId", value=cognito.user_pool.user_pool_id)

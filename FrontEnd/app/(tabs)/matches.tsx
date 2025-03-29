@@ -1,20 +1,44 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableHighlight, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, Button, StyleSheet, Platform, ScrollView, TouchableHighlight, TouchableOpacity } from 'react-native';
+import {useState} from 'react';
+import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Divider } from 'react-native-paper';
+import { Svg, Path } from 'react-native-svg';
+
+import { ThemedText } from '@/components/ThemedText';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { ThemedText } from '@/components/ThemedText';
+
+
+
+
+
+
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const [selectedTab, setSelectedTab] = useState('Matches');
 
-  const [matches, setMatches] = useState([
-    ["Indoor Tennis", ["Nathaniel", "John"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
+  // Track which button is selected for each match
+  const [buttonStates, setButtonStates] = useState(
+    Array(5).fill({ checkSelected: false, cancelSelected: false })
+  );
+
+  const testBtn = () => {
+    console.log('Button pressed');
+  };
+
+  const router = useRouter();
+  const primary_color = colorScheme === 'dark' ? 'white' : 'black';
+  const background_color = colorScheme === 'dark' ? 'rgba(0, 0, 0, 0)' : 'rgba(0, 0, 0, 0)';
+
+  const matches = [
+    ["Indoor Tennis", ["Nathaniel", "John",], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
     ["Indoor Tennis", ["Nathaniel", "John", "James"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
     ["Outdoor Tennis", ["Nathaniel", "John", "James", "Jim"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
     ["Indoor Tennis", ["John", "James"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
     ["Indoor Tennis", ["Nathaniel", "John", "James"], "Saturday 12th Feb 2025", "08:00 - 10:00", "Sports Training Village, Bath, BA2 7JX"],
-  ]);
+  ];
 
   const toggleButton = (index, type) => {
     setMatches(prevMatches => {
@@ -31,21 +55,21 @@ export default function HomeScreen() {
     });
   };
 
-  // Dynamic colors
-  const isDark = colorScheme === 'dark';
-  const primaryColor = isDark ? '#ffffff' : '#000000';
-  const backgroundColor = isDark ? '#000000' : '#ffffff';
-  const cardBackground = isDark ? '#333333' : '#f5f5f5';
-  const textColor = isDark ? '#ffffff' : '#000000';
+  const profileBtn = async () => {
+      await AsyncStorage.setItem("page", "/matches");
+      router.replace('/profile')
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor }}>
       {/* Top Menu App Bar */}
       <View style={styles.titleContainer}>
-        <MaterialIcons.Button name="person" size={28} color={primaryColor} backgroundColor="transparent" onPress={() => {}} />
+        <MaterialIcons.Button name="person" size={28} color={primary_color} backgroundColor="transparent" onPress={profileBtn} />
         <ThemedText type="title">BathLink</ThemedText>
-        <MaterialIcons.Button name="notifications" size={28} color={primaryColor} backgroundColor="transparent" onPress={() => {}} />
+        <MaterialIcons.Button name="notifications" size={28} color={"transparent"} backgroundColor="transparent" onPress={() => {testBtn}} />
       </View>
+
+
 
       {/* Tabs */}
       <View style={[styles.tabContainer, { borderBottomColor: isDark ? '#555' : '#ccc' }]}>
@@ -144,4 +168,11 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 4,
   },
+  iconSelectedCheck: {
+    backgroundColor: '#5e4bb7',
+  },
+  iconSelectedCancel: {
+    backgroundColor: '#b79dcf',
+  },
 });
+

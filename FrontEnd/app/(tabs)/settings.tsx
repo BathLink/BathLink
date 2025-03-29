@@ -1,12 +1,16 @@
-import { View, StyleSheet, Switch, TouchableOpacity, Text, ScrollView } from 'react-native';
+import { View, StyleSheet, Switch, TouchableOpacity, Text, ScrollView, Alert, Appearance } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useState, useEffect } from 'react';
-import { Appearance } from 'react-native';  // Import Appearance
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { useRouter } from "expo-router";
+import * as Crypto from 'expo-crypto';
+import {signOut, updatePassword, getCurrentUser} from 'aws-amplify/auth';
 import { ThemedText } from '@/components/ThemedText';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Alert } from 'react-native';
 
 export default function SettingsScreen() {
+  const router = useRouter();
   const [isDarkMode, setIsDarkMode] = useState(false); // Dark mode state
   const [highContrast, setHighContrast] = useState(false); // High contrast state
   const [fontSize, setFontSize] = useState(18); // Default to small font size
@@ -54,8 +58,9 @@ export default function SettingsScreen() {
   const primary_color = highContrast ? 'yellow' : isDarkMode ? "white" : "black";
   const background_color = highContrast ? 'black' : isDarkMode ? "rgba(20,20,20,20)" : "rgba(240, 240, 240, 240)"; // Add this dynamic update
 
-  const handleLogout = () => {
-
+  const handleLogout = async () => {
+    await signOut();
+    
     Alert.alert(
             "You have logged out successfully.",
             '',
@@ -67,6 +72,7 @@ export default function SettingsScreen() {
             ],
             { cancelable: false }
           );
+    router.replace("/login");
   };
 
   const [isEnabled, setIsEnabled] = useState(false);
@@ -138,24 +144,41 @@ export default function SettingsScreen() {
     }
   };
 
+  /** PASSWORD CHANGE FUNCTION */
+const handleChangePassword = async () => {
+
+    try {
+        const {username, userId, signInDetails} = await getCurrentUser();
+    await updatePassword({oldPassword : currentPassword, newPassword : newPassword})
+        Alert.alert("Success", "Password changed successfully!");
+        setModalVisible(false);
+
+    }
+    catch(e){
+        console.log(e)
+        }
+  }
+
+  const profileBtn = async () => {
+      await AsyncStorage.setItem("page", "/settings");
+      router.replace('/profile')
+  };
+
+
+
+
+
   return (
     <View style={[styles.container, { backgroundColor: background_color }]}>
-      {/* Top Bar (App Bar) */}
+      {/* Top Header Bar */}
       <View style={styles.titleContainer}>
         <MaterialIcons.Button
-          name="person"
-          size={28}
-          color={primary_color}
-          backgroundColor="transparent"
-          onPress={() => console.log('Profile pressed')}
+          name="person" size={28} color={primary_color} backgroundColor="transparent"
+          onPress={profileBtn}
         />
-        <ThemedText type="title" style={{ color: primary_color }}>BathLink</ThemedText>
+          <ThemedText type="title" >BathLink</ThemedText>
         <MaterialIcons.Button
-          name="notifications"
-          size={28}
-          color={primary_color}
-          backgroundColor="transparent"
-          onPress={() => console.log('Notifications pressed')}
+          name="notifications" size={28} color="transparent" backgroundColor="transparent"
         />
       </View>
 
@@ -272,13 +295,13 @@ export default function SettingsScreen() {
   );
 }
 
+/** STYLES */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
   titleContainer: {
     flexDirection: 'row',
-    flexGrow: 2,
     marginTop: 52,
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -293,12 +316,8 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     paddingHorizontal: 20,
   },
-  subheader: {
-    fontSize: 25,
-    fontWeight: 'bold',
-    marginVertical: 10,
-    paddingHorizontal: 20,
-  },
+  titleText: { fontSize: 28, fontWeight: 'bold' },
+  subheader: { fontSize: 25, fontWeight: 'bold', marginVertical: 10, paddingHorizontal: 20 },
   settingOption: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -314,8 +333,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 0,
   },
-  optionText: {
-    fontSize: 18,
+  optionText: { fontSize: 18 },
+
+  /** MODAL STYLES */
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Dark overlay
   },
   settingHeader: {
     flexDirection: 'row',
@@ -340,3 +365,4 @@ const styles = StyleSheet.create({
       paddingHorizontal: 3,
     },
 });
+

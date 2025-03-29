@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "2025-03-11T14:59:32Z",
+    "version": "2025-03-18T11:03:46Z",
     "title": "BathLinkApi"
   },
   "host": "mdwq3r92te.execute-api.eu-west-2.amazonaws.com",
