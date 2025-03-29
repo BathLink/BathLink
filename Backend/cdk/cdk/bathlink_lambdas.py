@@ -18,6 +18,7 @@ class BathLinkLambdas:
         self.sign_up = None
         self.manage_chats = None
         self.manage_calendars = None
+        self.manage_activities = None
         self.lambdas = {}
 
     def __getitem__(self, item):
@@ -53,4 +54,4 @@ class BathLinkLambdas:
         self.manage_profiles = create_lambda('manage_profiles_lambda',[tables.users_table])
         self.manage_chats = create_lambda('manage_chats_lambda',[tables.groupchats_table])
         self.manage_calendars = create_lambda('manage_calendars_lambda',[tables.users_table])
-        self.manage_calendars = create_lambda('manage_activities_lambda',[tables.users_table])
+        self.manage_activities = create_lambda('manage_activities_lambda',[tables.users_table])
