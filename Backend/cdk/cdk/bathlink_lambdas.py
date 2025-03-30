@@ -17,6 +17,7 @@ from .bathlink_databases import BathLinkDB
 class BathLinkLambdas:
 
     def __init__(self):
+        self.manage_preferences = None
         self.search_meetups = None
         self.manage_meetups = None
         self.manage_users = None
@@ -70,3 +71,4 @@ class BathLinkLambdas:
         self.manage_chats = create_lambda('manage_chats_lambda',[tables.groupchats_table])
         self.manage_calendars = create_lambda('manage_calendars_lambda',[tables.users_table])
         self.manage_activities = create_lambda('manage_activities_lambda',[tables.users_table,tables.activities_table])
+        self.manage_preferences = create_lambda('manage_preferences_lambda',[tables.users_table])
