@@ -377,7 +377,7 @@ const styles = StyleSheet.create({
     optionText: { fontSize: 18 },
     settingHeader: {
         flexDirection: 'row',
-        justifyContent: 'left',
+        justifyContent: 'flex-start',
         alignItems: 'center',
         paddingVertical: 10,
         paddingHorizontal: 2,
