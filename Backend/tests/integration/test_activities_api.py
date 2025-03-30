@@ -4,13 +4,12 @@ import requests
 
 
 def test_get_specific_activity():
-    response = requests.get("http://127.0.0.1:3000/activities/001")
-    print(response.text)
+    response = requests.get("http://127.0.0.1:3000/activities/7b1fe750")
     assert response.status_code == 200
     assert json.loads(response.text) == {
-        "activity-id": '001',
-        "ability": "Beginner",
-        "activity_name": "Tennis",
+        "activity-id": '7b1fe750',
+        "ability": "Advanced",
+        "activity_name": "Darts",
         "number_of_people": '2',
     }
 
