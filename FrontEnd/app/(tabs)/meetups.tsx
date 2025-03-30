@@ -1,25 +1,21 @@
 import { FlatList, View, StyleSheet, Text, Pressable, Modal } from 'react-native';
 import { useState, useEffect } from 'react';
-import { ThemedText } from '@/components/ThemedText';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { useColorScheme } from '@/hooks/useColorScheme';
 import { getInfo } from '@/authentication/getInfo';
 import { getCurrentUser } from 'aws-amplify/auth';
 import { useRouter } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import colours from '../colours';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 
 export default function MeetupsScreen() {
-  const colorScheme = useColorScheme();
   const [selectedMeetup, setSelectedMeetup] = useState(null);
   const [allMeetups, setAllMeetups] = useState([])
   const router = useRouter();
 
-  let primary_color = colorScheme === 'dark' ? 'white' : 'black';
-  let transparent_color = 'rgba(0, 0, 0, 0)';
-  let meetupBoxColor = colorScheme === 'dark' ? '#333' : '#FCFAFF';
-  let meetupBorderColor = colorScheme === 'dark' ? '#555' : 'transparent';
-
+  const theme = useColorScheme();
+  
   // replace this code with real data
   async function getMeetups() {
       try {
@@ -77,21 +73,7 @@ export default function MeetupsScreen() {
       };
 
       fetchMeetups();
-  }, []); // Empty dependency array to run only on mount
-
-
-
-
-//   const meetups = [
-//     { id: '1', title: 'Indoor Tennis', description: 'Sat, 12th Feb 2025 08:00 - 10:00', noPplAccepted: '3' },
-//     { id: '2', title: 'Indoor Tennis', description: 'Sat, 12th Feb 2025 08:00 - 10:00', noPplAccepted: '3' },
-//     { id: '3', title: 'Indoor Tennis', description: 'Sat, 12th Feb 2025 08:00 - 10:00', noPplAccepted: '3' },
-//     { id: '4', title: 'Indoor Tennis', description: 'Sat, 12th Feb 2025 08:00 - 10:00', noPplAccepted: '3' },
-//     { id: '5', title: 'Indoor Tennis', description: 'Sat, 12th Feb 2025 08:00 - 10:00', noPplAccepted: '3' },
-//     { id: '6', title: 'Indoor Tennis', description: 'Sat, 12th Feb 2025 08:00 - 10:00', noPplAccepted: '3' },
-//     { id: '7', title: 'Indoor Tennis', description: 'Sat, 12th Feb 2025 08:00 - 10:00', noPplAccepted: '3' },
-//     { id: '8', title: 'Indoor Tennis', description: 'Sat, 12th Feb 2025 08:00 - 10:00', noPplAccepted: '3' },
-//   ];
+  }, []); 
 
   const selectMeetup = (meetup) => {
     setSelectedMeetup(meetup);
@@ -107,30 +89,64 @@ export default function MeetupsScreen() {
   };
 
   const renderHeader = () => (
-    <View>
+    <View           
+    style={[{
+      backgroundColor: colours[theme].background
+    }]} 
+    >
       {/* Top Menu App Bar */}
       <View style={styles.titleContainer}>
         <MaterialIcons.Button
-          name="person" size={28} color={primary_color} backgroundColor="transparent"
+          name="person" 
+          size={28} 
+          color= {colours[theme].text}
+          backgroundColor="rgba(0,0,0,0)"
           onPress={profileBtn}
         />
-          <ThemedText type="title" >BathLink</ThemedText>
+
+        <Text 
+        style={[styles.header,{
+          color: colours[theme].text, 
+          backgroundColor: "rgba(0,0,0,0)",
+        }]} 
+        >
+          BathLink
+        </Text>
+
         <MaterialIcons.Button
-          name="notifications" size={28} color="transparent" backgroundColor="transparent"
+          name="notifications"
+          size={28}           
+          color= "rgba(0,0,0,0)"
+          backgroundColor="rgba(0,0,0,0)"
         />
       </View>
+      {/* End of top Menu App Bar */}
+
       {/* Subheader */}
-      <Text style={[styles.subheader, { color: primary_color }]}>Meetups</Text>
+      <Text 
+      style={[
+        styles.subheader, 
+        { 
+          color: colours[theme].text, 
+          backgroundColor: "transparent",
+        }
+      ]}
+      >
+        Meetups
+      </Text>
 
       {/* Next Meetup (First item) */}
       {allMeetups.length > 0 ? (
         <View>
-          <Text style={[styles.subsubheader, { color: primary_color }]}>Next Meetup</Text>
+          <Text 
+          style={[styles.subsubheader, { color: colours[theme].text }]}>
+            Next Meetup
+          </Text>
           <Pressable onPress={() => selectMeetup(allMeetups[0])}>
-            <View style={[styles.meetupBox, { backgroundColor: meetupBoxColor, borderColor: meetupBorderColor }]} >
+            <View style={[styles.meetupBox, { backgroundColor: colours[theme].secondary, borderColor: colours[theme].surface }]} >
               <View style={styles.meetupTextContainer}>
-                <Text style={[styles.meetupTitle, { color: primary_color }]}>{allMeetups[0].title}</Text>
-                <Text style={[styles.meetupDescription, { color: primary_color }]}>{allMeetups[0].description}</Text>
+                <Text style={[styles.meetupTitle, { color: colours[theme].text }]}>{allMeetups[0].title}</Text>
+                <Text style={[styles.meetupDescription, { color: colours[theme].text }]}>{allMeetups[0].description}</Text>
               </View>
               <MaterialIcons name="image" size={30} color="gray" style={styles.meetupImage} />
             </View>
@@ -138,28 +154,31 @@ export default function MeetupsScreen() {
         </View>
       ) : 
       <View>
-        <Text style={[styles.subsubheader, { color: primary_color }]}>
+        <Text style={[styles.subsubheader, { color: colours[theme].text }]}>
           No Meetups Found - See matches page to organise meetups
         </Text>
       </View>
       }
 
       {/* Other Meetups Header */}
-      {allMeetups.length > 1 && <Text style={[styles.subsubheader, { color: primary_color }]}>Other Meetups</Text>}
+      {allMeetups.length > 1 && <Text style={[styles.subsubheader, { color: colours[theme].text }]}>Other Meetups</Text>}
     </View>
   );
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={[{
+      flex: 1,
+      backgroundColor: colours[theme].background
+    }]}>
       <FlatList
         data={allMeetups.slice(1)}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <Pressable onPress={() => selectMeetup(item)}>
-            <View style={[styles.meetupBox, { backgroundColor: meetupBoxColor, borderColor: meetupBorderColor }]} >
+            <View style={[styles.meetupBox, { backgroundColor: colours[theme].secondary, borderColor: colours[theme].surface }]} >
               <View style={styles.meetupTextContainer}>
-                <Text style={[styles.meetupTitle, { color: primary_color }]}>{item.title}</Text>
-                <Text style={[styles.meetupDescription, { color: primary_color }]}>{item.description}</Text>
+                <Text style={[styles.meetupTitle, { color: colours[theme].text }]}>{item.title}</Text>
+                <Text style={[styles.meetupDescription, { color: colours[theme].text }]}>{item.description}</Text>
               </View>
               <MaterialIcons name="image" size={30} color="gray" style={styles.meetupImage} />
             </View>
@@ -173,13 +192,13 @@ export default function MeetupsScreen() {
       {selectedMeetup && (
         <Modal animationType="fade" transparent={true} visible={!!selectedMeetup}>
           <Pressable style={styles.modalOverlay} onPress={closeMeetup}>
-            <View style={[styles.expandedMeetup, { backgroundColor: meetupBoxColor }]}>
-              <Text style={[styles.expandedTitle, { color: primary_color }]}>{selectedMeetup.title}</Text>
-              <Text style={[styles.expandedDetail, { color: primary_color }]}>📅 {selectedMeetup.description}</Text>
-              <Text style={[styles.expandedDetail, { color: primary_color }]}>👤 {selectedMeetup.noPplAccepted}</Text>
+            <View style={[styles.expandedMeetup, { backgroundColor: colours[theme].secondary }]}>
+              <Text style={[styles.expandedTitle, { color: colours[theme].text }]}>{selectedMeetup.title}</Text>
+              <Text style={[styles.expandedDetail, { color: colours[theme].text }]}>📅 {selectedMeetup.description}</Text>
+              <Text style={[styles.expandedDetail, { color: colours[theme].text }]}>👤 {selectedMeetup.noPplAccepted}</Text>
               <MaterialIcons name="image" size={60} color="gray" style={styles.expandedImage} />
               <Pressable onPress={closeMeetup} style={styles.closeButton}>
-                <Text style={styles.closeButtonText}>Close</Text>
+                <Text style={[styles.closeButtonText, {color: colours[theme].text}]}>Close</Text>
               </Pressable>
             </View>
           </Pressable>
@@ -196,6 +215,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 16,
+    paddingHorizontal: 20,
+  },
+  header: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    marginVertical: 10,
     paddingHorizontal: 20,
   },
   subheader: {
@@ -217,11 +242,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginVertical: 8,
     borderRadius: 10,
-    borderWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    borderWidth: 0,
     elevation: 1,
   },
   meetupTextContainer: {
@@ -235,7 +256,6 @@ const styles = StyleSheet.create({
   },
   meetupDescription: {
     fontSize: 14,
-    color: 'gray',
   },
   meetupImage: {
     width: 40,
@@ -268,13 +288,11 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     marginTop: 20,
-    backgroundColor: '#007AFF',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
   },
   closeButtonText: {
-    color: 'white',
     fontSize: 16,
   },
 });
