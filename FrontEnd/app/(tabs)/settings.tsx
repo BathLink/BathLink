@@ -154,7 +154,7 @@ export default function SettingsScreen() {
     <View     
     style={[{
       backgroundColor: colours[theme].background
-    }]} >
+    }, styles.container]} >
       {/* Top Menu App Bar */}
       <View style={styles.titleContainer}>
         <MaterialIcons.Button
@@ -340,6 +340,7 @@ export default function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
+  container:{flex: 1},
   titleContainer: {
     flexDirection: 'row',
     marginTop: 52,
