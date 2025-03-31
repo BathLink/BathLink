@@ -8,6 +8,8 @@ const colours = {
     text: '#000000',
     disabled: '#F0F0F0',
     deselected: 'grey',
+    icon: 'black',
+    iconText: "white"
   },
   dark: {
     primary: '#dbedf5',
@@ -18,6 +20,8 @@ const colours = {
     text: '#FFFFFF',
     disabled: '#373737',
     deselected: 'grey',
+    icon: '#FFFFFF',
+    iconText: "black"
   },
 }
   

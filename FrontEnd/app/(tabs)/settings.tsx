@@ -151,10 +151,7 @@ export default function SettingsScreen() {
   };
 
   return (
-    <View     
-    style={[{
-      backgroundColor: colours[theme].background
-    }]} >
+      <View style={[styles.container, { backgroundColor: colours[theme].background }]}>
       {/* Top Menu App Bar */}
       <View style={styles.titleContainer}>
         <MaterialIcons.Button
@@ -433,6 +430,9 @@ const styles = StyleSheet.create({
       marginHorizontal: 5,
     },
     cancelButton: { backgroundColor: 'gray' },
+  container: {
+    flex: 1,
+  },
   
 });
 

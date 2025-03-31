@@ -25,6 +25,7 @@ export default function RegisterScreen() {
   const [formattedDate, setFormattedDate] = useState('');
   const [isRegistered, setIsRegistered] = useState(false);
 
+
   useEffect(() => {
     if (isRegistered) {
       router.replace('/confirmEmail');

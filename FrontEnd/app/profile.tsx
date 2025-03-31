@@ -10,6 +10,8 @@ import {postItem} from '@/authentication/postInfo';
 import '@/authentication/aws-exports'
 import {useRouter} from 'expo-router';
 import {ThemedText} from "@/components/ThemedText";
+import colours from './colours';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function ProfileScreen() {
 
@@ -18,6 +20,7 @@ export default function ProfileScreen() {
     const [pronouns, setPronouns] = useState("");
     const [socialLink, setSocialLink] = useState("");
     const router = useRouter();
+    const theme = useColorScheme();
 
     useEffect(() => {
         const loadProfileData = async () => {
@@ -138,14 +141,14 @@ export default function ProfileScreen() {
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={{flex: 1}}
+            style={{flex: 1, backgroundColor: colours[theme].background}}
         >
             <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
                     <View style={styles.titleContainer}>
-                        <MaterialIcons.Button name="arrow-back" size={28} color={"black"} backgroundColor="transparent"
+                        <MaterialIcons.Button name="arrow-back" size={28} color= {colours[theme].text} backgroundColor="transparent"
                                               onPress={returnBtn}/>
-                        <ThemedText type="title">My Profile</ThemedText>
+                        <ThemedText type="title" color= {colours[theme].text}>My Profile</ThemedText>
                         <MaterialIcons.Button name="notifications" size={28} color={"transparent"}
                                               backgroundColor="transparent" onPress={testBtn}/>
                     </View>
@@ -154,22 +157,29 @@ export default function ProfileScreen() {
                         <View style={styles.profileImageContainer}>
                             <Image style={styles.profileImage}
                                    source={profileImage ? {uri: profileImage} : require("../assets/images/default-profile.png")}/>
-                            <TouchableOpacity style={styles.editIcon} onPress={pickImage}>
-                                <MaterialIcons name="edit" size={20} color="black"/>
+                            <TouchableOpacity
+                                style={[styles.editIcon, { backgroundColor: colours[theme].icon }]}
+                                onPress={pickImage}
+                            >
+                                <MaterialIcons
+                                    name="edit"
+                                    size={24}
+                                    color={colours[theme].iconText}
+                                />
                             </TouchableOpacity>
                         </View>
 
-                        <TextInput style={styles.input} placeholder="Description"
+                        <TextInput style={[styles.input, { color: colours[theme].text, borderColor: colours[theme].text }]} placeholder="Description"
                                    value={description} onChangeText={setDescription}/>
 
-                        <TextInput style={styles.input} placeholder="Pronouns"
+                        <TextInput style={[styles.input, { color: colours[theme].text, borderColor: colours[theme].text }]} placeholder="Pronouns"
                                    value={pronouns} onChangeText={setPronouns}/>
 
-                        <TextInput style={styles.input} placeholder="Link your social media"
+                        <TextInput style={[styles.input, { color: colours[theme].text, borderColor: colours[theme].text }]} placeholder="Link your social media"
                                    value={socialLink} onChangeText={setSocialLink}/>
 
                          <TouchableOpacity style={styles.button} onPress={saveProfile}>
-                             <Text style={styles.buttonText}>Save</Text>
+                             <Text style = {[styles.buttonText, {color: colours[theme].text}]}>Save</Text>
                          </TouchableOpacity>
                     </View>
                 </ScrollView>
@@ -178,16 +188,15 @@ export default function ProfileScreen() {
     );
 }
 const styles = StyleSheet.create({
-  button: { backgroundColor: '#6c5b7b', padding: 10, borderRadius: 5, marginTop: 10 },
-  buttonText: { color: '#fff', fontWeight: 'bold' },
-  icon: { padding: 10 },
+  button: {  padding: 10, borderRadius: 5, marginTop: 10 },
+  buttonText: { fontWeight: 'bold' },
+  icon: { padding: 30 },
   backButton: { position: "absolute", top: 20, left: 10, padding: 10 },
   profileTitle: { fontSize: 24, fontWeight: "bold", marginTop: 10 },
-  profileImageContainer: {position: "relative", width: 100, height: 100, marginBottom: 50 },
-  profileImage: {width: 100, height: 100, borderRadius: 50, backgroundColor: "#e0e0e0" },
+  profileImageContainer: {position: "relative", width: 200, height: 200, marginBottom: 50 },
+  profileImage: {width: 200, height: 200, borderRadius: 100 },
 
   scrollContainer: {
-      backgroundColor: '#f8f4ff',
       width: "100%",
       flexGrow: 1,
       justifyContent: 'flex-start',
@@ -201,7 +210,7 @@ const styles = StyleSheet.create({
       flexGrow: 0,
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingVertical: 20,
+      paddingVertical: 30,
       paddingHorizontal: 20,
     },
 
@@ -210,7 +219,7 @@ const styles = StyleSheet.create({
         flex: 0.5,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: '#f8f4ff'
+
     },
 
     input: {
@@ -220,17 +229,15 @@ const styles = StyleSheet.create({
         borderColor: "#ccc",
         borderRadius: 5,
         marginBottom: 15,
-        backgroundColor: "white",
     },
 
     editIcon: {
         position: "absolute",
-        bottom: 0,
-        right: 0,
-        backgroundColor: "white",
-        borderRadius: 12,
-        padding: 5,
-        elevation: 3,
+        bottom: 10,  // Adjusted positioning
+        right: 10,   // Adjusted positioning
+        borderRadius: 25, // Circular shape
+        padding: 8, // Padding to make it larger
+        elevation: 5, // Shadow for better visibility
     },
 });
 

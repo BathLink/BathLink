@@ -107,6 +107,9 @@ export default function LoginScreen() {
             <TouchableOpacity onPress={handleForgotPassword}>
                 <Text style={[styles.switchText, { color: colours[theme].text }]}>Forgot Password?</Text>
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => router.replace('/confirmEmail')}>
+                <Text style={[styles.switchText, { color: colours[theme].text }]}>Confirm Email</Text>
+            </TouchableOpacity>
 
             {/* Forgot Password Modal (Email Entry) */}
             <Modal visible={showForgotPasswordModal} transparent animationType="slide">
