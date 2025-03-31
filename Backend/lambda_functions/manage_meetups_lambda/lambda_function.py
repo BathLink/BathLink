@@ -32,17 +32,23 @@ def handle_put_request(event):
                 "body": json.dumps("Missing meetup_id in path parameters"),
             }
 
-        if event.get("body") == str:
-            body = json.loads(event.get("body", "{}"))
+        if type(event.get("body")) is str:
+            body = json.loads(event.get("body", {}))
         else:
-            body = event.get("body", "{}")
+            body = event.get("body", {})
 
-        user_id = body.get("user_id")
+        print("checkpoint 1")
+        print(body)
+        print(type(body))
+
+        user_id = body.get("userId")
         if not user_id:
             return {
                 "statusCode": 400,
                 "body": json.dumps("Missing user_id in request body"),
             }
+
+        print("checkpoint 2")
 
         # Get current meetup
         response = meetups_table.get_item(Key={"meetup-id": meetup_id})
