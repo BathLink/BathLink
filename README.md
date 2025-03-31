@@ -32,5 +32,5 @@ Bathlink is a mobile app designed to help connect people through mutual activiti
 
 ## Contact
 
-Jonah Kaplan - jk2258@bath.ac.uk
+Jonah Kaplan - jk2258@bath.ac.uk <br/>
 Project Link - https://github.com/BathLink/BathLink
