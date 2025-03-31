@@ -87,7 +87,7 @@ def handle_put_request(userId, body):
                 "body": json.dumps(f"userId:{userId} not found!"),
             }
     except Exception as e:
-        print(e)
+        print("Put handler error", e)
         return {"statusCode": 404, "body": json.dumps(f"Error: {e}")}
 
 
@@ -104,9 +104,8 @@ def lambda_handler(event, context):
         http_method = event.get("httpMethod")
         path = event.get("pathParameters")
         userId = path.get("userId")
-        print(path)
-        print(http_method)
-        if "/meetups" in event.get("path") and http_method == "GET":
+
+        if "/meetups" in event.get("pathParameters") and http_method == "GET":
             print("hye!!")
             return {
                 "statusCode": 200,
@@ -119,6 +118,8 @@ def lambda_handler(event, context):
 
         elif http_method == "PUT":
             body = event.get("body")
+            print("Body is:", body)
+            print(type(body))
 
             if not body:
                 return {
@@ -135,7 +136,7 @@ def lambda_handler(event, context):
             }
 
     except Exception as e:
-        print(e)
+        print("Lambda handler error", e)
 
         return {
             "statusCode": 500,
