@@ -19,7 +19,7 @@ def PostConfirmation(event, context):
             "name": user_attributes.get("given_name")
             + " "
             + user_attributes.get("family_name"),
-            "calendar": {"busy": []},
+            "calendar": {"available": []},
             "dob": user_attributes.get("birthdate"),
             "profile": {},
             "matchPreferences": {"enabled": False, "activities": []},
@@ -38,6 +38,7 @@ def get_user_meetups(userId):
 
 
 def handle_get_request(userId):
+
     rsp = users_table.get_item(
         Key={"student-id": userId}  # The partition key used in the DynamoDB table
     )
@@ -56,7 +57,6 @@ def handle_put_request(userId, body):
     if type(body) == str:
         body = json.loads(body)
 
-    print("In put, body:", body)
     if len(body) > 1:
         return {
             "statusCode": 400,
@@ -97,8 +97,6 @@ def lambda_handler(event, context):
         and event["triggerSource"] == "PostConfirmation_ConfirmSignUp"
     ):
         return PostConfirmation(event, context)
-
-    print("Event:", event)
 
     try:
         http_method = event.get("httpMethod")

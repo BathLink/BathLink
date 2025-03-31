@@ -1,6 +1,7 @@
 import aws_cdk as core
 import aws_cdk.assertions as assertions
 import os
+from pathlib import Path
 
 from Backend.cdk.cdk.cdk_stack import CdkStack
 
@@ -14,7 +15,9 @@ def test_lambdas_created():
 
     lambdas = template.find_resources("AWS::Lambda::Function")
 
-    assert len(lambdas) == len(os.listdir('Backend/lambda_functions'))
+    file_path = Path(__file__).resolve()
+    lambdas_path = file_path.parent.parent.parent.parent / "lambda_functions"
+    assert len(lambdas) == len(os.listdir(lambdas_path))
 
     template.has_resource_properties("AWS::Lambda::Function", {
         "Runtime": "python3.9",
@@ -50,7 +53,7 @@ def test_dynamodb_tables_created():
 
     dynamo_tables = template.find_resources("AWS::DynamoDB::Table")
 
-    assert len(dynamo_tables) == 3
+    assert len(dynamo_tables) == 4
 
     template.has_resource_properties("AWS::DynamoDB::Table", {
         "TableName": "groupchats-table",
@@ -81,3 +84,14 @@ def test_dynamodb_tables_created():
             {"AttributeName": "student-id", "AttributeType": "S"}
         ]
     })
+
+    template.has_resource_properties("AWS::DynamoDB::Table", {
+        "TableName": "activities-table",
+        "KeySchema": [
+            {"AttributeName": "activity-id", "KeyType": "HASH"}  # Partition Key
+        ],
+        "AttributeDefinitions": [
+            {"AttributeName": "activity-id", "AttributeType": "S"}
+        ]
+    })
+

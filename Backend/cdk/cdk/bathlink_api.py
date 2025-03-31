@@ -5,6 +5,7 @@ from aws_cdk import (
 from .bathlink_lambdas import BathLinkLambdas
 
 
+
 class BathLinkAPI:
 
     def create_api(self, stack, user_pool, lambdas):
@@ -48,10 +49,10 @@ class BathLinkAPI:
         meetups = api.root.add_resource("meetups")
         meetup = meetups.add_resource("{meetupId}")
 
-        search_meetups = meetups.add_resource("search")
+        search_meetups = api.root.add_resource("search-meetups")
         add_method(
             search_meetups, "POST", "search_meetups_lambda"
-        )  # Search for new potential meetup
+        )
 
         users = api.root.add_resource(
             "users",
@@ -59,6 +60,7 @@ class BathLinkAPI:
         user = users.add_resource("{userId}")
         profile = user.add_resource("profile")
         calendar = user.add_resource("calendar")
+        preferences = user.add_resource("preferences")
         user_meetups = user.add_resource("meetups")
 
         add_method(user_meetups, "GET", "manage_users_lambda")  # Get user meetups
@@ -68,45 +70,23 @@ class BathLinkAPI:
             "GET",
             "manage_calendars_lambda",
             "GetUserCalendar",
-            [
-                {
-                    "statusCode": "200",
-                    "description": "User calendar returned",
-                },
-                {
-                    "statusCode": "404",
-                    "description": "User not Found",
-                },
-            ],
         )
         add_method(
             calendar,
             "POST",
             "manage_calendars_lambda",
             "PostCalendarData",
-            [
-                {"statusCode": "200", "description": "Calendar Updated"},
-                {"statusCode": "404", "description": "User not Found"},
-                {"statusCode": "400", "description": "No Post Data Provided"},
-            ],
-            {"method.request.querystring.calendarData": True},
         )  # Post calendar data
         add_method(
             calendar,
             "DELETE",
             "manage_calendars_lambda",
             "Delete Calendar",
-            [
-                {
-                    "statusCode": "200",
-                    "description": "User calendar returned",
-                },
-                {
-                    "statusCode": "404",
-                    "description": "Calendar not Found",
-                },
-            ],
+
         )
+
+        add_method(preferences, "GET", "manage_preferences_lambda")
+        add_method(preferences,"PUT","manage_preferences_lambda")
 
         chats = api.root.add_resource("chats")
         chat = chats.add_resource("{chatId}")
@@ -129,5 +109,11 @@ class BathLinkAPI:
         add_method(profile, "GET", "manage_profiles_lambda")  # Get Profile
         add_method(profile, "POST", "manage_profiles_lambda")  # Add Profile
         add_method(profile, "PUT", "manage_profiles_lambda")  # Update Profile
+        
+
+        activities = api.root.add_resource("activities")
+        add_method(activities, "GET", "manage_activities_lambda")  # Get activities
+        activity = activities.add_resource("{activityId}")
+        add_method(activity, "GET", "manage_activities_lambda")
 
         return api

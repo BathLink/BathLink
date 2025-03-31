@@ -95,9 +95,6 @@ def test_post_chat(
     event = {"httpMethod": "POST", "pathParameters": {"chatId": chat_id}, "body": body}
 
     response = lambda_handler(event, None)
-    print(event)
-    print("RESPONSE:")
-    print(response)
 
     assert response["statusCode"] == expected_status
     assert json.loads(response["body"]) == expected_response

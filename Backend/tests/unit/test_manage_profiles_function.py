@@ -21,7 +21,7 @@ def dynamodb_setup():
         table.put_item(
             Item={
                 "student-id": "test-user-id",
-                "calendar": {"busy": []},
+                "calendar": {"available": []},
                 "email": "test@test.com",
                 "phone": "+123456789",
                 "name": "Martin Power",

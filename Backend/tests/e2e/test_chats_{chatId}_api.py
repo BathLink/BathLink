@@ -7,10 +7,11 @@ from Backend.tests.test_utils import (
     put_from_api,
 )
 
+import random
+import string
 
-def test_create_profile():
-    import random
-    import string
+
+def test_create_chats():
 
     random_chatid = "".join(
         random.choice(string.ascii_uppercase + string.digits) for _ in range(10)

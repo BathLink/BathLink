@@ -40,3 +40,15 @@ class BathLinkDB:
             ),
             billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,  # On-demand pricing
         )
+
+        self.activities_table = dynamodb.Table(
+            stack, "activities-table",
+            table_name="activities-table",
+            partition_key=dynamodb.Attribute(
+                name="activity-id",
+                type=dynamodb.AttributeType.STRING
+            ),
+            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,  # On-demand pricing
+        )
+
+

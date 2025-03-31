@@ -31,22 +31,22 @@ def get_cognito_token(username, password):
     return response["AuthenticationResult"]["IdToken"]
 
 
-def fetch_from_api(url: str, method: str = "GET"):
-    token = get_cognito_token(TEST_USER, TEST_PASSWORD)
+def fetch_from_api(url: str, username=TEST_USER, password=TEST_PASSWORD):
+    token = get_cognito_token(username, password)
     headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
-    response = requests.request(method, url, headers=headers)
+    response = requests.get(url, headers=headers)
     return response
 
 
-def post_from_api(url: str, data: dict):
-    token = get_cognito_token(TEST_USER, TEST_PASSWORD)
+def post_from_api(url: str, data: dict,username=TEST_USER,password=TEST_PASSWORD):
+    token = get_cognito_token(username, password)
     headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
     response = requests.post(url, headers=headers, json=data)
     return response
 
 
-def put_from_api(url: str, data: dict):
-    token = get_cognito_token(TEST_USER, TEST_PASSWORD)
+def put_from_api(url: str, data: dict,username=TEST_USER,password=TEST_PASSWORD):
+    token = get_cognito_token(username, password)
     headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
     response = requests.put(url, headers=headers, json=data)
     return response
@@ -120,6 +120,31 @@ def create_test_user():
         "testuser@email.com", "Password123", "+1234567890", "Test", "User", "1990-01-01"
     )
 
-    yield id
+    yield id, "testuser@email.com", "Password123"
 
     delete_user("testuser@email.com", id)
+
+# @pytest.fixture(scope="module")
+# def create_integration_test_user():
+#     #create entry in users table
+#     dynamodb = boto3.resource("dynamodb", region_name="eu-west-2")
+#     users_table = dynamodb.Table("users-table")
+#
+#     userId = "b67e16cc-c108-4c14-a5b6-e36f40bc1030"
+#
+#     users_table.put_item(
+#         Item={
+#             "student-id": userId,
+#             "email": "testuser@email.com",
+#             "phone": "+1234567890",
+#             "name": "Test User",
+#             "calendar": {"available": []},
+#             "dob": "1990-01-01",
+#             "profile": {},
+#             "matchPreferences": {"enabled": False, "activities": []},
+#         }
+#     )
+#
+#     yield userId
+#
+#     users_table.delete_item(Key={"student-id": userId})

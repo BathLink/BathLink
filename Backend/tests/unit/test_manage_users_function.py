@@ -21,7 +21,7 @@ def dynamodb_setup():
         table.put_item(
             Item={
                 "student-id": "test-user-id",
-                "calendar": {"busy": []},
+                "calendar": {"available": []},
                 "email": "test@test.com",
                 "phone": "+123456789",
                 "name": "Martin Power",
@@ -52,7 +52,7 @@ from Backend.lambda_functions.manage_users_lambda.lambda_function import lambda_
             200,
             {
                 "student-id": "test-user-id",
-                "calendar": {"busy": []},
+                "calendar": {"available": []},
                 "email": "test@test.com",
                 "phone": "+123456789",
                 "name": "Martin Power",
@@ -72,7 +72,7 @@ from Backend.lambda_functions.manage_users_lambda.lambda_function import lambda_
 def test_get_user(
     benchmark, dynamodb_setup, student_id, expected_status, expected_response
 ):
-    event = {"httpMethod": "GET", "pathParameters": {"userId": student_id}}
+    event = {"path":f"/users/{student_id}","httpMethod": "GET", "pathParameters": {"userId": student_id}}
 
     response = benchmark(lambda_handler, event, None)
     assert response["statusCode"] == expected_status
@@ -111,11 +111,10 @@ def test_update_user(
         "httpMethod": "PUT",
         "pathParameters": {"userId": student_id},
         "body": body,
+        "path": f"/users/{student_id}",
     }
 
     response = benchmark(lambda_handler, event, None)
-    print(json.loads(response["body"]))
-    print(expected_response)
     assert response["statusCode"] == expected_status
     assert json.loads(response["body"]) == expected_response
 
@@ -152,7 +151,7 @@ def test_post_confirmation(dynamodb_setup, attributes):
         "email": attributes["email"],
         "phone": attributes["phone_number"],
         "name": attributes["given_name"] + " " + attributes["family_name"],
-        "calendar": {"busy": []},
+        "calendar": {"available": []},
         "dob": attributes["birthdate"],
         "profile": {},
         "matchPreferences": {"enabled": False, "activities": []},
@@ -160,6 +159,5 @@ def test_post_confirmation(dynamodb_setup, attributes):
     PostConfirmation(event, None)
     table = boto3.resource("dynamodb", region_name="eu-west-2").Table("users-table")
     item = table.get_item(Key={"student-id": attributes["sub"]})
-    print(item)
     assert "Item" in item
     assert item["Item"] == expected_response
