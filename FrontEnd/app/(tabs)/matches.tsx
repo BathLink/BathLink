@@ -1,4 +1,4 @@
-import { View, Text, Modal, StyleSheet,Switch, Pressable, ScrollView, TouchableHighlight, TouchableOpacity } from 'react-native';
+import { View, Text, Modal, StyleSheet,Switch, Pressable, ScrollView, TouchableHighlight, TouchableOpacity, Alert } from 'react-native';
 import {useState, useEffect} from 'react';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -52,7 +52,7 @@ export default function HomeScreen() {
               activities[activityId] = !currentActivities.includes(activityId);
               console.log("Activities:", activities);
               const response  = await putItem(`users/${userId}/preferences`, activities);
-              Alert.alert("Success", "Profile saved!");
+
 
               const updatedPreferences: any = await getInfo(`users/${userId}/preferences`);
               console.log("Updated Preferences:", updatedPreferences);
@@ -262,6 +262,11 @@ async function declineMeetup(meetupId) {
         };
 
         fetchMeetups();
+
+        const intervalId = setInterval(fetchMeetups, 1000);
+
+        // Clear the interval when the component unmounts
+        return () => clearInterval(intervalId);
 
     }, []); 
 

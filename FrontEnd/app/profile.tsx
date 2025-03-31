@@ -21,6 +21,7 @@ export default function ProfileScreen() {
     const [socialLink, setSocialLink] = useState("");
     const router = useRouter();
     const theme = useColorScheme();
+    const [selectedUser, setSelectedUser] = useState(null);
 
     useEffect(() => {
         const loadProfileData = async () => {
@@ -239,5 +240,6 @@ const styles = StyleSheet.create({
         padding: 8, // Padding to make it larger
         elevation: 5, // Shadow for better visibility
     },
+
 });
 
