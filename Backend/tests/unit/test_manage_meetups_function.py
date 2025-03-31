@@ -101,7 +101,7 @@ def test_del_meetup(
     [
         (
             "",
-            {"user_id": "something"},
+            {"userId": "something"},
             400,
             "Missing meetupId in path parameters",
         ),
@@ -113,13 +113,13 @@ def test_del_meetup(
         ),
         (
             "nonexistent",
-            {"user_id": "something"},
+            {"userId": "something"},
             404,
             "Meetup not found",
         ),
         (
             "001",
-            {"user_id": "something"},
+            {"userId": "something"},
             200,
             "User something confirmed for meetup 001. Meetup is now confirmed.",
         ),
