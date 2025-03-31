@@ -4,11 +4,12 @@ from moto import mock_aws
 import boto3
 
 test_activity = {
- "activity-id": "001",
- "ability": "Beginner",
- "activity_name": "Tennis",
- "number_of_people": "2"
+    "activity-id": "001",
+    "ability": "Beginner",
+    "activity_name": "Tennis",
+    "number_of_people": "2",
 }
+
 
 @pytest.fixture
 def dynamodb_setup():
@@ -43,45 +44,44 @@ def dynamodb_setup():
         yield table
 
 
-
 from Backend.lambda_functions.manage_preferences_lambda.lambda_function import (
     lambda_handler,
 )
 
+
 def test_get_preferences(dynamodb_setup):
     event = {"httpMethod": "GET", "pathParameters": {"userId": "test-user-id"}}
 
-    response = lambda_handler(event,None)
+    response = lambda_handler(event, None)
 
     assert response["statusCode"] == 200
     assert json.loads(response["body"]) == {"activities": ["001"], "enabled": False}
 
 
-
 @pytest.mark.parametrize(
     "updatedPreferences, expected_status, expected_preferences",
     [
-        ({"001":False}, 200, []),
-        ({"003":False}, 200, ["001"]),
-        ({"001":True}, 200, ["001"]),
-        ({"002":True}, 200, ["001","002"]),
-        ({"002":True,"001":False}, 200, ["002"])
+        ({"001": False}, 200, []),
+        ({"003": False}, 200, ["001"]),
+        ({"001": True}, 200, ["001"]),
+        ({"002": True}, 200, ["001", "002"]),
+        ({"002": True, "001": False}, 200, ["002"]),
     ],
 )
-
 def test_update_preferences(
     dynamodb_setup, updatedPreferences, expected_status, expected_preferences
 ):
-    event = {"httpMethod": "PUT", "pathParameters": {"userId": "test-user-id"}, "body": json.dumps(updatedPreferences)}
+    event = {
+        "httpMethod": "PUT",
+        "pathParameters": {"userId": "test-user-id"},
+        "body": json.dumps(updatedPreferences),
+    }
 
-    response = lambda_handler(event,None)
+    response = lambda_handler(event, None)
 
     assert response["statusCode"] == expected_status
 
-    response = lambda_handler({"httpMethod": "GET", "pathParameters": {"userId": "test-user-id"}},None)
+    response = lambda_handler(
+        {"httpMethod": "GET", "pathParameters": {"userId": "test-user-id"}}, None
+    )
     assert json.loads(response["body"])["activities"] == expected_preferences
-
-
-
-
-
