@@ -24,3 +24,13 @@ Bathlink is a mobile app designed to help connect people through mutual activiti
     cd Backend/cdk
     cdk deploy
    ```
+
+## Features
+- Android/Apple compatible app
+- Fully functioning Rest API
+- Test suite for backend
+
+## Contact
+
+Jonah Kaplan - jk2258@bath.ac.uk
+Project Link - https://github.com/BathLink/BathLink
