@@ -4,6 +4,8 @@ import {useRouter} from "expo-router";
 import {manualLogin} from '@/authentication/manualLogin';
 import {getCurrentUser} from 'aws-amplify/auth';
 import {getForgotCode, confirmForgotCode} from '@/authentication/forgotPass';
+import colours from './colours';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function LoginScreen() {
 
@@ -14,6 +16,8 @@ export default function LoginScreen() {
     const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
     const [showCodeModal, setShowCodeModal] = useState(false);
     const router = useRouter();
+    const theme = useColorScheme();
+    
 
     const handleForgotPassword = async () => {
         setShowForgotPasswordModal(true);
@@ -88,39 +92,39 @@ export default function LoginScreen() {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>BathLink</Text>
-            <Text style={styles.subtitle}>Log in</Text>
-            <TextInput style={styles.input} placeholder="Username/Email" value={id} onChangeText={setID}/>
-            <TextInput style={styles.input} placeholder="Password" secureTextEntry value={password}
+        <View style={[styles.container, {backgroundColor: colours[theme].background}]}>
+            <Text style={[styles.title, { color: colours[theme].text }]}>BathLink</Text>
+            <Text style={[styles.subtitle, { color: colours[theme].text }]}>Log in</Text>
+            <TextInput style={[styles.input, { color: colours[theme].text, borderColor: colours[theme].text }]} placeholder="Username/Email" value={id} onChangeText={setID}/>
+            <TextInput style={[styles.input, { color: colours[theme].text, borderColor: colours[theme].text }]} placeholder="Password" secureTextEntry value={password}
                        onChangeText={setPassword}/>
-            <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                <Text style={styles.buttonText}>Login</Text>
+            <TouchableOpacity style={[styles.button, , {backgroundColor: colours[theme].secondary}]} onPress={handleLogin}>
+                <Text style={[styles.buttonText, { color: colours[theme].text }]}>Login</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => router.replace('/register')}>
-                <Text style={styles.switchText}>Register Now</Text>
+                <Text style={[styles.switchText, { color: colours[theme].text }]}>Register Now</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleForgotPassword}>
-                <Text style={styles.switchText}>Forgot Password?</Text>
+                <Text style={[styles.switchText, { color: colours[theme].text }]}>Forgot Password?</Text>
             </TouchableOpacity>
 
             {/* Forgot Password Modal (Email Entry) */}
             <Modal visible={showForgotPasswordModal} transparent animationType="slide">
                 <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Reset Password</Text>
+                    <View style={[styles.modalContent, {backgroundColor: colours[theme].background, borderColor:colours[theme].text, borderWidth: 0.5}]}>
+                        <Text style={[styles.modalTitle, {color: colours[theme].text}]}>Reset Password</Text>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, {color: colours[theme].text, borderColor:colours[theme].text}]}
                             placeholder="Enter your email"
                             placeholderTextColor="#888"
                             value={email}
                             onChangeText={setEmail}
                         />
-                        <TouchableOpacity style={styles.modalButton} onPress={getCode}>
-                            <Text style={styles.modalButtonText}>Send Reset Code</Text>
+                        <TouchableOpacity style={[styles.modalButton, {backgroundColor: colours[theme].secondary}]} onPress={getCode}>
+                            <Text style={[styles.modalButtonText, { color: colours[theme].text }]}>Send Reset Code</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => setShowForgotPasswordModal(false)}>
-                            <Text style={styles.closeModalText}>Cancel</Text>
+                            <Text style={[styles.closeModalText, { color: colours[theme].text }]}>Cancel</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -129,7 +133,7 @@ export default function LoginScreen() {
             {/* Confirmation Code Modal (Code Entry) */}
             <Modal visible={showCodeModal} transparent animationType="slide">
                 <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
+                    <View style={[styles.modalContent, {backgroundColor: colours[theme].background, borderColor:colours[theme].text, borderWidth: 0.5}]}>
                         <Text style={styles.modalTitle}>Enter Confirmation Code</Text>
                         <TextInput
                             style={styles.input}
@@ -138,11 +142,11 @@ export default function LoginScreen() {
                             value={code}
                             onChangeText={setCode}
                         />
-                        <TouchableOpacity style={styles.modalButton} onPress={resetPassword}>
-                            <Text style={styles.modalButtonText}>Reset Password</Text>
+                        <TouchableOpacity style={[styles.modalButton, {backgroundColor: colours[theme].secondary}]} onPress={resetPassword}>
+                            <Text style={[styles.modalButtonText, { color: colours[theme].text }]}>Reset Password</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => setShowCodeModal(false)}>
-                            <Text style={styles.closeModalText}>Cancel</Text>
+                            <Text style={[styles.closeModalText, { color: colours[theme].text }]}>Cancel</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -153,25 +157,24 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: {flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f8f4ff'},
-    title: {fontSize: 32, fontWeight: 'bold', color: '#000'},
+    container: {flex: 1, justifyContent: 'center', alignItems: 'center'},
+    title: {fontSize: 32, fontWeight: 'bold', },
     subtitle: {fontSize: 18, marginBottom: 20},
-    input: {width: '80%', padding: 10, borderWidth: 1, marginBottom: 10, borderRadius: 5, backgroundColor: '#fff'},
-    button: {backgroundColor: '#6c5b7b', padding: 10, borderRadius: 5, marginTop: 10},
-    buttonText: {color: '#fff', fontWeight: 'bold'},
-    switchText: {marginTop: 10, color: '#6c5b7b'},
+    input: {width: '80%', padding: 10, borderWidth: 1, marginBottom: 10, borderRadius: 5},
+    button: {padding: 10, borderRadius: 5, marginTop: 10},
+    buttonText: { fontWeight: 'bold'},
+    switchText: {marginTop: 10},
 
-    modalContainer: {flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0,0,0,0.5)"},
-    modalContent: {backgroundColor: "#fff", padding: 20, borderRadius: 10, alignItems: "center", width: "80%"},
+    modalContainer: {flex: 1, justifyContent: "center", alignItems: "center"},
+    modalContent: {padding: 20, borderRadius: 10, alignItems: "center", width: "80%"},
     modalTitle: {fontSize: 20, fontWeight: "bold", marginBottom: 15},
     modalButton: {
-        backgroundColor: "#6c5b7b",
         padding: 10,
         borderRadius: 5,
         marginTop: 10,
         width: "100%",
         alignItems: "center"
     },
-    modalButtonText: {color: "#fff", fontWeight: "bold"},
-    closeModalText: {marginTop: 10, color: "#6c5b7b"},
+    modalButtonText: {fontWeight: "bold"},
+    closeModalText: {marginTop: 10},
 });
