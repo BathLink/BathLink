@@ -20,5 +20,5 @@ jobs:
           model: 'iPhone 14 Pro'
       - uses: dniHze/maestro-test-action@v1
         with:
-          flow: .maestro
+          flow: FrontEnd/.maestro
           report: report.xml
