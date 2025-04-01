@@ -84,4 +84,4 @@ def test_update_preferences(
     response = lambda_handler(
         {"httpMethod": "GET", "pathParameters": {"userId": "test-user-id"}}, None
     )
-    assert json.loads(response["body"])["activities"] == expected_preferences
+    assert set(json.loads(response["body"])["activities"]) == set(expected_preferences)

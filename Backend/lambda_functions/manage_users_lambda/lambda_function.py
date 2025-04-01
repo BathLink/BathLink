@@ -30,10 +30,12 @@ def PostConfirmation(event, context):
 
 
 def get_user_meetups(userId):
+
     response = meetups_table.scan(
         FilterExpression=f"contains(participants, :val)",
         ExpressionAttributeValues={":val": str(userId)},
     )
+
     return response.get("Items", [])
 
 
@@ -103,8 +105,7 @@ def lambda_handler(event, context):
         path = event.get("pathParameters")
         userId = path.get("userId")
 
-        if "/meetups" in event.get("pathParameters") and http_method == "GET":
-            print("hye!!")
+        if "/meetups" in event.get("path") and http_method == "GET":
             return {
                 "statusCode": 200,
                 "body": json.dumps({"meetups": get_user_meetups(userId)}),
