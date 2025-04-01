@@ -3,7 +3,7 @@ appId: com.anonymous.BathLinkApp
 - launchApp
 - tapOn: username/email
 - inputText: hc2306@bath.ac.uk
-- tapOn: password
+- tapOn: Password
 - inputText: Password9!
 - tapOn: Login
 - assertVisible: Meetups
