@@ -85,16 +85,14 @@ def handle_delete_request(meetupId):
     rsp = meetups_table.get_item(Key={"meetup-id": meetupId})
 
     if "Item" in rsp:
-        try:
-            del_rsp = meetups_table.delete_item(Key={"meetup-id": meetupId})
 
-            return {
-                "statusCode": 200,
-                "body": json.dumps(f"Successfully deleted meetup-id {meetupId}"),
-            }
+        del_rsp = meetups_table.delete_item(Key={"meetup-id": meetupId})
 
-        except Exception as e:
-            return {"statusCode": 400, "body": f"error: {e}"}
+        return {
+            "statusCode": 200,
+            "body": json.dumps(f"Successfully deleted meetup-id {meetupId}"),
+        }
+
 
     else:
         return {
