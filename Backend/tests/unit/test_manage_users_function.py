@@ -4,12 +4,13 @@ from moto import mock_aws
 import boto3
 
 
+
 @pytest.fixture
 def dynamodb_setup():
     """Set up a mock DynamoDB table before each test."""
     with mock_aws():
         dynamodb = boto3.resource("dynamodb", region_name="eu-west-2")
-        table = dynamodb.create_table(
+        user_table = dynamodb.create_table(
             TableName="users-table",
             KeySchema=[{"AttributeName": "student-id", "KeyType": "HASH"}],
             AttributeDefinitions=[
@@ -18,7 +19,7 @@ def dynamodb_setup():
             ProvisionedThroughput={"ReadCapacityUnits": 1, "WriteCapacityUnits": 1},
         )
 
-        table.put_item(
+        user_table.put_item(
             Item={
                 "student-id": "test-user-id",
                 "calendar": {"available": []},
@@ -34,7 +35,31 @@ def dynamodb_setup():
                 "matchPreferences": {"enabled": False, "activities": []},
             }
         )
-        yield table
+
+        meetup_table = dynamodb.create_table(
+            TableName="meetups-table",
+            KeySchema=[{"AttributeName": "meetup-id", "KeyType": "HASH"}],
+            AttributeDefinitions=[{"AttributeName": "meetup-id", "AttributeType": "S"}],
+            ProvisionedThroughput={"ReadCapacityUnits": 1, "WriteCapacityUnits": 1},
+        )
+
+        meetup_table.put_item(
+            Item={
+                "meetup-id": "001",
+                "activity": "Boxing",
+                "confirmed": True,
+                "confirmed_users": ["test-user-id"],
+                "done": False,
+                "participants": [
+                    "test-user-id",
+                ],
+                "time_slot": "2025-03-27 15:02:17",
+            }
+        )
+
+        yield user_table,meetup_table
+
+
 
 
 # Import lambda functions after initialising mocked dynamodb
@@ -161,3 +186,49 @@ def test_post_confirmation(dynamodb_setup, attributes):
     item = table.get_item(Key={"student-id": attributes["sub"]})
     assert "Item" in item
     assert item["Item"] == expected_response
+
+
+def test_get_user_meetups(dynamodb_setup):
+    event = {
+        "httpMethod": "GET",
+        "pathParameters": {"userId": "test-user-id"},
+        "path": f"/users/test-user-id/meetups",
+    }
+
+    response = lambda_handler(event, None)
+    print(response)
+    assert response["statusCode"] == 200
+    assert json.loads(response["body"])["meetups"] == [
+        {
+            "meetup-id": "001",
+            "activity": "Boxing",
+            "confirmed": True,
+            "confirmed_users": ["test-user-id"],
+            "done": False,
+            "participants": ["test-user-id"],
+            "time_slot": "2025-03-27 15:02:17",
+        }
+    ]
+
+def test_invalid_method():
+    event = {
+        "httpMethod": "UNKNOWN",
+        "pathParameters": {"userId": "test-user-id"},
+        "path": f"/users/test-user-id/meetups",
+    }
+
+    response = lambda_handler(event, None)
+    assert response["statusCode"] == 500
+    assert response["body"] == "UNKNOWN does not exist for users"
+
+def test_invalid_userId():
+
+    event = {
+        "httpMethod": "GET",
+        "pathParameters": {"userId": ["test-user-id"]},
+        "path": f"/users/test-user-id",
+    }
+
+    response = lambda_handler(event, None)
+    assert response["statusCode"] == 500
+    assert json.loads(response["body"]) == "The server screwed up, error: An error occurred (ValidationException) when calling the GetItem operation: The provided key element does not match the schema"
