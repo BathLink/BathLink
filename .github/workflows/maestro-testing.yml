@@ -1,3 +1,11 @@
+name: Front end E2E testing
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'FrontEnd/**'
+
 jobs:
   test:
     runs-on: macos-12
