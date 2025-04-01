@@ -7,8 +7,6 @@ from Backend.cdk.cdk.cdk_stack import CdkStack
 
 
 def test_lambdas_created():
-
-
     app = core.App()
     stack = CdkStack(app, "CdkStack")
     template = assertions.Template.from_stack(stack)
