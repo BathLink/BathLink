@@ -16,10 +16,11 @@ jobs:
         with:
           model: 'iPhone 14 Pro'
 
-      - name: Install app and run
-        run: cd FrontEnd/
-        run: npm install
-        run: npx expo run:ios
+      - name: Run app
+        run: |
+          cd FrontEnd/
+          npm install
+          npx expo run:ios
         
       - uses: dniHze/maestro-test-action@v1
         with:
