@@ -1,0 +1,7 @@
+appId: com.anonymous.BathLinkApp
+---
+- tapOn: Matches
+- tapOn: Darts
+- assertVisible: "📅"
+- tapOn: close
+- tapOn: Preferences

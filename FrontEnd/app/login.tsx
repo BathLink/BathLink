@@ -91,6 +91,10 @@ export default function LoginScreen() {
         }
     };
 
+    const registerPage = async () => {
+        router.replace('/register');
+    }
+
     return (
         <View style={[styles.container, {backgroundColor: colours[theme].background}]}>
             <Text style={[styles.title, { color: colours[theme].text }]}>BathLink</Text>
@@ -101,7 +105,7 @@ export default function LoginScreen() {
             <TouchableOpacity style={[styles.button, , {backgroundColor: colours[theme].secondary}]} onPress={handleLogin}>
                 <Text style={[styles.buttonText, { color: colours[theme].text }]}>Login</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.replace('/register')}>
+            <TouchableOpacity onPress={registerPage}>
                 <Text style={[styles.switchText, { color: colours[theme].text }]}>Register Now</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleForgotPassword}>

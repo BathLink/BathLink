@@ -102,7 +102,6 @@ export default function RegisterScreen() {
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1, backgroundColor: colours[theme].background }}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <View style={styles.titleContainer}>
             <MaterialIcons.Button name="arrow-back" size={28} color= {colours[theme].text} backgroundColor="transparent" onPress={() => router.replace('/login')}/>
@@ -164,7 +163,6 @@ export default function RegisterScreen() {
             </TouchableOpacity>
           </View>
         </ScrollView>
-      </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
 }

@@ -176,8 +176,7 @@ export default function MeetupsScreen() {
                     <Pressable onPress={() => selectMeetup(item)}>
                         <View style={[styles.meetupBox, {backgroundColor: colours[theme].secondary}]}>
                             <Text style={[styles.meetupTitle, {color: colours[theme].text}]}>{item.title}</Text>
-                            <Text
-                                style={[styles.meetupDescription, {color: colours[theme].text}]}>{item.description}</Text>
+                            <Text style={[styles.meetupDescription, {color: colours[theme].text}]}>{item.description}</Text>
                         </View>
                     </Pressable>
                 )}
@@ -243,13 +242,14 @@ const styles = StyleSheet.create({
     },
     meetupBox: {
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'left',
         padding: 12,
         marginHorizontal: 20,
         marginVertical: 8,
         borderRadius: 10,
         borderWidth: 0,
         elevation: 1,
+        flexDirection: 'column'
     },
     meetupTextContainer: {
         flex: 1,

@@ -1,0 +1,40 @@
+appId: com.anonymous.BathLinkApp
+---
+- launchApp
+- tapOn: "Register Now"
+- tapOn: "First Name"
+- inputText: "Test"
+- tapOn: "Last Name"
+- inputText: "User"
+- tapOn: "Email"
+- inputText: "hc2306@bath.ac.uk"
+- tapOn: "Confirm Email"
+- inputText: "hc2306@bath.ac.uk"
+- tapOn: "Phone Number"
+- inputText: "07777777777"
+- hideKeyboard
+- doubleTapOn:
+    text: "Date of Birth "
+    retryTapIfNoChange: true
+- swipe:
+    start: "71%,40%"
+    end: "73%,55%"
+    duration: 917
+- swipe:
+    start: "25%,55%"
+    end: "24%,40%"
+    duration: 1500
+- swipe:
+    start: "51%,55%"
+    end: "51%,38%"
+    duration: 983
+- tapOn: "Confirm"
+- tapOn: "Password"
+- inputText: "Password9!"
+- "hideKeyboard"
+- tapOn: "Confirm Password"
+- inputText: "Password9!"
+- "hideKeyboard"
+- doubleTapOn: 
+    text: "Register"
+    retryTapIfNoChange: true
