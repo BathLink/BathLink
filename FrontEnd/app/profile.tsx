@@ -144,7 +144,6 @@ export default function ProfileScreen() {
             behavior={Platform.OS === "ios" ? "padding" : "height"}
             style={{flex: 1, backgroundColor: colours[theme].background}}
         >
-            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
                     <View style={styles.titleContainer}>
                         <MaterialIcons.Button name="arrow-back" size={28} color= {colours[theme].text} backgroundColor="transparent"
@@ -184,7 +183,6 @@ export default function ProfileScreen() {
                          </TouchableOpacity>
                     </View>
                 </ScrollView>
-            </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
     );
 }

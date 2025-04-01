@@ -1,0 +1,5 @@
+appId: com.anonymous.BathLinkApp
+---
+- tapOn: "Basketball"
+- assertVisible: "📅"
+- tapOn: "close"

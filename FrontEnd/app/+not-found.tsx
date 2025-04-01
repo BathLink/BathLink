@@ -5,7 +5,6 @@ import '@/authentication/aws-exports' //Change to whatever the path of the file 
 import colours from './colours';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
-
 export default function NotFoundScreen() {
   const router = useRouter();
   const theme = useColorScheme();
