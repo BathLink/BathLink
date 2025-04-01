@@ -1,14 +1,11 @@
 name: Front end E2E testing
 
 on:
-  workflow_dispatch:
-  push:
-    paths:
-      - 'FrontEnd/**'
+  push
 
 jobs:
   test:
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
@@ -18,7 +15,19 @@ jobs:
       - uses: futureware-tech/simulator-action@v2
         with:
           model: 'iPhone 14 Pro'
+
+      - name: Open app directory
+        run: cd FrontEnd/
+
+      - name: Install app
+        run: npm install
+
+      - name: Build and run app
+        run: npx expo run:ios
+
       - uses: dniHze/maestro-test-action@v1
         with:
-          flow: .maestro
+          flow: FrontEnd/.maestro
           report: report.xml
+
+      
