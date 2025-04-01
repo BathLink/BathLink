@@ -1,0 +1,3 @@
+- name: maestro-test-action
+
+  uses: dniHze/maestro-test-action@v1.0.0
