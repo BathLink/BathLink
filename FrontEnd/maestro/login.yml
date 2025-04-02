@@ -1,5 +1,6 @@
 appId: com.anonymous.BathLinkApp
 ---
+- clearState: com.anonymous.BathLinkApp
 - launchApp
 - tapOn: username/email
 - inputText: hc2306@bath.ac.uk

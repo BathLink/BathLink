@@ -14,10 +14,16 @@
     "production": {
       "autoIncrement": true
     },
-    "development-sim": {
-      "distribution": "internal",
+    "build-and-maestro-test": {
+      "withoutCredentials": true,
+      "config": "build-and-maestro-test.yml",
+      "android": {
+        "buildType": "apk",
+        "image": "latest"
+      },
       "ios": {
-        "simulator": true
+        "simulator": true,
+        "image": "latest"
       }
     }
   },

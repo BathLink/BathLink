@@ -4,7 +4,7 @@ on:
 
 jobs:
   eas-build:
-    name: Trigger EAS build for development-sim
+    name: Trigger external EAS build and Maestro testing
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -31,5 +31,5 @@ jobs:
       - name: 🚀 Send build request
         run: |
           cd FrontEnd/
-          eas build --platform all --non-interactive --no-wait --profile development-sim
+          eas build --platform ios --non-interactive --profile build-and-maestro-test
         shell: bash
