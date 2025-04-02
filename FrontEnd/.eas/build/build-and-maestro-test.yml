@@ -1,0 +1,13 @@
+build:
+  name: Create a build and run Maestro tests on it
+  steps:
+    - eas/build
+    - eas/maestro_test:
+        inputs:
+          flow_path: |
+            maestro/register.yml
+            maestro/login.yml
+            maestro/selectMeetup.yml
+            maestro/matches.yml
+            maestro/settings.yml
+            maestro/profile.yml
