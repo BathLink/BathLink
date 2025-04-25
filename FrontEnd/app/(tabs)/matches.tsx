@@ -1,5 +1,5 @@
 import { View, Text, Modal, StyleSheet,Switch, Pressable, ScrollView, TouchableHighlight, TouchableOpacity, Alert } from 'react-native';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getCurrentUser } from 'aws-amplify/auth';
@@ -23,6 +23,12 @@ export default function HomeScreen() {
     const [preferences, setPreferences] = useState({});
     const [activities, setActivities] = useState<any[]>([]);
 
+  const appStartTimeRef = useRef(Date.now());
+  const logButtonPress = (buttonName: string) => {
+    const now = Date.now();
+    const relTime = ((now - appStartTimeRef.current) / 1000).toFixed(2);
+    console.log(`[LOG] Button "${buttonName}" pressed at +${relTime}s`);
+  };
 
   // Track which button is selected for each match
   const [buttonStates] = useState(
@@ -33,6 +39,7 @@ export default function HomeScreen() {
 
 
   const toggleSwitch = async (activityId: string) => {
+          logButtonPress(`Toggle Activity ${activityId}`);
           try {
               const {userId} = await getCurrentUser();
               const userPreferences: any = await getInfo(`users/${userId}/preferences`);
@@ -197,6 +204,7 @@ export default function HomeScreen() {
 }
 
 async function acceptMeetup(meetupId) {
+    logButtonPress(`Accept Meetup ${meetupId}`);
     try {
       const { userId } = await getCurrentUser();
       await putItem(`meetups/${meetupId}`, {userId: userId});
@@ -207,6 +215,7 @@ async function acceptMeetup(meetupId) {
 }
 
 async function declineMeetup(meetupId) {
+  logButtonPress(`Decline Meetup ${meetupId}`);
   try {
     const { userId } = await getCurrentUser();
     await deleteItem(`meetups/${meetupId}`, `{userId: ${userId}}`);
@@ -263,15 +272,18 @@ async function declineMeetup(meetupId) {
     }, []); 
 
   const profileBtn = async () => {
+      logButtonPress("Profile");
       await AsyncStorage.setItem("page", "/matches");
       router.replace('/profile')
   };
 
   const selectMeetup = (meetup) => {
+    logButtonPress(`Select Meetup ${meetup[0]}`);
     setSelectedMatch(meetup);
   };
 
   const closeMeetup = () => {
+    logButtonPress("Close Meetup Modal");
     setSelectedMatch(null);
   };
 
@@ -295,7 +307,7 @@ async function declineMeetup(meetupId) {
             {/* Tabs */}
             <View style={[styles.tabContainer, { color: colours[theme].text }]}>
                 {['Invitations', 'Preferences'].map(tab => (
-                    <TouchableOpacity key={tab} onPress={() => setSelectedTab(tab)}>
+                    <TouchableOpacity key={tab} onPress={() => { logButtonPress(`Tab: ${tab}`); setSelectedTab(tab); }}>
                         <Text style={[
                             styles.tabText , {color: colours[theme].text},
                             selectedTab === tab && { ...styles.tabTextSelected, borderBottomColor: colours[theme].text
@@ -311,7 +323,7 @@ async function declineMeetup(meetupId) {
             {selectedTab === 'Invitations' && (
                 <ScrollView style={styles.matchList}>
                     {allMatches.map((match, index) => (
-                        <Pressable key={match[0]} onPress={() => selectMeetup(match)}>
+                        <Pressable key={match[0]} onPress={() => { logButtonPress(`Open Meetup ${match[0]}`); selectMeetup(match); }}>
                             <View style={[styles.matchCard, { backgroundColor: colours[theme].secondary }]}>
                                 <Text style={[styles.matchTitle, { color: colours[theme].text }]}>{match[1]}</Text>
                                 <Text style={[styles.matchDetail, { color: colours[theme].text }]}>
@@ -326,7 +338,7 @@ async function declineMeetup(meetupId) {
                                             styles.iconContainer,
                                             buttonStates[index]?.checkSelected && styles.iconSelectedCheck,
                                         ]}
-                                        onPress={() => acceptMeetup(match[0])}
+                                        onPress={() => { logButtonPress(`Accept Meetup Icon ${match[0]}`); acceptMeetup(match[0]); }}
                                     >
                                         <MaterialIcons name="check-circle" size={30} color={colours[theme].primary} />
                                     </TouchableHighlight>
@@ -337,7 +349,7 @@ async function declineMeetup(meetupId) {
                                             styles.iconContainer,
                                             buttonStates[index]?.cancelSelected && styles.iconSelectedCancel,
                                         ]}
-                                        onPress={() => declineMeetup(match[0])}
+                                        onPress={() => { logButtonPress(`Decline Meetup Icon ${match[0]}`); declineMeetup(match[0]); }}
                                     >
                                         <MaterialIcons name="cancel" size={30} color={colours[theme].primary} />
                                     </TouchableHighlight>
@@ -356,7 +368,7 @@ async function declineMeetup(meetupId) {
                             <Text style={[ { color: colours[theme].text }]}>{`${activity.activity_name} (${activity.ability}, ${activity.number_of_people} people)`}</Text>
                             <Switch
                                 value={toggles[activity["activity-id"]] || false}
-                                onValueChange={() => toggleSwitch(activity["activity-id"])}
+                                onValueChange={() => { logButtonPress(`Toggle Activity Switch ${activity["activity-id"]}`); toggleSwitch(activity["activity-id"]); }}
                             />
                         </View>
                     ))}
@@ -366,13 +378,13 @@ async function declineMeetup(meetupId) {
             {/* Expanded Meetup Modal */}
             {selectedMatch && (
                 <Modal animationType="fade" transparent={true} visible={!!selectedMatch}>
-                    <Pressable style={styles.modalOverlay} onPress={closeMeetup}>
+                    <Pressable style={styles.modalOverlay} onPress={() => { logButtonPress("Close Meetup Modal (overlay)"); closeMeetup(); }}>
                         <View style={[styles.expandedMeetup, { backgroundColor: colours[theme].secondary }]}>
                             <Text style={[styles.expandedTitle, { color: colours[theme].text }]}>{selectedMatch[1]}</Text>
                             <Text style={[styles.expandedDetail, { color: colours[theme].text }]}>📅 {selectedMatch[3]}</Text>
                             <Text style={[styles.expandedDetail, { color: colours[theme].text }]}>👤 {selectedMatch[2].length > 1 ? selectedMatch[2].join(", ") : selectedMatch[2]}</Text>
                             <MaterialIcons name="image" size={60} color="gray" style={styles.expandedImage} />
-                            <Pressable onPress={closeMeetup} style={styles.closeButton}>
+                            <Pressable onPress={() => { logButtonPress("Close Meetup Modal (button)"); closeMeetup(); }} style={styles.closeButton}>
                                 <Text style={[styles.closeButtonText, { color: colours[theme].text }]}>Close</Text>
                             </Pressable>
                         </View>

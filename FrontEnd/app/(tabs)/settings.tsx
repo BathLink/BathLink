@@ -1,6 +1,6 @@
 import { View, StyleSheet, Switch, TouchableOpacity, Text, Modal, ScrollView, TextInput, Alert, Appearance } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import colours from '../colours';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -47,6 +47,7 @@ export default function SettingsScreen() {
 
   // Dynamically set primary color and background color based on dark mode
   const handleLogout = async () => {
+    logButtonPress("Log Out");
     await signOut();
     
     Alert.alert(
@@ -73,6 +74,7 @@ export default function SettingsScreen() {
   const toggleSwitch4 = (value) => { setHighContrast(value); };
 
   const toggleSwitch = (value) => {
+    logButtonPress("Push Notifications");
     setIsEnabled(value);
 
     if (value) {
@@ -103,6 +105,7 @@ export default function SettingsScreen() {
   };
 
   const toggleSwitch1 = (value) => {
+    logButtonPress("Email Notifications");
     setIsEnabled1(value);
 
     if (value) {
@@ -134,6 +137,7 @@ export default function SettingsScreen() {
 
   /** PASSWORD CHANGE FUNCTION */
   const handleChangePassword = async () => {
+    logButtonPress("Change Password");
     try {
         const {username, userId, signInDetails} = await getCurrentUser();
     await updatePassword({oldPassword : currentPassword, newPassword : newPassword})
@@ -146,8 +150,16 @@ export default function SettingsScreen() {
   }
 
   const profileBtn = async () => {
+      logButtonPress("Profile");
       await AsyncStorage.setItem("page", "/settings");
       router.replace('/profile')
+  };
+
+  const appStartTimeRef = useRef(Date.now());
+  const logButtonPress = (buttonName: string) => {
+    const now = Date.now();
+    const relTime = ((now - appStartTimeRef.current) / 1000).toFixed(2);
+    console.log(`[LOG] Button "${buttonName}" pressed at +${relTime}s`);
   };
 
   return (
@@ -202,7 +214,7 @@ export default function SettingsScreen() {
           </View>
           {/* Font size switch with options */}
           <View style={styles.fontSizeOptions}>
-            <TouchableOpacity onPress={() => handleFontSizeChange('small')}>
+            <TouchableOpacity onPress={() => { logButtonPress("Font Size Small"); handleFontSizeChange('small'); }}>
               <Text style={[styles.optionText, {
                   color: colours[theme].text,
                   fontWeight: 'bold',
@@ -210,7 +222,7 @@ export default function SettingsScreen() {
                   lineHeight: 30,
                    }]}>A</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleFontSizeChange('medium')}>
+            <TouchableOpacity onPress={() => { logButtonPress("Font Size Medium"); handleFontSizeChange('medium'); }}>
               <Text style={[styles.optionText, {
                   color: colours[theme].text,
                   fontWeight: 'bold',
@@ -218,7 +230,7 @@ export default function SettingsScreen() {
                   lineHeight: 30,
                    }]}>A</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleFontSizeChange('large')}>
+            <TouchableOpacity onPress={() => { logButtonPress("Font Size Large"); handleFontSizeChange('large'); }}>
               <Text style={[styles.optionText, {
                   color: colours[theme].text,
                   fontWeight: 'bold',
@@ -313,7 +325,7 @@ export default function SettingsScreen() {
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.modalButton, styles.cancelButton]}
-                onPress={() => setModalVisible(false)}
+                onPress={() => { logButtonPress("Cancel Change Password"); setModalVisible(false); }}
               >
                 <Text style={styles.buttonText}>Cancel</Text>
               </TouchableOpacity>
@@ -322,7 +334,7 @@ export default function SettingsScreen() {
         </View>
       </Modal>
 
-      <TouchableOpacity style={styles.settingOption} onPress={() => setModalVisible(true)}>
+      <TouchableOpacity style={styles.settingOption} onPress={() => { logButtonPress("Change Password"); setModalVisible(true); }}>
         <Text style={[styles.optionText, { color: colours[theme].text }]}>Change Password</Text>
         <MaterialIcons name="lock" size={24} color="gray" />
       </TouchableOpacity>

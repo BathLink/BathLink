@@ -1,5 +1,5 @@
 import {FlatList, View, StyleSheet, Text, Pressable, Modal, Image} from 'react-native';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import {getInfo} from '@/authentication/getInfo';
 import {getCurrentUser} from 'aws-amplify/auth';
@@ -16,6 +16,13 @@ export default function MeetupsScreen() {
     const [allMeetups, setAllMeetups] = useState([]);
     const router = useRouter();
     const theme = useColorScheme();
+    const appStartTimeRef = useRef(Date.now());
+
+    const logButtonPress = (buttonName: string) => {
+        const now = Date.now();
+        const relTime = ((now - appStartTimeRef.current) / 1000).toFixed(2);
+        console.log(`[LOG] Button "${buttonName}" pressed at +${relTime}s`);
+    };
 
     async function getMeetups() {
         try {
@@ -102,15 +109,18 @@ export default function MeetupsScreen() {
 
 
     const selectMeetup = async (meetup) => {
+        logButtonPress("Select Meetup");
         setSelectedMeetup(meetup);
     };
 
     const closeMeetup = () => {
+        logButtonPress("Close Meetup");
         setSelectedMeetup(null);
         setSelectedUser(null);
     };
 
     const profileBtn = async () => {
+        logButtonPress("Profile Button");
         await AsyncStorage.setItem("page", "/meetups");
         router.replace('/profile');
     };
@@ -124,7 +134,7 @@ export default function MeetupsScreen() {
                     size={28}
                     color={colours[theme].text}
                     backgroundColor="transparent"
-                    onPress={profileBtn}
+                    onPress={() => { logButtonPress("Person Icon"); profileBtn(); }}
                 />
                 <Text style={[styles.header, {color: colours[theme].text}]}>BathLink</Text>
                 <MaterialIcons.Button
@@ -141,7 +151,7 @@ export default function MeetupsScreen() {
             {allMeetups.length > 0 ? (
                 <View>
                     <Text style={[styles.subsubheader, {color: colours[theme].text}]}>Next Meetup</Text>
-                    <Pressable onPress={() => selectMeetup(allMeetups[0])}>
+                    <Pressable onPress={() => { logButtonPress("Next Meetup"); selectMeetup(allMeetups[0]); }}>
                         <View style={[styles.meetupBox, {backgroundColor: colours[theme].secondary}]}>
                             <Text
                                 style={[styles.meetupTitle, {color: colours[theme].text}]}>{allMeetups[0].title}</Text>
@@ -168,7 +178,7 @@ export default function MeetupsScreen() {
                 data={allMeetups.slice(1)}
                 keyExtractor={(item) => item.id}
                 renderItem={({item}) => (
-                    <Pressable onPress={() => selectMeetup(item)}>
+                    <Pressable onPress={() => { logButtonPress("Meetup Item"); selectMeetup(item); }}>
                         <View style={[styles.meetupBox, {backgroundColor: colours[theme].secondary}]}>
                             <Text style={[styles.meetupTitle, {color: colours[theme].text}]}>{item.title}</Text>
                             <Text style={[styles.meetupDescription, {color: colours[theme].text}]}>{item.description}</Text>
@@ -181,7 +191,7 @@ export default function MeetupsScreen() {
             {/* Expanded Meetup Modal */}
             {selectedMeetup && (
                 <Modal animationType="fade" transparent={true} visible={!!selectedMeetup}>
-                    <Pressable style={styles.modalOverlay} onPress={closeMeetup}>
+                    <Pressable style={styles.modalOverlay} onPress={() => { logButtonPress("Modal Overlay"); closeMeetup(); }}>
                         <View style={[styles.expandedMeetup, {backgroundColor: colours[theme].secondary}]}>
                             <Text style={[styles.expandedTitle, {color: colours[theme].text}]}>
                                 {selectedMeetup.title}
@@ -197,7 +207,7 @@ export default function MeetupsScreen() {
 
 
 
-                            <Pressable onPress={closeMeetup} style={styles.closeButton}>
+                            <Pressable onPress={() => { logButtonPress("Close Button"); closeMeetup(); }} style={styles.closeButton}>
                                 <Text style={[styles.closeButtonText, {color: colours[theme].text}]}>Close</Text>
                             </Pressable>
                         </View>
