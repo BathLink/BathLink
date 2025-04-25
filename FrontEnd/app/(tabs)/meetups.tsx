@@ -20,8 +20,6 @@ export default function MeetupsScreen() {
     async function getMeetups() {
         try {
             const {userId} = await getCurrentUser();
-            console.log("User ID:", userId);
-
             const dbMeetups = await getInfo(`users/${userId}/meetups`);
             return dbMeetups;
         } catch (error) {
@@ -57,8 +55,6 @@ export default function MeetupsScreen() {
                     const profile = await getInfo(`users/${meetup.confirmed_users[i]}/profile`)
                     participantProfiles.push(profile)
                 }
-                console.log("Participant Profiles:", participantProfiles);
-
                 return {
                     id: (index + 1).toString(),
                     title: meetup.activity,
@@ -159,7 +155,6 @@ export default function MeetupsScreen() {
             )}
         </View>
     );
-    console.log("selected",selectedMeetup)
     const renderItem = ({ item }) => (
         item.social?
         <Text style={[styles.expandedDetail, {color: colours[theme].text}]}>

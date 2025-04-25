@@ -50,12 +50,10 @@ export default function HomeScreen() {
               // Update backend
               const activities: any = {}
               activities[activityId] = !currentActivities.includes(activityId);
-              console.log("Activities:", activities);
               const response  = await putItem(`users/${userId}/preferences`, activities);
 
 
               const updatedPreferences: any = await getInfo(`users/${userId}/preferences`);
-              console.log("Updated Preferences:", updatedPreferences);
 
               // Update UI state correctly
               setToggles(prev => ({
@@ -157,9 +155,6 @@ export default function HomeScreen() {
       try {
           const { userId } = await getCurrentUser();
           const dbMeetups = await getInfo("users/"+userId+"/meetups");
-          console.log("orange")
-          console.log(dbMeetups)
-          console.log(dbMeetups.meetups)
           return dbMeetups;
       } catch (error) {
           console.error("Error fetching matches:", error);
@@ -224,12 +219,9 @@ async function declineMeetup(meetupId) {
   async function processMatches(dbMeetups) {
     try {
       let meetups = await dbMeetups.meetups.filter(meetup => !meetup.confirmed)
-        console.log("apple")
-        console.log(meetups)
       let formatedMeetups = []
       for (let i = 0; i < meetups.length; i++) {
         let meetup = meetups[i]
-        console.log(meetups)
         let id = meetup["meetup-id"]
         let title = meetup.activity
         let people = (await getName(meetup.participants))

@@ -7,7 +7,6 @@ export async function getInfo(path: string) {
             path: path
         });
         const response = await restOperation.response;
-        console.log('GET call succeeded: ', response);
         const responseBody = await response.body.json();
         return responseBody;
     } catch (error) {
