@@ -4,7 +4,6 @@ import {autoSignIn, confirmSignUp} from "@aws-amplify/auth";
 
 export async function ConfirmEmailAddy(username: string, code: string){
     try{
-        console.log("pets")
         const { nextStep: confirmSignUpNextStep } = await confirmSignUp({
             username: username,
             confirmationCode: code,

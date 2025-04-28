@@ -25,6 +25,19 @@ export default function RegisterScreen() {
   const [formattedDate, setFormattedDate] = useState('');
   const [isRegistered, setIsRegistered] = useState(false);
 
+  const [step, setStep] = useState(0); // New: track which input we're on!
+
+  const fields = [
+    { placeholder: "First Name", value: firstName, setter: setFirstName, keyboardType: "default" },
+    { placeholder: "Last Name", value: lastName, setter: setLastName, keyboardType: "default" },
+    { placeholder: "Email", value: email, setter: setEmail, keyboardType: "email-address" },
+    { placeholder: "Confirm Email", value: confirmEmail, setter: setConfirmEmail, keyboardType: "email-address" },
+    { placeholder: "Phone Number", value: phone, setter: setPhone, keyboardType: "phone-pad" },
+    { placeholder: "Date of Birth", value: formattedDate, setter: () => {}, keyboardType: "default", isDate: true },
+    { placeholder: "Password", value: password, setter: setPassword, keyboardType: "default", secureTextEntry: true },
+    { placeholder: "Confirm Password", value: confirmPassword, setter: setConfirmPassword, keyboardType: "default", secureTextEntry: true },
+  ];
+
 
   useEffect(() => {
     if (isRegistered) {
@@ -101,69 +114,101 @@ export default function RegisterScreen() {
   };
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1, backgroundColor: colours[theme].background }}>
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1, backgroundColor: colours[theme].background }}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <View style={styles.titleContainer}>
             <MaterialIcons.Button name="arrow-back" size={28} color= {colours[theme].text} backgroundColor="transparent" onPress={() => router.replace('/login')}/>
-            <Text 
-        style={[styles.header,{
-          color: colours[theme].text, 
-          backgroundColor: "rgba(0,0,0,0)",
-        }]} 
-        >
-          BathLink
-        </Text>
+            <Text
+                style={[styles.header,{
+                  color: colours[theme].text,
+                  backgroundColor: "rgba(0,0,0,0)",
+                }]}
+            >
+              BathLink
+            </Text>
             <MaterialIcons.Button name="notifications" size={28} color={"transparent"}
                                   backgroundColor="transparent" onPress={testBtn}/>
 
           </View>
-          <Text style={[styles.subtitle, { color: colours[theme].text }]}>Register</Text>
+
 
 
           <View style={styles.container}>
+            <View style={styles.formBox}>
+            <Text style={[styles.subtitle, { color: colours[theme].text }]}>Register</Text>
 
-            <TextInput style={[styles.input, { color: colours[theme].text, borderColor: colours[theme].text }]} placeholder="First Name" value={firstName} onChangeText={setFirstName} />
-            <TextInput style={[styles.input, { color: colours[theme].text, borderColor: colours[theme].text }]} placeholder="Last Name" value={lastName} onChangeText={setLastName} />
-            <TextInput style={[styles.input, { color: colours[theme].text, borderColor: colours[theme].text }]} placeholder="Email" value={email} onChangeText={setEmail} keyboardType="email-address" />
-            <TextInput style={[styles.input, { color: colours[theme].text, borderColor: colours[theme].text }]} placeholder="Confirm Email" value={confirmEmail} onChangeText={setConfirmEmail} keyboardType="email-address" />
-            <TextInput style={[styles.input, { color: colours[theme].text, borderColor: colours[theme].text }]} placeholder="Phone Number" value={phone} onChangeText={setPhone} keyboardType="phone-pad" returnKeyType="done" />
+            {fields[step]?.isDate ? (
+                <>
+                  <TouchableOpacity onPress={() => setShowPicker(true)} style={[styles.input, { flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderColor: colours[theme].text }]}>
+                    <Text style={[{ color: formattedDate ? colours[theme].text : "grey" }]}>
+                      {formattedDate || "Date of Birth"}
+                    </Text>
+                    <MaterialIcons name="calendar-today" size={24} color={colours[theme].text} />
+                  </TouchableOpacity>
+                </>
+            ) : (
+                <TextInput
+                    style={[styles.input, { color: colours[theme].text, borderColor: colours[theme].text }]}
+                    placeholder={fields[step]?.placeholder}
+                    value={fields[step]?.value}
+                    onChangeText={fields[step]?.setter}
+                    keyboardType={fields[step]?.keyboardType as any}
+                    secureTextEntry={fields[step]?.secureTextEntry || false}
+                />
+            )}
 
-            {/* Date Picker Trigger */}
-            <TouchableOpacity onPress={() => setShowPicker(true)} style={[styles.inputContainer, { borderColor: colours[theme].text }]}>
-              <Text style={[formattedDate ? { color: colours[theme].text } : { color: "grey" }]}>
-                {formattedDate || "Date of Birth"}
-              </Text>
-              <MaterialIcons name="calendar-today" size={24} color={colours[theme].text} />
-            </TouchableOpacity>
-
-            {/* Android Date Picker (shows inline) */}
             {showPicker && Platform.OS === "android" && (
-              <DateTimePicker value={date} mode="date" display="default" onChange={handleDateChange} />
+                <DateTimePicker value={date} mode="date" display="default" onChange={handleDateChange} />
             )}
 
-            {/* iOS Date Picker (inside Modal) */}
             {showPicker && Platform.OS === "ios" && (
-              <Modal transparent={true} animationType="slide">
-                <View style={styles.modalContainer}>
-                  <View style={[styles.modalContent, {backgroundColor: colours[theme].background, borderColor:colours[theme].text, borderWidth: 0.5}]}>
-                    <DateTimePicker value={date} mode="date" display="spinner" onChange={handleDateChange} />
-                    <TouchableOpacity style={[styles.confirmButton, {backgroundColor: colours[theme].secondary}]} onPress={confirmDateSelection}>
-                      <Text style={[styles.buttonText, {color: colours[theme].text}]}>Confirm</Text>
-                    </TouchableOpacity>
+                <Modal transparent={true} animationType="slide">
+                  <View style={styles.modalContainer}>
+                    <View style={[styles.modalContent, { backgroundColor: colours[theme].background, borderColor: colours[theme].text, borderWidth: 0.5 }]}>
+                      <DateTimePicker value={date} mode="date" display="spinner" onChange={handleDateChange} />
+                      <TouchableOpacity style={[styles.confirmButton, { backgroundColor: colours[theme].secondary }]} onPress={confirmDateSelection}>
+                        <Text style={[styles.buttonText, { color: colours[theme].text }]}>Confirm</Text>
+                      </TouchableOpacity>
+                    </View>
                   </View>
-                </View>
-              </Modal>
+                </Modal>
             )}
 
-            <TextInput style={[styles.input, { color: colours[theme].text, borderColor: colours[theme].text }]} placeholder="Password" secureTextEntry value={password} onChangeText={setPassword} />
-            <TextInput style={[styles.input, { color: colours[theme].text, borderColor: colours[theme].text }]} placeholder="Confirm Password" secureTextEntry value={confirmPassword} onChangeText={setConfirmPassword} />
 
-            <TouchableOpacity style={[styles.button, {backgroundColor: colours[theme].secondary}]} onPress={handleRegister}>
-              <Text style={[styles.buttonText, {color: colours[theme].text}]}>Register</Text>
-            </TouchableOpacity>
+              {/* PROGRESS DOTS */}
+              <View style={styles.dotsContainer}>
+                {fields.map((_, index) => (
+                    <View
+                        key={index}
+                        style={[
+                          styles.dot,
+                          { backgroundColor: index === step ? colours[theme].primary : 'lightgray' },
+                        ]}
+                    />
+                ))}
+              </View>
+
+            <View style={styles.buttonRow}>
+              {step > 0 && (
+                  <TouchableOpacity style={[styles.navButton, { backgroundColor: colours[theme].secondary }]} onPress={() => setStep(step - 1)}>
+                    <Text style={[styles.buttonText, { color: colours[theme].text }]}>Back</Text>
+                  </TouchableOpacity>
+              )}
+              {step < fields.length - 1 ? (
+                  <TouchableOpacity style={[styles.navButton, { backgroundColor: colours[theme].secondary }]} onPress={() => setStep(step + 1)}>
+                    <Text style={[styles.buttonText, { color: colours[theme].text }]}>Next</Text>
+                  </TouchableOpacity>
+              ) : (
+                  <TouchableOpacity style={[styles.navButton, { backgroundColor: colours[theme].secondary }]} onPress={handleRegister}>
+                    <Text style={[styles.buttonText, { color: colours[theme].text }]}>Register</Text>
+                  </TouchableOpacity>
+              )}
+            </View>
+            </View>
+
           </View>
         </ScrollView>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
   );
 }
 
@@ -174,7 +219,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     paddingHorizontal: 20,
   },
-  container: { flex: 1, justifyContent: "flex-start", alignItems: 'center',  width: "100%", paddingVertical: 16, },
+  container: { flex: 1, justifyContent: "flex-start", alignItems: 'center',  width: "100%", paddingVertical: 170, },
   subtitle: { fontSize: 18, marginBottom: 10 },
   input: { width: '80%', padding: 10, borderWidth: 1, marginBottom: 10, borderRadius: 5},
   button: {padding: 10, borderRadius: 5, marginTop: 10 },
@@ -196,5 +241,46 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 16,
     paddingHorizontal: 20,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    marginTop: 10,
+  },
+  navButton: {
+    padding: 12,
+    borderRadius: 5,
+    marginHorizontal: 10,
+    minWidth: 100,
+    alignItems: 'center',
+  },
+
+  formBox: {
+    width: '85%',
+    borderWidth: 1,
+    borderColor: 'lightgray',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+  },
+  dotsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginVertical: 20,
+  },
+  dot: {
+    height: 10,
+    width: 10,
+    borderRadius: 5,
+    marginHorizontal: 5,
+  },
+  formContainer: {
+    width: '90%',
+    borderWidth: 1,
+    borderColor: 'lightgray',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+    backgroundColor: 'transparent', // Optional: stays transparent
   },
 });

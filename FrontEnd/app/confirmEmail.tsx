@@ -26,7 +26,7 @@ export default function ConfirmScreen() {
       return;
     }
     await ConfirmEmailAddy(email, code)
-    router.replace('/(tabs)/meetups');
+    router.replace('/profile2');
   };
 
     return (
