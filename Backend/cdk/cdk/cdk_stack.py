@@ -32,13 +32,20 @@ class CdkStack(Stack):
             lambdas.manage_users
         )
 
-        api = BathLinkAPI().create_api(self, cognito.user_pool, lambdas)
+        cognito.user_pool2.add_trigger(
+            _cognito.UserPoolOperation.POST_CONFIRMATION,
+            lambdas.manage_users
+        )
+
+        api = BathLinkAPI().create_api(self, cognito.user_pool, cognito.user_pool2, lambdas)
 
         buckets = BathLinkBuckets().create_buckets(self)
 
         CfnOutput(self, "APIEndpoint", value=api.url)
         CfnOutput(self, "UserPoolId", value=cognito.user_pool.user_pool_id)
+        CfnOutput(self, "UserPool2Id", value=cognito.user_pool2.user_pool_id)
         CfnOutput(self,"AppClientId",value=cognito.app_client.user_pool_client_id)
+        CfnOutput(self, "AppClient2Id", value=cognito.app_client2.user_pool_client_id)
 
 
 

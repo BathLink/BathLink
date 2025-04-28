@@ -67,6 +67,12 @@ class BathLinkLambdas:
             action="lambda:InvokeFunction",
             source_arn=cognito.user_pool.user_pool_arn
         )
+        self.manage_users.add_permission(
+            "CognitoTriggerPermission2",
+            principal=iam.ServicePrincipal("cognito-idp.amazonaws.com"),
+            action="lambda:InvokeFunction",
+            source_arn=cognito.user_pool2.user_pool_arn
+        )
         self.manage_profiles = create_lambda('manage_profiles_lambda',[tables.users_table])
         self.manage_chats = create_lambda('manage_chats_lambda',[tables.groupchats_table])
         self.manage_calendars = create_lambda('manage_calendars_lambda',[tables.users_table])

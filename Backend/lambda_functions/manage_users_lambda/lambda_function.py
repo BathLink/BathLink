@@ -1,4 +1,6 @@
 import json
+import uuid
+
 import boto3
 
 dynamodb = boto3.resource("dynamodb", region_name="eu-west-2")
@@ -25,6 +27,25 @@ def PostConfirmation(event, context):
             "matchPreferences": {"enabled": False, "activities": []},
         }
     )
+
+    # Finn, Harry, Martin
+    others = ['06621284-d031-70f3-f8e2-a21e5965e598','463252b4-c071-7011-ad55-29a0128416ba','26225284-d0a1-7004-1e01-973773a6990f']
+
+    meetup_item = {
+        "meetup-id": uuid.UUID(),
+        "activity": 'Tennis',
+        "participants": others+[user_attributes.get("sub")],
+        "time_slot": '2025-05-06 20:00:00',
+        "confirmed": False,
+        "done": False,
+        "confirmed_users": others
+    }
+
+    meetups_table.put_item(
+        Item=meetup_item
+    )
+
+
 
     return event
 
