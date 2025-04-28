@@ -8,7 +8,7 @@ from .bathlink_lambdas import BathLinkLambdas
 
 class BathLinkAPI:
 
-    def create_api(self, stack, user_pool, lambdas):
+    def create_api(self, stack, user_pool,user_pool2, lambdas):
         def add_method(
             root,
             method,
@@ -33,7 +33,7 @@ class BathLinkAPI:
             )
 
         authorizer = apigateway.CognitoUserPoolsAuthorizer(
-            stack, "BathLinkAuthorizer", cognito_user_pools=[user_pool]
+            stack, "BathLinkAuthorizer", cognito_user_pools=[user_pool,user_pool2]
         )
 
         api = apigateway.RestApi(
